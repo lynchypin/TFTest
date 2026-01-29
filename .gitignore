@@ -1,0 +1,16 @@
+# Exclude everything by default
+*
+
+# Allow only GitHub Pages essentials
+!.gitignore
+!.github/
+!.github/workflows/
+!.github/workflows/deploy-demo.yml
+!docs/
+!docs/demo-scenarios/
+!docs/demo-scenarios/**
+
+# But exclude node_modules and dev files within demo-scenarios
+docs/demo-scenarios/node_modules/
+docs/demo-scenarios/.env*
+docs/demo-scenarios/*.log

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getFullPayload, sendEvent, getRoutingKey } from '../services/pagerduty';
+import { getFullPayload, maskKey } from '../services/pagerduty';
+import { getPagerDutyCredentials } from '../services/integrations';
 import { FEATURES, getScenarioLicenseInfo, getPlanDisplay, ADDONS } from '../services/license';
 
 const FEATURE_TIER_COLORS = {
@@ -8,7 +9,7 @@ const FEATURE_TIER_COLORS = {
   tier3: { bg: 'bg-cyan-900/20', text: 'text-cyan-500' }
 };
 
-export default function PayloadModal({ scenario, routingKey, onClose, onSend }) {
+export default function PayloadModal({ scenario, onClose, onSend }) {
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState(null);
@@ -16,8 +17,8 @@ export default function PayloadModal({ scenario, routingKey, onClose, onSend }) 
   const [editedPayload, setEditedPayload] = useState('');
   const [parseError, setParseError] = useState(null);
 
-  const effectiveKey = routingKey || getRoutingKey(scenario.tags.integration);
-  const originalPayload = getFullPayload(scenario, effectiveKey);
+  const { routingKey } = getPagerDutyCredentials();
+  const originalPayload = getFullPayload(scenario, routingKey || 'YOUR_ROUTING_KEY');
   const originalJsonString = JSON.stringify(originalPayload, null, 2);
 
   const licenseInfo = getScenarioLicenseInfo(scenario);
@@ -52,8 +53,8 @@ export default function PayloadModal({ scenario, routingKey, onClose, onSend }) 
   };
 
   const handleSend = async () => {
-    if (!effectiveKey) {
-      setResult({ success: false, message: 'No routing key configured for ' + scenario.tags.integration });
+    if (!routingKey) {
+      setResult({ success: false, message: 'No fallback routing key configured. Add one in Settings → PagerDuty tab.' });
       return;
     }
 

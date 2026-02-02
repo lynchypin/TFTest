@@ -1,18 +1,6 @@
 import { useState, useEffect } from 'react';
 import { maskKey } from '../services/pagerduty';
-import { getIntegrationStatus } from '../services/integrations';
-
-const integrations = [
-  { key: 'prometheus', name: 'Prometheus', icon: '📊' },
-  { key: 'grafana', name: 'Grafana', icon: '📈' },
-  { key: 'datadog', name: 'Datadog', icon: '🐕' },
-  { key: 'newrelic', name: 'New Relic', icon: '🔮' },
-  { key: 'sentry', name: 'Sentry', icon: '🐛' },
-  { key: 'splunk', name: 'Splunk', icon: '🔍' },
-  { key: 'cloudwatch', name: 'CloudWatch', icon: '☁️' },
-  { key: 'uptimerobot', name: 'UptimeRobot', icon: '🤖' },
-  { key: 'github_actions', name: 'GitHub Actions', icon: '⚙️' }
-];
+import { getIntegrationStatus, getPagerDutyCredentials, savePagerDutyCredentials, clearPagerDutyCredentials } from '../services/integrations';
 
 const externalTools = [
   { key: 'datadog', name: 'Datadog', icon: '🐕', fields: [
@@ -53,20 +41,15 @@ const externalTools = [
   ]}
 ];
 
-export default function SettingsModal({ routingKeys, instance, onSave, onClose }) {
-  const [keys, setKeys] = useState({});
+export default function SettingsModal({ instance, onSave, onClose }) {
   const [pdInstance, setPdInstance] = useState(instance || '');
-  const [pdApiKey, setPdApiKey] = useState('');
+  const [fallbackKey, setFallbackKey] = useState('');
+  const [showFallbackKey, setShowFallbackKey] = useState(false);
   const [showKeys, setShowKeys] = useState({});
-  const [editingKey, setEditingKey] = useState(null);
   const [externalCreds, setExternalCreds] = useState({});
   const [activeTab, setActiveTab] = useState('pagerduty');
 
   useEffect(() => {
-    const emptyKeys = {};
-    integrations.forEach(({ key }) => { emptyKeys[key] = ''; });
-    setKeys(emptyKeys);
-    setPdApiKey('');
     const savedCreds = {};
     externalTools.forEach(tool => {
       tool.fields.forEach(field => { savedCreds[field.name] = ''; });
@@ -74,37 +57,24 @@ export default function SettingsModal({ routingKeys, instance, onSave, onClose }
     setExternalCreds(savedCreds);
   }, []);
 
-  const handleChange = (integration, value) => {
-    setKeys(prev => ({ ...prev, [integration]: value }));
-  };
-
   const handleExternalCredChange = (fieldName, value) => {
     setExternalCreds(prev => ({ ...prev, [fieldName]: value }));
   };
 
   const handleSave = () => {
-    const updatedKeys = { ...routingKeys };
-    Object.entries(keys).forEach(([key, value]) => {
-      if (value && value.trim()) updatedKeys[key] = value.trim();
-    });
-    if (pdApiKey && pdApiKey.trim()) localStorage.setItem('pd_api_key', pdApiKey.trim());
+    if (fallbackKey && fallbackKey.trim()) {
+      savePagerDutyCredentials(fallbackKey.trim());
+    }
     Object.entries(externalCreds).forEach(([key, value]) => {
       if (value && value.trim()) localStorage.setItem(key, value.trim());
     });
-    onSave(updatedKeys, pdInstance);
+    onSave(pdInstance);
     onClose();
   };
 
-  const handleClearKey = (key) => {
-    const updatedKeys = { ...routingKeys };
-    delete updatedKeys[key];
-    onSave(updatedKeys, pdInstance);
-    setKeys(prev => ({ ...prev, [key]: '' }));
-  };
-
-  const handleClearApiKey = () => {
-    localStorage.removeItem('pd_api_key');
-    setPdApiKey('');
+  const handleClearFallbackKey = () => {
+    clearPagerDutyCredentials();
+    setFallbackKey('');
   };
 
   const handleClearExternalCred = (fieldName) => {
@@ -116,7 +86,7 @@ export default function SettingsModal({ routingKeys, instance, onSave, onClose }
     setShowKeys(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const hasStoredApiKey = !!localStorage.getItem('pd_api_key');
+  const { routingKey: storedFallbackKey } = getPagerDutyCredentials();
   const integrationStatus = getIntegrationStatus();
 
   return (
@@ -132,7 +102,7 @@ export default function SettingsModal({ routingKeys, instance, onSave, onClose }
             </div>
             <div>
               <h3 className="font-bold text-gray-100">Settings</h3>
-              <p className="text-xs text-gray-500">Configure integrations & API keys</p>
+              <p className="text-xs text-gray-500">Configure integrations</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 text-gray-500 hover:text-gray-300 hover:bg-gray-800 rounded-lg transition-colors">
@@ -164,52 +134,28 @@ export default function SettingsModal({ routingKeys, instance, onSave, onClose }
                 <p className="text-xs text-indigo-400 mt-2">Your PagerDuty subdomain (e.g., "acme" for acme.pagerduty.com)</p>
               </div>
 
-              <div className="mb-6 p-4 bg-emerald-900/30 rounded-xl border border-emerald-700/50">
-                <label className="block text-sm font-semibold text-emerald-300 mb-2">PagerDuty API Key</label>
-                {hasStoredApiKey && !pdApiKey ? (
+              <div className="mb-6 p-4 bg-amber-900/30 rounded-xl border border-amber-700/50">
+                <label className="block text-sm font-semibold text-amber-300 mb-2">Fallback Routing Key (Optional)</label>
+                <p className="text-xs text-amber-400 mb-3">Used only when external tool integration fails. Most scenarios trigger through their native integration flow.</p>
+                {storedFallbackKey && !fallbackKey ? (
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 px-3 py-2 bg-gray-800/50 rounded-lg border border-gray-700 text-gray-400 font-mono text-sm">{maskKey(localStorage.getItem('pd_api_key'))}</div>
-                    <button type="button" onClick={handleClearApiKey} className="px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded-lg transition-colors">Clear</button>
+                    <div className="flex-1 px-3 py-2 bg-gray-800/50 rounded-lg border border-gray-700 text-gray-400 font-mono text-sm">{maskKey(storedFallbackKey)}</div>
+                    <button type="button" onClick={handleClearFallbackKey} className="px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded-lg transition-colors">Clear</button>
                   </div>
                 ) : (
                   <div className="relative">
-                    <input type={showKeys.apiKey ? 'text' : 'password'} value={pdApiKey} onChange={(e) => setPdApiKey(e.target.value)} placeholder={hasStoredApiKey ? 'Enter new key to replace' : 'Enter your PagerDuty API key'} className="w-full input-field pr-10" />
-                    <button type="button" onClick={() => toggleShowKey('apiKey')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">{showKeys.apiKey ? '🙈' : '👁️'}</button>
+                    <input type={showFallbackKey ? 'text' : 'password'} value={fallbackKey} onChange={(e) => setFallbackKey(e.target.value)} placeholder={storedFallbackKey ? 'Enter new key to replace' : 'R0...'} className="w-full input-field pr-10" />
+                    <button type="button" onClick={() => setShowFallbackKey(!showFallbackKey)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">{showFallbackKey ? '🙈' : '👁️'}</button>
                   </div>
                 )}
-                <p className="text-xs text-emerald-400 mt-2">🔒 Stored securely in localStorage</p>
               </div>
 
-              <div className="mb-4">
-                <h4 className="font-semibold text-gray-100 mb-2">Integration Routing Keys</h4>
-                <p className="text-sm text-gray-400 mb-4">Configure routing keys from your PagerDuty Event Orchestration integrations.</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {integrations.map(({ key, name, icon }) => {
-                  const hasStoredKey = !!routingKeys[key];
-                  const isEditing = editingKey === key || !hasStoredKey;
-                  return (
-                    <div key={key} className="p-3 bg-gray-800/50 rounded-xl border border-gray-700/50">
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
-                        <span>{icon}</span>{name}
-                        {hasStoredKey && <span className="ml-auto text-xs text-emerald-500">✓ Saved</span>}
-                      </label>
-                      {hasStoredKey && !isEditing ? (
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 px-3 py-2 bg-gray-900/50 rounded-lg border border-gray-700 text-gray-400 font-mono text-xs truncate">{maskKey(routingKeys[key])}</div>
-                          <button type="button" onClick={() => setEditingKey(key)} className="p-2 text-gray-500 hover:text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">✏️</button>
-                          <button type="button" onClick={() => handleClearKey(key)} className="p-2 text-red-500 hover:text-red-300 hover:bg-red-900/30 rounded-lg transition-colors">🗑️</button>
-                        </div>
-                      ) : (
-                        <div className="relative">
-                          <input type={showKeys[key] ? 'text' : 'password'} value={keys[key] || ''} onChange={(e) => handleChange(key, e.target.value)} placeholder={hasStoredKey ? 'Enter new key to replace' : 'R0...'} className="w-full input-field text-sm pr-10" />
-                          <button type="button" onClick={() => toggleShowKey(key)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 text-sm">{showKeys[key] ? '🙈' : '👁️'}</button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+              <div className="p-4 bg-emerald-900/20 rounded-xl border border-emerald-700/30">
+                <h4 className="text-sm font-semibold text-emerald-300 mb-2">How Scenarios Work</h4>
+                <div className="text-xs text-emerald-400 space-y-2">
+                  <p><strong>Full Flow (Datadog, Grafana, CloudWatch, New Relic, GitHub Actions, Prometheus):</strong> Sends metrics/events to the tool → Tool's monitors trigger alerts → Alerts flow to PagerDuty through existing integrations.</p>
+                  <p><strong>Fallback Flow (Sentry, Splunk, UptimeRobot):</strong> Uses PagerDuty Events API directly when native integration isn't available.</p>
+                </div>
               </div>
             </div>
           )}
@@ -217,11 +163,11 @@ export default function SettingsModal({ routingKeys, instance, onSave, onClose }
           {activeTab === 'external' && (
             <div>
               <div className="mb-4 p-4 bg-violet-900/30 rounded-xl border border-violet-700/50">
-                <p className="text-sm text-violet-300"><strong>Native Integration Mode:</strong> Configure credentials to trigger alerts directly through monitoring tools.</p>
+                <p className="text-sm text-violet-300"><strong>External Tool Credentials:</strong> Configure API keys to send metrics/events to monitoring tools.</p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {Object.entries(integrationStatus).map(([key, { configured, name }]) => (
+                  {Object.entries(integrationStatus).filter(([key]) => key !== 'pagerduty_direct').map(([key, { configured, name, fullFlow }]) => (
                     <span key={key} className={`px-2 py-1 rounded text-xs font-medium ${configured ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-700/50' : 'bg-gray-800/50 text-gray-500 border border-gray-700/50'}`}>
-                      {configured ? '✓' : '○'} {name}
+                      {configured ? '✓' : '○'} {name} {fullFlow && <span className="opacity-60">(full flow)</span>}
                     </span>
                   ))}
                 </div>
@@ -262,12 +208,12 @@ export default function SettingsModal({ routingKeys, instance, onSave, onClose }
             </div>
           )}
 
-          <div className="mt-6 p-4 bg-amber-900/30 rounded-xl border border-amber-700/50">
+          <div className="mt-6 p-4 bg-gray-800/30 rounded-xl border border-gray-700/50">
             <div className="flex items-start gap-2">
-              <span className="text-amber-400">🔒</span>
+              <span className="text-gray-400">🔒</span>
               <div>
-                <p className="text-sm font-medium text-amber-300">Security Note</p>
-                <p className="text-xs text-amber-400 mt-1">All keys are stored in your browser's localStorage and never leave your device.</p>
+                <p className="text-sm font-medium text-gray-300">Security Note</p>
+                <p className="text-xs text-gray-400 mt-1">All credentials are stored in your browser's localStorage and never leave your device.</p>
               </div>
             </div>
           </div>

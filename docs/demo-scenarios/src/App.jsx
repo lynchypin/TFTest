@@ -7,14 +7,13 @@ import ScenarioCard from './components/ScenarioCard';
 import PayloadModal from './components/PayloadModal';
 import TraceModal from './components/TraceModal';
 import SettingsModal from './components/SettingsModal';
-import { sendEvent, getRoutingKeys, saveRoutingKeys, getRoutingKey, getInstance, saveInstance } from './services/pagerduty';
+import { getInstance, saveInstance } from './services/pagerduty';
 import { getLicenseConfig, saveLicenseConfig, filterByLicense } from './services/license';
-import { triggerNativeIntegration, isIntegrationConfigured } from './services/integrations';
+import { triggerNativeIntegration, isIntegrationConfigured, hasPagerDutyCredentials } from './services/integrations';
 
 function App() {
   const [filters, setFilters] = useState({});
   const [licenseConfig, setLicenseConfig] = useState(() => getLicenseConfig());
-  const [routingKeys, setRoutingKeys] = useState(() => getRoutingKeys());
   const [pdInstance, setPdInstance] = useState(() => getInstance());
   const [selectedScenario, setSelectedScenario] = useState(null);
   const [modalType, setModalType] = useState(null);
@@ -106,9 +105,7 @@ function App() {
     saveLicenseConfig(newConfig);
   };
 
-  const handleSaveSettings = (keys, instance) => {
-    setRoutingKeys(keys);
-    saveRoutingKeys(keys);
+  const handleSaveSettings = (instance) => {
     setPdInstance(instance);
     saveInstance(instance);
   };
@@ -122,41 +119,36 @@ function App() {
     const integration = scenario.tags?.integration;
     const nativeConfigured = isIntegrationConfigured(integration);
 
-    if (nativeConfigured) {
-      try {
-        const nativeResult = await triggerNativeIntegration(scenario);
-
-        if (nativeResult.nativeTriggered) {
-          showNotification(
-            `${scenario.id} sent via ${nativeResult.integration}! ${nativeResult.message}`,
-            'success'
-          );
-          return;
-        }
-
-        if (!nativeResult.requiresFallback) {
-          return;
-        }
-
-        console.log(`Native integration fallback: ${nativeResult.reason}`);
-      } catch (error) {
-        console.error('Native integration error:', error);
-      }
-    }
-
-    const key = getRoutingKey(integration);
-    if (!key) {
-      showNotification(
-        `No routing key configured for ${integration}. Configure in Settings → PagerDuty tab.`,
-        'error'
-      );
-      return;
-    }
-
     try {
-      const response = await sendEvent(scenario, key);
-      const source = nativeConfigured ? ' (Events API fallback)' : '';
-      showNotification(`${scenario.id} sent${source}! Dedup: ${response.dedup_key}`, 'success');
+      const result = await triggerNativeIntegration(scenario);
+
+      if (result.nativeTriggered) {
+        showNotification(
+          `${scenario.id} sent via ${result.integration}! ${result.message}`,
+          'success'
+        );
+        return;
+      }
+
+      if (result.success && result.fallbackUsed) {
+        showNotification(
+          `${scenario.id} sent via PagerDuty Direct (fallback). Dedup: ${result.dedup_key}`,
+          'success'
+        );
+        return;
+      }
+
+      if (result.error) {
+        const hasFallback = hasPagerDutyCredentials();
+        if (!hasFallback && !nativeConfigured) {
+          showNotification(
+            `Configure ${integration} credentials in Settings → External Tools, or add a Fallback Routing Key.`,
+            'error'
+          );
+        } else {
+          showNotification(`Failed: ${result.error}`, 'error');
+        }
+      }
     } catch (error) {
       showNotification(`Failed: ${error.message}`, 'error');
     }
@@ -323,7 +315,6 @@ function App() {
       {modalType === 'payload' && selectedScenario && (
         <PayloadModal
           scenario={selectedScenario}
-          routingKey={routingKeys[selectedScenario.tags.integration]}
           onClose={closeModal}
           onSend={handleTrigger}
         />
@@ -338,7 +329,6 @@ function App() {
 
       {modalType === 'settings' && (
         <SettingsModal
-          routingKeys={routingKeys}
           instance={pdInstance}
           onSave={handleSaveSettings}
           onClose={closeModal}

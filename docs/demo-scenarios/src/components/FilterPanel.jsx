@@ -4,15 +4,23 @@ import { FEATURE_HIERARCHY, isFeatureAvailable } from '../services/license';
 const FILTER_CONFIG = {
   industry: {
     label: 'Industry',
-    options: ['banking', 'fintech', 'healthcare', 'retail', 'ecommerce', 'technology', 'mining', 'manufacturing', 'energy', 'telecom']
+    options: ['banking', 'fintech', 'healthcare', 'retail', 'ecommerce', 'technology', 'mining', 'manufacturing', 'energy', 'telecom', 'enterprise', 'saas', 'startup', 'msp']
   },
   team_type: {
     label: 'Team',
-    options: ['soc', 'noc', 'devops', 'platform', 'sre', 'support', 'dba', 'ot_ops']
+    options: ['soc', 'noc', 'devops', 'platform', 'sre', 'support', 'dba', 'ot_ops', 'compliance', 'l1']
   },
-  integration: {
-    label: 'Integration',
-    options: ['prometheus', 'grafana', 'datadog', 'newrelic', 'sentry', 'splunk', 'cloudwatch', 'github_actions', 'uptimerobot']
+  tool: {
+    label: 'Tool',
+    options: ['prometheus', 'grafana', 'datadog', 'newrelic', 'sentry', 'splunk', 'cloudwatch', 'github_actions', 'uptimerobot', 'slack', 'teams', 'jira', 'servicenow', 'statuspage', 'zoom', 'pagerduty_api', 'runbook_automation', 'pagerduty_agent_sre', 'pagerduty_agent_scribe', 'pagerduty_agent_shift']
+  },
+  tool_type: {
+    label: 'Tool Type',
+    options: ['integration', 'extension', 'chatops', 'bidirectional', 'orchestration', 'workflow', 'automation', 'agent']
+  },
+  agent_type: {
+    label: 'PagerDuty Agent',
+    options: ['sre', 'scribe', 'shift']
   },
   severity: {
     label: 'Severity',
@@ -48,13 +56,16 @@ function getAvailableOptionsFromScenarios(scenarios, filteredScenarios, filters)
   const available = {
     industry: new Set(),
     team_type: new Set(),
+    tool: new Set(),
+    tool_type: new Set(),
     integration: new Set(),
     severity: new Set(),
-    features: new Set()
+    features: new Set(),
+    agent_type: new Set()
   };
 
-  const scenariosToCheck = Object.keys(filters).some(k => filters[k]?.length > 0) 
-    ? filteredScenarios 
+  const scenariosToCheck = Object.keys(filters).some(k => filters[k]?.length > 0)
+    ? filteredScenarios
     : scenarios;
 
   scenariosToCheck.forEach(scenario => {
@@ -64,8 +75,37 @@ function getAvailableOptionsFromScenarios(scenarios, filteredScenarios, filters)
     if (scenario.tags?.team_type) {
       scenario.tags.team_type.forEach(t => available.team_type.add(t));
     }
+    if (scenario.tags?.tool) {
+      if (Array.isArray(scenario.tags.tool)) {
+        scenario.tags.tool.forEach(t => {
+          available.tool.add(t);
+          if (t === 'pagerduty_agent_sre') available.agent_type.add('sre');
+          if (t === 'pagerduty_agent_scribe') available.agent_type.add('scribe');
+          if (t === 'pagerduty_agent_shift') available.agent_type.add('shift');
+        });
+      } else {
+        available.tool.add(scenario.tags.tool);
+        if (scenario.tags.tool === 'pagerduty_agent_sre') available.agent_type.add('sre');
+        if (scenario.tags.tool === 'pagerduty_agent_scribe') available.agent_type.add('scribe');
+        if (scenario.tags.tool === 'pagerduty_agent_shift') available.agent_type.add('shift');
+      }
+    }
     if (scenario.tags?.integration) {
       available.integration.add(scenario.tags.integration);
+    }
+    if (scenario.tags?.tool_type) {
+      if (Array.isArray(scenario.tags.tool_type)) {
+        scenario.tags.tool_type.forEach(t => available.tool_type.add(t));
+      } else {
+        available.tool_type.add(scenario.tags.tool_type);
+      }
+    }
+    if (scenario.tags?.features) {
+      scenario.tags.features.forEach(f => {
+        if (f === 'agent_sre') available.agent_type.add('sre');
+        if (f === 'agent_scribe') available.agent_type.add('scribe');
+        if (f === 'agent_shift') available.agent_type.add('shift');
+      });
     }
     if (scenario.severity) {
       available.severity.add(scenario.severity);

@@ -14,3 +14,6 @@
 docs/demo-scenarios/node_modules/
 docs/demo-scenarios/.env*
 docs/demo-scenarios/*.log
+
+# Credentials reference (contains real secrets)
+docs/CREDENTIALS_REFERENCE.md

@@ -64,13 +64,33 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
               {truncateName(planDisplay.label, 20)}
             </span>
             {addonLabels.map((label, idx) => (
-              <span 
+              <span
                 key={idx}
                 className={`px-2.5 py-1 text-xs font-semibold rounded-lg border ${ADDON_COLOR.bg} ${ADDON_COLOR.text} ${ADDON_COLOR.border}`}
               >
                 {truncateName(label, 18)}
               </span>
             ))}
+            {scenario.tags?.tool_type && (
+              (Array.isArray(scenario.tags.tool_type) ? scenario.tags.tool_type : [scenario.tags.tool_type]).map((type, idx) => (
+                <span
+                  key={`tt-${idx}`}
+                  className={`px-2 py-0.5 text-xs font-semibold rounded-lg border ${
+                    type === 'integration' ? 'bg-blue-900/50 text-blue-300 border-blue-700/50' :
+                    type === 'extension' ? 'bg-green-900/50 text-green-300 border-green-700/50' :
+                    type === 'chatops' ? 'bg-pink-900/50 text-pink-300 border-pink-700/50' :
+                    type === 'bidirectional' ? 'bg-yellow-900/50 text-yellow-300 border-yellow-700/50' :
+                    'bg-gray-800 text-gray-400 border-gray-700'
+                  }`}
+                >
+                  {type === 'integration' ? '→ Integration' :
+                   type === 'extension' ? '← Extension' :
+                   type === 'chatops' ? '💬 ChatOps' :
+                   type === 'bidirectional' ? '↔ Bidirectional' :
+                   type}
+                </span>
+              ))
+            )}
           </div>
 
           <p className="text-sm text-gray-400 mb-4 line-clamp-2 leading-relaxed">{scenario.description}</p>

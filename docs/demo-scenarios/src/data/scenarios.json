@@ -6,17 +6,45 @@
       "description": "Basic event routing to a service with escalation policy",
       "severity": "warning",
       "tags": {
-        "industry": ["technology", "startup"],
-        "team_type": ["devops", "platform"],
-        "org_style": ["startup", "messy"],
-        "features": ["routing", "escalation"],
-        "integration": "prometheus"
+        "industry": [
+          "technology",
+          "startup"
+        ],
+        "team_type": [
+          "devops",
+          "platform"
+        ],
+        "org_style": [
+          "startup",
+          "messy"
+        ],
+        "features": [
+          "routing",
+          "escalation"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["basic_routing", "escalation_policies", "on_call_schedules"],
-      "features_demonstrated": ["basic_routing", "escalation_policies", "on_call_schedules"],
+      "required_features": [
+        "basic_routing",
+        "escalation_policies",
+        "on_call_schedules"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "escalation_policies",
+        "on_call_schedules"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": null,
-      "rules_triggered": ["Basic service routing"],
+      "rules_triggered": [
+        "Basic service routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -32,8 +60,14 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Platform - Kubernetes/Platform" },
-        { "stage": "Escalation", "action": "Notify on-call responder" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Platform - Kubernetes/Platform"
+        },
+        {
+          "stage": "Escalation",
+          "action": "Notify on-call responder"
+        }
       ]
     },
     {
@@ -42,17 +76,41 @@
       "description": "Route events based on if/else conditions in service rules",
       "severity": "error",
       "tags": {
-        "industry": ["technology"],
-        "team_type": ["devops"],
-        "org_style": ["startup"],
-        "features": ["routing", "conditions"],
-        "integration": "grafana"
+        "industry": [
+          "technology"
+        ],
+        "team_type": [
+          "devops"
+        ],
+        "org_style": [
+          "startup"
+        ],
+        "features": [
+          "routing",
+          "conditions"
+        ],
+        "integration": "grafana",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "grafana"
+        ]
       },
-      "required_features": ["basic_routing", "service_rules", "basic_conditions"],
-      "features_demonstrated": ["service_rules", "basic_conditions"],
+      "required_features": [
+        "basic_routing",
+        "service_rules",
+        "basic_conditions"
+      ],
+      "features_demonstrated": [
+        "service_rules",
+        "basic_conditions"
+      ],
       "target_service": "App - Checkout Team",
       "expected_priority": null,
-      "rules_triggered": ["Service rule with basic conditions"],
+      "rules_triggered": [
+        "Service rule with basic conditions"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -68,8 +126,15 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "rule": "if error_rate > 1%", "action": "Route to Checkout Team" },
-        { "stage": "Assignment", "result": "App - Checkout Team" }
+        {
+          "stage": "Service Rules",
+          "rule": "if error_rate > 1%",
+          "action": "Route to Checkout Team"
+        },
+        {
+          "stage": "Assignment",
+          "result": "App - Checkout Team"
+        }
       ]
     },
     {
@@ -78,17 +143,41 @@
       "description": "Assign priority levels to incidents based on severity and impact",
       "severity": "critical",
       "tags": {
-        "industry": ["technology", "ecommerce"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["structured"],
-        "features": ["routing", "priority_assignment"],
-        "integration": "datadog"
+        "industry": [
+          "technology",
+          "ecommerce"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "structured"
+        ],
+        "features": [
+          "routing",
+          "priority_assignment"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment"],
-      "features_demonstrated": ["priority_assignment"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment"
+      ],
+      "features_demonstrated": [
+        "priority_assignment"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Priority assignment based on severity"],
+      "rules_triggered": [
+        "Priority assignment based on severity"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -104,9 +193,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Platform - DBRE" },
-        { "stage": "Priority", "action": "Assign P1 (critical severity)" },
-        { "stage": "Assignment", "result": "Platform - DBRE [P1]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Platform - DBRE"
+        },
+        {
+          "stage": "Priority",
+          "action": "Assign P1 (critical severity)"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - DBRE [P1]"
+        }
       ]
     },
     {
@@ -115,17 +213,42 @@
       "description": "Create a post-incident review after resolving a major incident",
       "severity": "critical",
       "tags": {
-        "industry": ["technology", "enterprise"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["structured", "enterprise"],
-        "features": ["post_incident_review"],
-        "integration": "datadog"
+        "industry": [
+          "technology",
+          "enterprise"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "post_incident_review"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "post_incident_reviews"],
-      "features_demonstrated": ["post_incident_reviews"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "post_incident_reviews"
+      ],
+      "features_demonstrated": [
+        "post_incident_reviews"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Post-incident review creation"],
+      "rules_triggered": [
+        "Post-incident review creation"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -141,9 +264,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Resolution", "action": "Trigger post-incident review" },
-        { "stage": "PIR", "action": "Generate timeline, collect learnings" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Resolution",
+          "action": "Trigger post-incident review"
+        },
+        {
+          "stage": "PIR",
+          "action": "Generate timeline, collect learnings"
+        }
       ]
     },
     {
@@ -152,17 +284,42 @@
       "description": "Automatically create Jira tickets from PagerDuty incidents",
       "severity": "warning",
       "tags": {
-        "industry": ["technology", "enterprise"],
-        "team_type": ["devops", "sre"],
-        "org_style": ["structured"],
-        "features": ["jira_integration"],
-        "integration": "prometheus"
+        "industry": [
+          "technology",
+          "enterprise"
+        ],
+        "team_type": [
+          "devops",
+          "sre"
+        ],
+        "org_style": [
+          "structured"
+        ],
+        "features": [
+          "jira_integration"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration",
+          "extension"
+        ],
+        "tool": [
+          "prometheus",
+          "jira"
+        ]
       },
-      "required_features": ["basic_routing", "jira_integration"],
-      "features_demonstrated": ["jira_integration"],
+      "required_features": [
+        "basic_routing",
+        "jira_integration"
+      ],
+      "features_demonstrated": [
+        "jira_integration"
+      ],
       "target_service": "App - Orders API Team",
       "expected_priority": "P2",
-      "rules_triggered": ["Jira ticket creation"],
+      "rules_triggered": [
+        "Jira ticket creation"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -178,9 +335,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create incident" },
-        { "stage": "Integration", "action": "Create Jira ticket PLAT-1234" },
-        { "stage": "Assignment", "result": "App - Orders API Team [P2]" }
+        {
+          "stage": "Incident",
+          "action": "Create incident"
+        },
+        {
+          "stage": "Integration",
+          "action": "Create Jira ticket PLAT-1234"
+        },
+        {
+          "stage": "Assignment",
+          "result": "App - Orders API Team [P2]"
+        }
       ]
     },
     {
@@ -189,17 +355,48 @@
       "description": "Add additional responders during a major incident using Response Mobilizer",
       "severity": "critical",
       "tags": {
-        "industry": ["technology", "enterprise", "ecommerce"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise", "structured"],
-        "features": ["response_mobilizer", "conference_bridge"],
-        "integration": "datadog"
+        "industry": [
+          "technology",
+          "enterprise",
+          "ecommerce"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise",
+          "structured"
+        ],
+        "features": [
+          "response_mobilizer",
+          "conference_bridge"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration",
+          "extension"
+        ],
+        "tool": [
+          "zoom",
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "response_mobilizer", "conference_bridge"],
-      "features_demonstrated": ["response_mobilizer", "conference_bridge"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "response_mobilizer",
+        "conference_bridge"
+      ],
+      "features_demonstrated": [
+        "response_mobilizer",
+        "conference_bridge"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Response mobilizer activation"],
+      "rules_triggered": [
+        "Response mobilizer activation"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -217,10 +414,22 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 major incident" },
-        { "stage": "Response Mobilizer", "action": "Add DBA team, Network team" },
-        { "stage": "Conference Bridge", "action": "Start incident call" },
-        { "stage": "Assignment", "result": "Platform - Kubernetes/Platform [P1] + mobilized teams" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 major incident"
+        },
+        {
+          "stage": "Response Mobilizer",
+          "action": "Add DBA team, Network team"
+        },
+        {
+          "stage": "Conference Bridge",
+          "action": "Start incident call"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Kubernetes/Platform [P1] + mobilized teams"
+        }
       ]
     },
     {
@@ -229,17 +438,45 @@
       "description": "Automatically create dedicated Slack channel for incident coordination",
       "severity": "critical",
       "tags": {
-        "industry": ["technology", "ecommerce"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["structured", "enterprise"],
-        "features": ["slack_incident_channel"],
-        "integration": "prometheus"
+        "industry": [
+          "technology",
+          "ecommerce"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "slack_incident_channel"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration",
+          "chatops",
+          "extension"
+        ],
+        "tool": [
+          "prometheus",
+          "slack"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "slack_incident_channel"],
-      "features_demonstrated": ["slack_incident_channel"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "slack_incident_channel"
+      ],
+      "features_demonstrated": [
+        "slack_incident_channel"
+      ],
       "target_service": "App - Checkout Team",
       "expected_priority": "P1",
-      "rules_triggered": ["Slack channel creation"],
+      "rules_triggered": [
+        "Slack channel creation"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -255,9 +492,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Slack", "action": "Create #inc-checkout-20240115" },
-        { "stage": "Assignment", "result": "App - Checkout Team [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Slack",
+          "action": "Create #inc-checkout-20240115"
+        },
+        {
+          "stage": "Assignment",
+          "result": "App - Checkout Team [P1]"
+        }
       ]
     },
     {
@@ -266,17 +512,46 @@
       "description": "Visualize service dependencies and blast radius during incident",
       "severity": "critical",
       "tags": {
-        "industry": ["technology", "enterprise"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise", "structured"],
-        "features": ["service_graph", "business_services"],
-        "integration": "datadog"
+        "industry": [
+          "technology",
+          "enterprise"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise",
+          "structured"
+        ],
+        "features": [
+          "service_graph",
+          "business_services"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "service_graph", "business_services"],
-      "features_demonstrated": ["service_graph", "business_services", "impact_metrics"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "service_graph",
+        "business_services"
+      ],
+      "features_demonstrated": [
+        "service_graph",
+        "business_services",
+        "impact_metrics"
+      ],
       "target_service": "Platform - Networking",
       "expected_priority": "P1",
-      "rules_triggered": ["Service graph analysis"],
+      "rules_triggered": [
+        "Service graph analysis"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -287,15 +562,32 @@
             "pd_service": "Platform - Networking",
             "env": "production",
             "switch": "core-sw-01",
-            "dependent_services": ["checkout", "orders", "inventory", "identity"]
+            "dependent_services": [
+              "checkout",
+              "orders",
+              "inventory",
+              "identity"
+            ]
           }
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Service Graph", "action": "Identify 12 downstream services affected" },
-        { "stage": "Business Services", "action": "Map to 'Online Store' business service" },
-        { "stage": "Assignment", "result": "Platform - Networking [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Service Graph",
+          "action": "Identify 12 downstream services affected"
+        },
+        {
+          "stage": "Business Services",
+          "action": "Map to 'Online Store' business service"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Networking [P1]"
+        }
       ]
     },
     {
@@ -304,17 +596,44 @@
       "description": "Sync incident updates between PagerDuty and ServiceNow ITSM",
       "severity": "warning",
       "tags": {
-        "industry": ["enterprise", "banking"],
-        "team_type": ["platform", "noc"],
-        "org_style": ["enterprise", "structured"],
-        "features": ["servicenow_integration"],
-        "integration": "prometheus"
+        "industry": [
+          "enterprise",
+          "banking"
+        ],
+        "team_type": [
+          "platform",
+          "noc"
+        ],
+        "org_style": [
+          "enterprise",
+          "structured"
+        ],
+        "features": [
+          "servicenow_integration"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration",
+          "bidirectional",
+          "extension"
+        ],
+        "tool": [
+          "prometheus",
+          "servicenow"
+        ]
       },
-      "required_features": ["basic_routing", "servicenow_integration"],
-      "features_demonstrated": ["servicenow_integration"],
+      "required_features": [
+        "basic_routing",
+        "servicenow_integration"
+      ],
+      "features_demonstrated": [
+        "servicenow_integration"
+      ],
       "target_service": "Platform - DBRE",
       "expected_priority": "P2",
-      "rules_triggered": ["ServiceNow sync"],
+      "rules_triggered": [
+        "ServiceNow sync"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -330,9 +649,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create incident" },
-        { "stage": "ServiceNow", "action": "Create INC0012345, sync status" },
-        { "stage": "Assignment", "result": "Platform - DBRE [P2]" }
+        {
+          "stage": "Incident",
+          "action": "Create incident"
+        },
+        {
+          "stage": "ServiceNow",
+          "action": "Create INC0012345, sync status"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - DBRE [P2]"
+        }
       ]
     },
     {
@@ -341,17 +669,45 @@
       "description": "Send templated status updates to business stakeholders",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise", "ecommerce"],
-        "team_type": ["sre", "support"],
-        "org_style": ["enterprise", "structured"],
-        "features": ["stakeholder_notifications", "status_update_templates"],
-        "integration": "datadog"
+        "industry": [
+          "enterprise",
+          "ecommerce"
+        ],
+        "team_type": [
+          "sre",
+          "support"
+        ],
+        "org_style": [
+          "enterprise",
+          "structured"
+        ],
+        "features": [
+          "stakeholder_notifications",
+          "status_update_templates"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "stakeholder_notifications", "status_update_templates"],
-      "features_demonstrated": ["stakeholder_notifications", "status_update_templates"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "stakeholder_notifications",
+        "status_update_templates"
+      ],
+      "features_demonstrated": [
+        "stakeholder_notifications",
+        "status_update_templates"
+      ],
       "target_service": "App - Checkout Team",
       "expected_priority": "P1",
-      "rules_triggered": ["Stakeholder notification"],
+      "rules_triggered": [
+        "Stakeholder notification"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -367,10 +723,22 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Stakeholders", "action": "Send status update to executives" },
-        { "stage": "Template", "action": "Use 'Payment Issue' template" },
-        { "stage": "Assignment", "result": "App - Checkout Team [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Stakeholders",
+          "action": "Send status update to executives"
+        },
+        {
+          "stage": "Template",
+          "action": "Use 'Payment Issue' template"
+        },
+        {
+          "stage": "Assignment",
+          "result": "App - Checkout Team [P1]"
+        }
       ]
     },
     {
@@ -379,17 +747,44 @@
       "description": "ML-based grouping of related alerts into single incident",
       "severity": "critical",
       "tags": {
-        "industry": ["technology", "ecommerce"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["structured", "distributed"],
-        "features": ["intelligent_grouping", "noise_reduction"],
-        "integration": "prometheus"
+        "industry": [
+          "technology",
+          "ecommerce"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "structured",
+          "distributed"
+        ],
+        "features": [
+          "intelligent_grouping",
+          "noise_reduction"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "intelligent_alert_grouping"],
-      "features_demonstrated": ["intelligent_alert_grouping", "time_based_alert_grouping"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "intelligent_alert_grouping"
+      ],
+      "features_demonstrated": [
+        "intelligent_alert_grouping",
+        "time_based_alert_grouping"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Intelligent alert grouping"],
+      "rules_triggered": [
+        "Intelligent alert grouping"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -400,17 +795,36 @@
             "pd_service": "Platform - Kubernetes/Platform",
             "env": "production",
             "namespace": "checkout",
-            "failed_pods": ["checkout-api-1", "checkout-api-2", "checkout-api-3"],
+            "failed_pods": [
+              "checkout-api-1",
+              "checkout-api-2",
+              "checkout-api-3"
+            ],
             "root_cause": "Node memory pressure"
           }
         }
       },
       "orchestration_trace": [
-        { "stage": "Alert 1", "action": "checkout-api-1 CrashLoopBackOff" },
-        { "stage": "Alert 2", "action": "checkout-api-2 CrashLoopBackOff (grouped)" },
-        { "stage": "Alert 3", "action": "checkout-api-3 CrashLoopBackOff (grouped)" },
-        { "stage": "ML Grouping", "action": "3 alerts → 1 incident (95% correlation)" },
-        { "stage": "Assignment", "result": "Platform - Kubernetes/Platform [P1]" }
+        {
+          "stage": "Alert 1",
+          "action": "checkout-api-1 CrashLoopBackOff"
+        },
+        {
+          "stage": "Alert 2",
+          "action": "checkout-api-2 CrashLoopBackOff (grouped)"
+        },
+        {
+          "stage": "Alert 3",
+          "action": "checkout-api-3 CrashLoopBackOff (grouped)"
+        },
+        {
+          "stage": "ML Grouping",
+          "action": "3 alerts \u2192 1 incident (95% correlation)"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Kubernetes/Platform [P1]"
+        }
       ]
     },
     {
@@ -419,17 +833,40 @@
       "description": "Suppress noisy alerts based on conditions and patterns",
       "severity": "warning",
       "tags": {
-        "industry": ["technology", "telecom"],
-        "team_type": ["noc", "platform"],
-        "org_style": ["structured"],
-        "features": ["suppression", "noise_reduction"],
-        "integration": "prometheus"
+        "industry": [
+          "technology",
+          "telecom"
+        ],
+        "team_type": [
+          "noc",
+          "platform"
+        ],
+        "org_style": [
+          "structured"
+        ],
+        "features": [
+          "suppression",
+          "noise_reduction"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["alert_suppression"],
-      "features_demonstrated": ["alert_suppression"],
+      "required_features": [
+        "alert_suppression"
+      ],
+      "features_demonstrated": [
+        "alert_suppression"
+      ],
       "target_service": "(Suppressed)",
       "expected_priority": null,
-      "rules_triggered": ["Alert suppression rule"],
+      "rules_triggered": [
+        "Alert suppression rule"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -446,8 +883,15 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Orchestration", "rule": "Flapping detection", "action": "SUPPRESS" },
-        { "stage": "Result", "action": "Event suppressed - no incident created" }
+        {
+          "stage": "Service Orchestration",
+          "rule": "Flapping detection",
+          "action": "SUPPRESS"
+        },
+        {
+          "stage": "Result",
+          "action": "Event suppressed - no incident created"
+        }
       ]
     },
     {
@@ -456,17 +900,38 @@
       "description": "Automatically pause notifications for transient issues that self-resolve",
       "severity": "warning",
       "tags": {
-        "industry": ["technology"],
-        "team_type": ["platform", "devops"],
-        "org_style": ["structured"],
-        "features": ["auto_pause"],
-        "integration": "datadog"
+        "industry": [
+          "technology"
+        ],
+        "team_type": [
+          "platform",
+          "devops"
+        ],
+        "org_style": [
+          "structured"
+        ],
+        "features": [
+          "auto_pause"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["auto_pause_incidents"],
-      "features_demonstrated": ["auto_pause_incidents"],
+      "required_features": [
+        "auto_pause_incidents"
+      ],
+      "features_demonstrated": [
+        "auto_pause_incidents"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P3",
-      "rules_triggered": ["Auto-pause rule"],
+      "rules_triggered": [
+        "Auto-pause rule"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -483,8 +948,14 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Orchestration", "action": "Auto-pause for 120 seconds" },
-        { "stage": "Timeout", "action": "Self-resolved, incident dropped" }
+        {
+          "stage": "Service Orchestration",
+          "action": "Auto-pause for 120 seconds"
+        },
+        {
+          "stage": "Timeout",
+          "action": "Self-resolved, incident dropped"
+        }
       ]
     },
     {
@@ -493,17 +964,42 @@
       "description": "Advanced orchestration rules with threshold-based conditions",
       "severity": "warning",
       "tags": {
-        "industry": ["technology", "ecommerce"],
-        "team_type": ["platform", "sre"],
-        "org_style": ["structured"],
-        "features": ["threshold_conditions", "service_orchestration"],
-        "integration": "prometheus"
+        "industry": [
+          "technology",
+          "ecommerce"
+        ],
+        "team_type": [
+          "platform",
+          "sre"
+        ],
+        "org_style": [
+          "structured"
+        ],
+        "features": [
+          "threshold_conditions",
+          "service_orchestration"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["service_orchestration_rules", "threshold_conditions"],
-      "features_demonstrated": ["service_orchestration_rules", "threshold_conditions"],
+      "required_features": [
+        "service_orchestration_rules",
+        "threshold_conditions"
+      ],
+      "features_demonstrated": [
+        "service_orchestration_rules",
+        "threshold_conditions"
+      ],
       "target_service": "Platform - DBRE",
       "expected_priority": "P2",
-      "rules_triggered": ["Threshold condition rule"],
+      "rules_triggered": [
+        "Threshold condition rule"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -520,9 +1016,20 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Orchestration", "rule": "if pool_utilization > 80", "action": "Set priority P2" },
-        { "stage": "Service Orchestration", "rule": "if pool_utilization > 95", "action": "Escalate to DBA lead" },
-        { "stage": "Assignment", "result": "Platform - DBRE [P2]" }
+        {
+          "stage": "Service Orchestration",
+          "rule": "if pool_utilization > 80",
+          "action": "Set priority P2"
+        },
+        {
+          "stage": "Service Orchestration",
+          "rule": "if pool_utilization > 95",
+          "action": "Escalate to DBA lead"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - DBRE [P2]"
+        }
       ]
     },
     {
@@ -531,17 +1038,39 @@
       "description": "Route events differently based on on-call schedule conditions",
       "severity": "warning",
       "tags": {
-        "industry": ["technology"],
-        "team_type": ["platform", "devops"],
-        "org_style": ["structured"],
-        "features": ["schedule_conditions"],
-        "integration": "datadog"
+        "industry": [
+          "technology"
+        ],
+        "team_type": [
+          "platform",
+          "devops"
+        ],
+        "org_style": [
+          "structured"
+        ],
+        "features": [
+          "schedule_conditions"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["service_orchestration_rules", "schedule_conditions"],
-      "features_demonstrated": ["schedule_conditions"],
+      "required_features": [
+        "service_orchestration_rules",
+        "schedule_conditions"
+      ],
+      "features_demonstrated": [
+        "schedule_conditions"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P3",
-      "rules_triggered": ["Schedule condition rule"],
+      "rules_triggered": [
+        "Schedule condition rule"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -556,8 +1085,15 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Orchestration", "rule": "if outside_business_hours", "action": "Lower priority" },
-        { "stage": "Assignment", "result": "Platform - Kubernetes/Platform [P3]" }
+        {
+          "stage": "Service Orchestration",
+          "rule": "if outside_business_hours",
+          "action": "Lower priority"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Kubernetes/Platform [P3]"
+        }
       ]
     },
     {
@@ -566,17 +1102,44 @@
       "description": "Show similar past incidents to help with troubleshooting",
       "severity": "critical",
       "tags": {
-        "industry": ["technology", "ecommerce"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["structured"],
-        "features": ["past_incidents", "related_incidents"],
-        "integration": "prometheus"
+        "industry": [
+          "technology",
+          "ecommerce"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "structured"
+        ],
+        "features": [
+          "past_incidents",
+          "related_incidents"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "past_incidents", "related_incidents"],
-      "features_demonstrated": ["past_incidents", "related_incidents"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "past_incidents",
+        "related_incidents"
+      ],
+      "features_demonstrated": [
+        "past_incidents",
+        "related_incidents"
+      ],
       "target_service": "App - Checkout Team",
       "expected_priority": "P1",
-      "rules_triggered": ["Past incident correlation"],
+      "rules_triggered": [
+        "Past incident correlation"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -592,10 +1155,22 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "AI Analysis", "action": "Found 3 similar past incidents" },
-        { "stage": "Past Incidents", "action": "INC-1234 (resolved by DB restart), INC-1122 (cache issue)" },
-        { "stage": "Assignment", "result": "App - Checkout Team [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "AI Analysis",
+          "action": "Found 3 similar past incidents"
+        },
+        {
+          "stage": "Past Incidents",
+          "action": "INC-1234 (resolved by DB restart), INC-1122 (cache issue)"
+        },
+        {
+          "stage": "Assignment",
+          "result": "App - Checkout Team [P1]"
+        }
       ]
     },
     {
@@ -604,17 +1179,44 @@
       "description": "Correlate incidents with recent deployment changes",
       "severity": "critical",
       "tags": {
-        "industry": ["technology", "ecommerce"],
-        "team_type": ["sre", "devops"],
-        "org_style": ["structured"],
-        "features": ["change_events", "change_correlation"],
-        "integration": "datadog"
+        "industry": [
+          "technology",
+          "ecommerce"
+        ],
+        "team_type": [
+          "sre",
+          "devops"
+        ],
+        "org_style": [
+          "structured"
+        ],
+        "features": [
+          "change_events",
+          "change_correlation"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "change_events", "change_correlation"],
-      "features_demonstrated": ["change_events", "change_correlation"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "change_events",
+        "change_correlation"
+      ],
+      "features_demonstrated": [
+        "change_events",
+        "change_correlation"
+      ],
       "target_service": "App - Orders API Team",
       "expected_priority": "P1",
-      "rules_triggered": ["Change correlation"],
+      "rules_triggered": [
+        "Change correlation"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -631,11 +1233,26 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Change Events", "action": "Deployment v2.3.1 detected 5 mins ago" },
-        { "stage": "Correlation", "action": "95% confidence: incident caused by deployment" },
-        { "stage": "Suggestion", "action": "Recommend rollback to v2.3.0" },
-        { "stage": "Assignment", "result": "App - Orders API Team [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Change Events",
+          "action": "Deployment v2.3.1 detected 5 mins ago"
+        },
+        {
+          "stage": "Correlation",
+          "action": "95% confidence: incident caused by deployment"
+        },
+        {
+          "stage": "Suggestion",
+          "action": "Recommend rollback to v2.3.0"
+        },
+        {
+          "stage": "Assignment",
+          "result": "App - Orders API Team [P1]"
+        }
       ]
     },
     {
@@ -644,17 +1261,42 @@
       "description": "Account-wide event routing and transformation before service routing",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise", "technology"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise", "structured"],
-        "features": ["global_orchestration", "routing"],
-        "integration": "splunk"
+        "industry": [
+          "enterprise",
+          "technology"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise",
+          "structured"
+        ],
+        "features": [
+          "global_orchestration",
+          "routing"
+        ],
+        "integration": "splunk",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "splunk"
+        ]
       },
-      "required_features": ["global_event_orchestration"],
-      "features_demonstrated": ["global_event_orchestration", "event_orchestration_variables"],
+      "required_features": [
+        "global_event_orchestration"
+      ],
+      "features_demonstrated": [
+        "global_event_orchestration",
+        "event_orchestration_variables"
+      ],
       "target_service": "SecOps",
       "expected_priority": "P1",
-      "rules_triggered": ["Global orchestration rule R3"],
+      "rules_triggered": [
+        "Global orchestration rule R3"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -671,10 +1313,25 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Global Orchestration", "rule": "Security Detection", "action": "priority=P1, routing_hint=secops" },
-        { "stage": "Global Orchestration", "rule": "Context Addition", "action": "Add security runbook link" },
-        { "stage": "Router", "match": "routing_hint=secops", "action": "Route to SecOps" },
-        { "stage": "Assignment", "result": "SecOps [P1]" }
+        {
+          "stage": "Global Orchestration",
+          "rule": "Security Detection",
+          "action": "priority=P1, routing_hint=secops"
+        },
+        {
+          "stage": "Global Orchestration",
+          "rule": "Context Addition",
+          "action": "Add security runbook link"
+        },
+        {
+          "stage": "Router",
+          "match": "routing_hint=secops",
+          "action": "Route to SecOps"
+        },
+        {
+          "stage": "Assignment",
+          "result": "SecOps [P1]"
+        }
       ]
     },
     {
@@ -683,17 +1340,41 @@
       "description": "Cross-service alert grouping at account level",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise", "technology"],
-        "team_type": ["sre", "noc"],
-        "org_style": ["enterprise"],
-        "features": ["global_alert_grouping"],
-        "integration": "prometheus"
+        "industry": [
+          "enterprise",
+          "technology"
+        ],
+        "team_type": [
+          "sre",
+          "noc"
+        ],
+        "org_style": [
+          "enterprise"
+        ],
+        "features": [
+          "global_alert_grouping"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["global_event_orchestration", "global_alert_grouping"],
-      "features_demonstrated": ["global_alert_grouping", "unified_alerting_group"],
+      "required_features": [
+        "global_event_orchestration",
+        "global_alert_grouping"
+      ],
+      "features_demonstrated": [
+        "global_alert_grouping",
+        "unified_alerting_group"
+      ],
       "target_service": "Platform - Networking",
       "expected_priority": "P1",
-      "rules_triggered": ["Global alert grouping"],
+      "rules_triggered": [
+        "Global alert grouping"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -702,17 +1383,39 @@
           "severity": "critical",
           "custom_details": {
             "env": "production",
-            "affected_services": ["checkout-api", "orders-api", "inventory-api"],
+            "affected_services": [
+              "checkout-api",
+              "orders-api",
+              "inventory-api"
+            ],
             "network_segment": "datacenter-east"
           }
         }
       },
       "orchestration_trace": [
-        { "stage": "Alert 1", "service": "checkout-api", "action": "Connection timeout" },
-        { "stage": "Alert 2", "service": "orders-api", "action": "Connection timeout (cross-service grouped)" },
-        { "stage": "Alert 3", "service": "inventory-api", "action": "Connection timeout (cross-service grouped)" },
-        { "stage": "Global Grouping", "action": "3 services → 1 unified incident" },
-        { "stage": "Assignment", "result": "Platform - Networking [P1]" }
+        {
+          "stage": "Alert 1",
+          "service": "checkout-api",
+          "action": "Connection timeout"
+        },
+        {
+          "stage": "Alert 2",
+          "service": "orders-api",
+          "action": "Connection timeout (cross-service grouped)"
+        },
+        {
+          "stage": "Alert 3",
+          "service": "inventory-api",
+          "action": "Connection timeout (cross-service grouped)"
+        },
+        {
+          "stage": "Global Grouping",
+          "action": "3 services \u2192 1 unified incident"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Networking [P1]"
+        }
       ]
     },
     {
@@ -721,17 +1424,43 @@
       "description": "ML-based analysis to identify probable origin of cascading failures",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise", "technology"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise"],
-        "features": ["probable_origin", "triage_suggestions"],
-        "integration": "datadog"
+        "industry": [
+          "enterprise",
+          "technology"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise"
+        ],
+        "features": [
+          "probable_origin",
+          "triage_suggestions"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["global_event_orchestration", "probable_origin", "triage_suggestions"],
-      "features_demonstrated": ["probable_origin", "triage_suggestions"],
+      "required_features": [
+        "global_event_orchestration",
+        "probable_origin",
+        "triage_suggestions"
+      ],
+      "features_demonstrated": [
+        "probable_origin",
+        "triage_suggestions"
+      ],
       "target_service": "Platform - DBRE",
       "expected_priority": "P1",
-      "rules_triggered": ["Probable origin analysis"],
+      "rules_triggered": [
+        "Probable origin analysis"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -740,17 +1469,36 @@
           "severity": "critical",
           "custom_details": {
             "env": "production",
-            "services_affected": ["orders-api", "inventory-api", "checkout-api"],
+            "services_affected": [
+              "orders-api",
+              "inventory-api",
+              "checkout-api"
+            ],
             "cascade_detected": true
           }
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident with multiple alerts" },
-        { "stage": "AI Analysis", "action": "Analyzing service dependencies" },
-        { "stage": "Probable Origin", "action": "orders-db (92% confidence)" },
-        { "stage": "Triage Suggestion", "action": "Check database connection pool" },
-        { "stage": "Assignment", "result": "Platform - DBRE [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident with multiple alerts"
+        },
+        {
+          "stage": "AI Analysis",
+          "action": "Analyzing service dependencies"
+        },
+        {
+          "stage": "Probable Origin",
+          "action": "orders-db (92% confidence)"
+        },
+        {
+          "stage": "Triage Suggestion",
+          "action": "Check database connection pool"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - DBRE [P1]"
+        }
       ]
     },
     {
@@ -759,17 +1507,39 @@
       "description": "Detect anomalous incident patterns compared to historical baseline",
       "severity": "warning",
       "tags": {
-        "industry": ["technology", "enterprise"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise"],
-        "features": ["outlier_detection"],
-        "integration": "prometheus"
+        "industry": [
+          "technology",
+          "enterprise"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise"
+        ],
+        "features": [
+          "outlier_detection"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["outlier_incident_detection"],
-      "features_demonstrated": ["outlier_incident_detection"],
+      "required_features": [
+        "outlier_incident_detection"
+      ],
+      "features_demonstrated": [
+        "outlier_incident_detection"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P2",
-      "rules_triggered": ["Outlier detection"],
+      "rules_triggered": [
+        "Outlier detection"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -786,10 +1556,22 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create incident" },
-        { "stage": "Outlier Detection", "action": "10x above baseline (anomaly score: 0.95)" },
-        { "stage": "Alert", "action": "Flag as outlier incident" },
-        { "stage": "Assignment", "result": "Platform - Kubernetes/Platform [P2]" }
+        {
+          "stage": "Incident",
+          "action": "Create incident"
+        },
+        {
+          "stage": "Outlier Detection",
+          "action": "10x above baseline (anomaly score: 0.95)"
+        },
+        {
+          "stage": "Alert",
+          "action": "Flag as outlier incident"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Kubernetes/Platform [P2]"
+        }
       ]
     },
     {
@@ -798,17 +1580,41 @@
       "description": "Create and assign tasks during major incident response",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise", "banking"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise"],
-        "features": ["incident_tasks"],
-        "integration": "datadog"
+        "industry": [
+          "enterprise",
+          "banking"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise"
+        ],
+        "features": [
+          "incident_tasks"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "incident_tasks"],
-      "features_demonstrated": ["incident_tasks"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "incident_tasks"
+      ],
+      "features_demonstrated": [
+        "incident_tasks"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Incident task creation"],
+      "rules_triggered": [
+        "Incident task creation"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -825,11 +1631,26 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 major incident" },
-        { "stage": "Task 1", "action": "Create: 'Stop all writes to database' - assigned to DBA" },
-        { "stage": "Task 2", "action": "Create: 'Initiate backup verification' - assigned to SRE" },
-        { "stage": "Task 3", "action": "Create: 'Notify affected service owners' - assigned to IC" },
-        { "stage": "Assignment", "result": "Platform - DBRE [P1] with 3 tasks" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 major incident"
+        },
+        {
+          "stage": "Task 1",
+          "action": "Create: 'Stop all writes to database' - assigned to DBA"
+        },
+        {
+          "stage": "Task 2",
+          "action": "Create: 'Initiate backup verification' - assigned to SRE"
+        },
+        {
+          "stage": "Task 3",
+          "action": "Create: 'Notify affected service owners' - assigned to IC"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - DBRE [P1] with 3 tasks"
+        }
       ]
     },
     {
@@ -838,17 +1659,42 @@
       "description": "Assign formal incident roles (IC, Communications, Scribe) during major incidents",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise", "banking", "healthcare"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise"],
-        "features": ["incident_roles"],
-        "integration": "datadog"
+        "industry": [
+          "enterprise",
+          "banking",
+          "healthcare"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise"
+        ],
+        "features": [
+          "incident_roles"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "incident_roles"],
-      "features_demonstrated": ["incident_roles"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "incident_roles"
+      ],
+      "features_demonstrated": [
+        "incident_roles"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Incident role assignment"],
+      "rules_triggered": [
+        "Incident role assignment"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -865,11 +1711,26 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 major incident" },
-        { "stage": "Role: IC", "action": "Assign Sarah Chen as Incident Commander" },
-        { "stage": "Role: Comms", "action": "Assign Mike Johnson as Communications Lead" },
-        { "stage": "Role: Scribe", "action": "Assign Emily Davis as Scribe" },
-        { "stage": "Assignment", "result": "Platform - Kubernetes/Platform [P1] with defined roles" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 major incident"
+        },
+        {
+          "stage": "Role: IC",
+          "action": "Assign Sarah Chen as Incident Commander"
+        },
+        {
+          "stage": "Role: Comms",
+          "action": "Assign Mike Johnson as Communications Lead"
+        },
+        {
+          "stage": "Role: Scribe",
+          "action": "Assign Emily Davis as Scribe"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Kubernetes/Platform [P1] with defined roles"
+        }
       ]
     },
     {
@@ -878,17 +1739,41 @@
       "description": "Categorize incidents by type with type-specific workflows",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise", "banking"],
-        "team_type": ["sre", "soc"],
-        "org_style": ["enterprise"],
-        "features": ["incident_types"],
-        "integration": "splunk"
+        "industry": [
+          "enterprise",
+          "banking"
+        ],
+        "team_type": [
+          "sre",
+          "soc"
+        ],
+        "org_style": [
+          "enterprise"
+        ],
+        "features": [
+          "incident_types"
+        ],
+        "integration": "splunk",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "splunk"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "incident_types"],
-      "features_demonstrated": ["incident_types"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "incident_types"
+      ],
+      "features_demonstrated": [
+        "incident_types"
+      ],
       "target_service": "SecOps",
       "expected_priority": "P1",
-      "rules_triggered": ["Incident type classification"],
+      "rules_triggered": [
+        "Incident type classification"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -906,11 +1791,26 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Type Classification", "action": "Set type: Security Breach" },
-        { "stage": "Workflow", "action": "Trigger security breach workflow" },
-        { "stage": "Actions", "action": "Auto-notify CISO, Legal, isolate affected systems" },
-        { "stage": "Assignment", "result": "SecOps [P1] - Type: Security Breach" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Type Classification",
+          "action": "Set type: Security Breach"
+        },
+        {
+          "stage": "Workflow",
+          "action": "Trigger security breach workflow"
+        },
+        {
+          "stage": "Actions",
+          "action": "Auto-notify CISO, Legal, isolate affected systems"
+        },
+        {
+          "stage": "Assignment",
+          "result": "SecOps [P1] - Type: Security Breach"
+        }
       ]
     },
     {
@@ -919,17 +1819,45 @@
       "description": "Advanced incident actions directly from Slack",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise", "technology"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise"],
-        "features": ["slack_actions_advanced"],
-        "integration": "prometheus"
+        "industry": [
+          "enterprise",
+          "technology"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise"
+        ],
+        "features": [
+          "slack_actions_advanced"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration",
+          "chatops",
+          "extension"
+        ],
+        "tool": [
+          "prometheus",
+          "slack"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "slack_actions_advanced"],
-      "features_demonstrated": ["slack_actions_advanced", "slack_incident_channel"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "slack_actions_advanced"
+      ],
+      "features_demonstrated": [
+        "slack_actions_advanced",
+        "slack_incident_channel"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Advanced Slack actions"],
+      "rules_triggered": [
+        "Advanced Slack actions"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -945,10 +1873,22 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Slack Channel", "action": "Create #inc-node-failure-20240115" },
-        { "stage": "Slack Actions", "action": "Available: Add Responders, Update Status, Run Automation" },
-        { "stage": "Assignment", "result": "Platform - Kubernetes/Platform [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Slack Channel",
+          "action": "Create #inc-node-failure-20240115"
+        },
+        {
+          "stage": "Slack Actions",
+          "action": "Available: Add Responders, Update Status, Run Automation"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Kubernetes/Platform [P1]"
+        }
       ]
     },
     {
@@ -957,17 +1897,42 @@
       "description": "Use extended custom fields (30+) for detailed incident tracking",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise", "banking", "healthcare"],
-        "team_type": ["sre", "compliance"],
-        "org_style": ["enterprise"],
-        "features": ["custom_fields_advanced"],
-        "integration": "datadog"
+        "industry": [
+          "enterprise",
+          "banking",
+          "healthcare"
+        ],
+        "team_type": [
+          "sre",
+          "compliance"
+        ],
+        "org_style": [
+          "enterprise"
+        ],
+        "features": [
+          "custom_fields_advanced"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "custom_fields_advanced"],
-      "features_demonstrated": ["custom_fields_advanced"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "custom_fields_advanced"
+      ],
+      "features_demonstrated": [
+        "custom_fields_advanced"
+      ],
       "target_service": "App - Checkout Team",
       "expected_priority": "P1",
-      "rules_triggered": ["Custom field population"],
+      "rules_triggered": [
+        "Custom field population"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -984,10 +1949,22 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Custom Fields", "action": "Populate: PCI Scope, Data Classification, Regulatory Impact..." },
-        { "stage": "Custom Fields", "action": "Total: 15 custom fields populated" },
-        { "stage": "Assignment", "result": "App - Checkout Team [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Custom Fields",
+          "action": "Populate: PCI Scope, Data Classification, Regulatory Impact..."
+        },
+        {
+          "stage": "Custom Fields",
+          "action": "Total: 15 custom fields populated"
+        },
+        {
+          "stage": "Assignment",
+          "result": "App - Checkout Team [P1]"
+        }
       ]
     },
     {
@@ -996,17 +1973,42 @@
       "description": "Run automated diagnostic scripts when incident is triggered",
       "severity": "critical",
       "tags": {
-        "industry": ["technology", "enterprise"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise", "structured"],
-        "features": ["automation_actions"],
-        "integration": "prometheus"
+        "industry": [
+          "technology",
+          "enterprise"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise",
+          "structured"
+        ],
+        "features": [
+          "automation_actions"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "automation_actions"],
-      "features_demonstrated": ["automation_actions"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "automation_actions"
+      ],
+      "features_demonstrated": [
+        "automation_actions"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Automation action trigger"],
+      "rules_triggered": [
+        "Automation action trigger"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1022,11 +2024,26 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Automation", "action": "Run: memory_diagnostic.sh" },
-        { "stage": "Results", "action": "Top processes: java (45GB), mysql (12GB)" },
-        { "stage": "Attachment", "action": "Diagnostic results attached to incident" },
-        { "stage": "Assignment", "result": "Platform - Kubernetes/Platform [P1] + diagnostics" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Automation",
+          "action": "Run: memory_diagnostic.sh"
+        },
+        {
+          "stage": "Results",
+          "action": "Top processes: java (45GB), mysql (12GB)"
+        },
+        {
+          "stage": "Attachment",
+          "action": "Diagnostic results attached to incident"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Kubernetes/Platform [P1] + diagnostics"
+        }
       ]
     },
     {
@@ -1035,17 +2052,40 @@
       "description": "Automatically remediate known issues with runbooks",
       "severity": "warning",
       "tags": {
-        "industry": ["technology", "enterprise"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise"],
-        "features": ["automation_actions_remediation"],
-        "integration": "prometheus"
+        "industry": [
+          "technology",
+          "enterprise"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise"
+        ],
+        "features": [
+          "automation_actions_remediation"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["automation_actions", "automation_actions_remediation"],
-      "features_demonstrated": ["automation_actions_remediation"],
+      "required_features": [
+        "automation_actions",
+        "automation_actions_remediation"
+      ],
+      "features_demonstrated": [
+        "automation_actions_remediation"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P2",
-      "rules_triggered": ["Automated remediation"],
+      "rules_triggered": [
+        "Automated remediation"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1062,10 +2102,22 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create incident" },
-        { "stage": "Remediation", "action": "Run: cleanup_old_logs.sh" },
-        { "stage": "Result", "action": "Freed 50GB, usage now 45%" },
-        { "stage": "Auto-Resolve", "action": "Incident resolved automatically" }
+        {
+          "stage": "Incident",
+          "action": "Create incident"
+        },
+        {
+          "stage": "Remediation",
+          "action": "Run: cleanup_old_logs.sh"
+        },
+        {
+          "stage": "Result",
+          "action": "Freed 50GB, usage now 45%"
+        },
+        {
+          "stage": "Auto-Resolve",
+          "action": "Incident resolved automatically"
+        }
       ]
     },
     {
@@ -1074,17 +2126,39 @@
       "description": "Execute PagerDuty Process Automation runbooks from incidents",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise", "technology"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise"],
-        "features": ["runbook_automation"],
-        "integration": "datadog"
+        "industry": [
+          "enterprise",
+          "technology"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise"
+        ],
+        "features": [
+          "runbook_automation"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["runbook_automation"],
-      "features_demonstrated": ["runbook_automation"],
+      "required_features": [
+        "runbook_automation"
+      ],
+      "features_demonstrated": [
+        "runbook_automation"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Runbook execution"],
+      "rules_triggered": [
+        "Runbook execution"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1100,11 +2174,26 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Runbook", "action": "Available: database_failover_runbook" },
-        { "stage": "Execution", "action": "Responder triggers runbook" },
-        { "stage": "Steps", "action": "1. Verify replica, 2. Promote replica, 3. Update DNS" },
-        { "stage": "Assignment", "result": "Platform - DBRE [P1] + runbook" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Runbook",
+          "action": "Available: database_failover_runbook"
+        },
+        {
+          "stage": "Execution",
+          "action": "Responder triggers runbook"
+        },
+        {
+          "stage": "Steps",
+          "action": "1. Verify replica, 2. Promote replica, 3. Update DNS"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - DBRE [P1] + runbook"
+        }
       ]
     },
     {
@@ -1113,17 +2202,43 @@
       "description": "Update external status page during customer-impacting incident",
       "severity": "critical",
       "tags": {
-        "industry": ["technology", "ecommerce", "saas"],
-        "team_type": ["sre", "support"],
-        "org_style": ["enterprise", "structured"],
-        "features": ["status_pages"],
-        "integration": "datadog"
+        "industry": [
+          "technology",
+          "ecommerce",
+          "saas"
+        ],
+        "team_type": [
+          "sre",
+          "support"
+        ],
+        "org_style": [
+          "enterprise",
+          "structured"
+        ],
+        "features": [
+          "status_pages"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "status_pages"],
-      "features_demonstrated": ["status_pages"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "status_pages"
+      ],
+      "features_demonstrated": [
+        "status_pages"
+      ],
       "target_service": "App - Checkout Team",
       "expected_priority": "P1",
-      "rules_triggered": ["Status page update"],
+      "rules_triggered": [
+        "Status page update"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1139,11 +2254,26 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Status Page", "action": "Update status.example.com" },
-        { "stage": "Component", "action": "Payment Processing: Degraded" },
-        { "stage": "Message", "action": "We are investigating payment processing delays" },
-        { "stage": "Assignment", "result": "App - Checkout Team [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Status Page",
+          "action": "Update status.example.com"
+        },
+        {
+          "stage": "Component",
+          "action": "Payment Processing: Degraded"
+        },
+        {
+          "stage": "Message",
+          "action": "We are investigating payment processing delays"
+        },
+        {
+          "stage": "Assignment",
+          "result": "App - Checkout Team [P1]"
+        }
       ]
     },
     {
@@ -1152,17 +2282,40 @@
       "description": "Basic workflow to page on-call when incident triggers",
       "severity": "critical",
       "tags": {
-        "industry": ["technology"],
-        "team_type": ["devops", "sre"],
-        "org_style": ["structured"],
-        "features": ["incident_workflows_basic"],
-        "integration": "prometheus"
+        "industry": [
+          "technology"
+        ],
+        "team_type": [
+          "devops",
+          "sre"
+        ],
+        "org_style": [
+          "structured"
+        ],
+        "features": [
+          "incident_workflows_basic"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "incident_workflows_basic"],
-      "features_demonstrated": ["incident_workflows_basic"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "incident_workflows_basic"
+      ],
+      "features_demonstrated": [
+        "incident_workflows_basic"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Basic workflow"],
+      "rules_triggered": [
+        "Basic workflow"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1177,10 +2330,22 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 incident" },
-        { "stage": "Workflow", "action": "Trigger: page_oncall_workflow" },
-        { "stage": "Action", "action": "Page primary on-call" },
-        { "stage": "Assignment", "result": "Platform - Kubernetes/Platform [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 incident"
+        },
+        {
+          "stage": "Workflow",
+          "action": "Trigger: page_oncall_workflow"
+        },
+        {
+          "stage": "Action",
+          "action": "Page primary on-call"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Kubernetes/Platform [P1]"
+        }
       ]
     },
     {
@@ -1189,17 +2354,49 @@
       "description": "Full incident workflow with Slack, Zoom, and stakeholder notification",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise", "technology"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise", "structured"],
-        "features": ["incident_workflows"],
-        "integration": "datadog"
+        "industry": [
+          "enterprise",
+          "technology"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise",
+          "structured"
+        ],
+        "features": [
+          "incident_workflows"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration",
+          "chatops",
+          "extension"
+        ],
+        "tool": [
+          "slack",
+          "datadog",
+          "zoom"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment", "incident_workflows", "slack_incident_channel"],
-      "features_demonstrated": ["incident_workflows", "slack_incident_channel", "conference_bridge"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment",
+        "incident_workflows",
+        "slack_incident_channel"
+      ],
+      "features_demonstrated": [
+        "incident_workflows",
+        "slack_incident_channel",
+        "conference_bridge"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Full response workflow"],
+      "rules_triggered": [
+        "Full response workflow"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1215,12 +2412,30 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 major incident" },
-        { "stage": "Workflow Step 1", "action": "Create Slack channel #inc-cluster-20240115" },
-        { "stage": "Workflow Step 2", "action": "Start Zoom bridge" },
-        { "stage": "Workflow Step 3", "action": "Notify executives via email" },
-        { "stage": "Workflow Step 4", "action": "Add SRE team as responders" },
-        { "stage": "Assignment", "result": "Platform - Kubernetes/Platform [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 major incident"
+        },
+        {
+          "stage": "Workflow Step 1",
+          "action": "Create Slack channel #inc-cluster-20240115"
+        },
+        {
+          "stage": "Workflow Step 2",
+          "action": "Start Zoom bridge"
+        },
+        {
+          "stage": "Workflow Step 3",
+          "action": "Notify executives via email"
+        },
+        {
+          "stage": "Workflow Step 4",
+          "action": "Add SRE team as responders"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Kubernetes/Platform [P1]"
+        }
       ]
     },
     {
@@ -1229,17 +2444,38 @@
       "description": "Advanced workflow with conditional logic and custom actions",
       "severity": "critical",
       "tags": {
-        "industry": ["enterprise"],
-        "team_type": ["sre", "platform"],
-        "org_style": ["enterprise"],
-        "features": ["incident_workflows_advanced"],
-        "integration": "datadog"
+        "industry": [
+          "enterprise"
+        ],
+        "team_type": [
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "enterprise"
+        ],
+        "features": [
+          "incident_workflows_advanced"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["incident_workflows_advanced"],
-      "features_demonstrated": ["incident_workflows_advanced"],
+      "required_features": [
+        "incident_workflows_advanced"
+      ],
+      "features_demonstrated": [
+        "incident_workflows_advanced"
+      ],
       "target_service": "Platform - Kubernetes/Platform",
       "expected_priority": "P1",
-      "rules_triggered": ["Advanced workflow"],
+      "rules_triggered": [
+        "Advanced workflow"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1250,17 +2486,35 @@
           "custom_details": {
             "pd_service": "Platform - Kubernetes/Platform",
             "env": "production",
-            "regions_affected": ["us-east-1", "us-west-2"],
+            "regions_affected": [
+              "us-east-1",
+              "us-west-2"
+            ],
             "services_affected": 15
           }
         }
       },
       "orchestration_trace": [
-        { "stage": "Incident", "action": "Create P1 major incident" },
-        { "stage": "Condition", "action": "if regions_affected > 1: escalate to VP Eng" },
-        { "stage": "Workflow", "action": "Execute: multi_region_outage_workflow" },
-        { "stage": "Custom Action", "action": "Trigger failover to DR region" },
-        { "stage": "Assignment", "result": "Platform - Kubernetes/Platform [P1]" }
+        {
+          "stage": "Incident",
+          "action": "Create P1 major incident"
+        },
+        {
+          "stage": "Condition",
+          "action": "if regions_affected > 1: escalate to VP Eng"
+        },
+        {
+          "stage": "Workflow",
+          "action": "Execute: multi_region_outage_workflow"
+        },
+        {
+          "stage": "Custom Action",
+          "action": "Trigger failover to DR region"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Kubernetes/Platform [P1]"
+        }
       ]
     },
     {
@@ -1269,17 +2523,43 @@
       "description": "Monitor manufacturing equipment sensors and route to OT Operations",
       "severity": "critical",
       "tags": {
-        "industry": ["manufacturing", "energy"],
-        "team_type": ["ot_ops", "noc"],
-        "org_style": ["structured", "enterprise"],
-        "features": ["routing", "priority_assignment"],
-        "integration": "cloudwatch"
+        "industry": [
+          "manufacturing",
+          "energy"
+        ],
+        "team_type": [
+          "ot_ops",
+          "noc"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "routing",
+          "priority_assignment"
+        ],
+        "integration": "cloudwatch",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "cloudwatch"
+        ]
       },
-      "required_features": ["basic_routing", "escalation_policies"],
-      "features_demonstrated": ["basic_routing", "escalation_policies"],
+      "required_features": [
+        "basic_routing",
+        "escalation_policies"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "escalation_policies"
+      ],
       "target_service": "OT Operations - Factory Floor",
       "expected_priority": "P1",
-      "rules_triggered": ["Equipment failure routing"],
+      "rules_triggered": [
+        "Equipment failure routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1297,9 +2577,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to OT Operations" },
-        { "stage": "Priority", "action": "Assign P1 (critical equipment)" },
-        { "stage": "Assignment", "result": "OT Operations - Factory Floor [P1]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to OT Operations"
+        },
+        {
+          "stage": "Priority",
+          "action": "Assign P1 (critical equipment)"
+        },
+        {
+          "stage": "Assignment",
+          "result": "OT Operations - Factory Floor [P1]"
+        }
       ]
     },
     {
@@ -1308,17 +2597,43 @@
       "description": "Environmental hazard detection in mining operations",
       "severity": "critical",
       "tags": {
-        "industry": ["mining", "energy"],
-        "team_type": ["ot_ops", "soc"],
-        "org_style": ["structured", "enterprise"],
-        "features": ["routing", "priority_assignment"],
-        "integration": "cloudwatch"
+        "industry": [
+          "mining",
+          "energy"
+        ],
+        "team_type": [
+          "ot_ops",
+          "soc"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "routing",
+          "priority_assignment"
+        ],
+        "integration": "cloudwatch",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "cloudwatch"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment"],
-      "features_demonstrated": ["basic_routing", "priority_assignment"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "priority_assignment"
+      ],
       "target_service": "Safety Operations",
       "expected_priority": "P1",
-      "rules_triggered": ["Safety system routing"],
+      "rules_triggered": [
+        "Safety system routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1336,10 +2651,22 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Safety Operations" },
-        { "stage": "Priority", "action": "Assign P1 (safety critical)" },
-        { "stage": "Escalation", "action": "Notify safety team + site manager" },
-        { "stage": "Assignment", "result": "Safety Operations [P1]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Safety Operations"
+        },
+        {
+          "stage": "Priority",
+          "action": "Assign P1 (safety critical)"
+        },
+        {
+          "stage": "Escalation",
+          "action": "Notify safety team + site manager"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Safety Operations [P1]"
+        }
       ]
     },
     {
@@ -1348,17 +2675,43 @@
       "description": "Point-of-sale system outage affecting retail stores",
       "severity": "critical",
       "tags": {
-        "industry": ["retail", "ecommerce"],
-        "team_type": ["support", "noc"],
-        "org_style": ["structured", "enterprise"],
-        "features": ["routing", "priority_assignment"],
-        "integration": "newrelic"
+        "industry": [
+          "retail",
+          "ecommerce"
+        ],
+        "team_type": [
+          "support",
+          "noc"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "routing",
+          "priority_assignment"
+        ],
+        "integration": "newrelic",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "newrelic"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment"],
-      "features_demonstrated": ["basic_routing", "priority_assignment"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "priority_assignment"
+      ],
       "target_service": "Retail Systems - POS",
       "expected_priority": "P1",
-      "rules_triggered": ["POS failure routing"],
+      "rules_triggered": [
+        "POS failure routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1375,9 +2728,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Retail Systems" },
-        { "stage": "Priority", "action": "Assign P1 (revenue impact)" },
-        { "stage": "Assignment", "result": "Retail Systems - POS [P1]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Retail Systems"
+        },
+        {
+          "stage": "Priority",
+          "action": "Assign P1 (revenue impact)"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Retail Systems - POS [P1]"
+        }
       ]
     },
     {
@@ -1386,17 +2748,43 @@
       "description": "Payment processing latency affecting fintech transactions",
       "severity": "critical",
       "tags": {
-        "industry": ["fintech", "banking"],
-        "team_type": ["sre", "support"],
-        "org_style": ["structured", "enterprise"],
-        "features": ["routing", "priority_assignment"],
-        "integration": "datadog"
+        "industry": [
+          "fintech",
+          "banking"
+        ],
+        "team_type": [
+          "sre",
+          "support"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "routing",
+          "priority_assignment"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment"],
-      "features_demonstrated": ["basic_routing", "priority_assignment"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "priority_assignment"
+      ],
       "target_service": "Payment Processing - Gateway",
       "expected_priority": "P1",
-      "rules_triggered": ["Payment system routing"],
+      "rules_triggered": [
+        "Payment system routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1413,9 +2801,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Payment Processing" },
-        { "stage": "Priority", "action": "Assign P1 (payment critical)" },
-        { "stage": "Assignment", "result": "Payment Processing - Gateway [P1]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Payment Processing"
+        },
+        {
+          "stage": "Priority",
+          "action": "Assign P1 (payment critical)"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Payment Processing - Gateway [P1]"
+        }
       ]
     },
     {
@@ -1424,17 +2821,43 @@
       "description": "Power grid anomaly detection for utility operations",
       "severity": "critical",
       "tags": {
-        "industry": ["energy", "manufacturing"],
-        "team_type": ["ot_ops", "noc"],
-        "org_style": ["structured", "enterprise"],
-        "features": ["routing", "priority_assignment"],
-        "integration": "splunk"
+        "industry": [
+          "energy",
+          "manufacturing"
+        ],
+        "team_type": [
+          "ot_ops",
+          "noc"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "routing",
+          "priority_assignment"
+        ],
+        "integration": "splunk",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "splunk"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment"],
-      "features_demonstrated": ["basic_routing", "priority_assignment"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "priority_assignment"
+      ],
       "target_service": "Grid Operations Center",
       "expected_priority": "P1",
-      "rules_triggered": ["Grid anomaly routing"],
+      "rules_triggered": [
+        "Grid anomaly routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1452,9 +2875,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Grid Operations" },
-        { "stage": "Priority", "action": "Assign P1 (infrastructure critical)" },
-        { "stage": "Assignment", "result": "Grid Operations Center [P1]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Grid Operations"
+        },
+        {
+          "stage": "Priority",
+          "action": "Assign P1 (infrastructure critical)"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Grid Operations Center [P1]"
+        }
       ]
     },
     {
@@ -1463,17 +2895,43 @@
       "description": "Network capacity alert for telecommunications provider",
       "severity": "warning",
       "tags": {
-        "industry": ["telecom", "technology"],
-        "team_type": ["noc", "sre"],
-        "org_style": ["structured", "enterprise"],
-        "features": ["routing", "threshold_conditions"],
-        "integration": "prometheus"
+        "industry": [
+          "telecom",
+          "technology"
+        ],
+        "team_type": [
+          "noc",
+          "sre"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "routing",
+          "threshold_conditions"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["basic_routing", "escalation_policies"],
-      "features_demonstrated": ["basic_routing", "escalation_policies"],
+      "required_features": [
+        "basic_routing",
+        "escalation_policies"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "escalation_policies"
+      ],
       "target_service": "Network Operations - Core",
       "expected_priority": "P2",
-      "rules_triggered": ["Network capacity routing"],
+      "rules_triggered": [
+        "Network capacity routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1490,9 +2948,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Network Operations" },
-        { "stage": "Escalation", "action": "Notify network engineering" },
-        { "stage": "Assignment", "result": "Network Operations - Core [P2]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Network Operations"
+        },
+        {
+          "stage": "Escalation",
+          "action": "Notify network engineering"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Network Operations - Core [P2]"
+        }
       ]
     },
     {
@@ -1501,17 +2968,43 @@
       "description": "Electronic Medical Records system performance degradation",
       "severity": "critical",
       "tags": {
-        "industry": ["healthcare", "enterprise"],
-        "team_type": ["support", "dba"],
-        "org_style": ["structured", "enterprise"],
-        "features": ["routing", "priority_assignment"],
-        "integration": "newrelic"
+        "industry": [
+          "healthcare",
+          "enterprise"
+        ],
+        "team_type": [
+          "support",
+          "dba"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "routing",
+          "priority_assignment"
+        ],
+        "integration": "newrelic",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "newrelic"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment"],
-      "features_demonstrated": ["basic_routing", "priority_assignment"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "priority_assignment"
+      ],
       "target_service": "Clinical Systems - EMR",
       "expected_priority": "P1",
-      "rules_triggered": ["EMR system routing"],
+      "rules_triggered": [
+        "EMR system routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1528,9 +3021,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Clinical Systems" },
-        { "stage": "Priority", "action": "Assign P1 (patient care)" },
-        { "stage": "Assignment", "result": "Clinical Systems - EMR [P1]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Clinical Systems"
+        },
+        {
+          "stage": "Priority",
+          "action": "Assign P1 (patient care)"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Clinical Systems - EMR [P1]"
+        }
       ]
     },
     {
@@ -1539,17 +3041,42 @@
       "description": "Database replication lag exceeds threshold",
       "severity": "warning",
       "tags": {
-        "industry": ["technology", "fintech", "ecommerce"],
-        "team_type": ["dba", "platform"],
-        "org_style": ["structured"],
-        "features": ["routing"],
-        "integration": "datadog"
+        "industry": [
+          "technology",
+          "fintech",
+          "ecommerce"
+        ],
+        "team_type": [
+          "dba",
+          "platform"
+        ],
+        "org_style": [
+          "structured"
+        ],
+        "features": [
+          "routing"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "datadog"
+        ]
       },
-      "required_features": ["basic_routing", "escalation_policies"],
-      "features_demonstrated": ["basic_routing", "escalation_policies"],
+      "required_features": [
+        "basic_routing",
+        "escalation_policies"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "escalation_policies"
+      ],
       "target_service": "Database - DBRE Team",
       "expected_priority": "P2",
-      "rules_triggered": ["Database alert routing"],
+      "rules_triggered": [
+        "Database alert routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1566,9 +3093,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to DBRE Team" },
-        { "stage": "Escalation", "action": "Notify on-call DBA" },
-        { "stage": "Assignment", "result": "Database - DBRE Team [P2]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to DBRE Team"
+        },
+        {
+          "stage": "Escalation",
+          "action": "Notify on-call DBA"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Database - DBRE Team [P2]"
+        }
       ]
     },
     {
@@ -1577,17 +3113,42 @@
       "description": "Critical deployment pipeline failure blocking releases",
       "severity": "error",
       "tags": {
-        "industry": ["technology", "saas"],
-        "team_type": ["devops", "platform"],
-        "org_style": ["startup", "structured"],
-        "features": ["routing"],
-        "integration": "github_actions"
+        "industry": [
+          "technology",
+          "saas"
+        ],
+        "team_type": [
+          "devops",
+          "platform"
+        ],
+        "org_style": [
+          "startup",
+          "structured"
+        ],
+        "features": [
+          "routing"
+        ],
+        "integration": "github_actions",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "github_actions"
+        ]
       },
-      "required_features": ["basic_routing", "escalation_policies"],
-      "features_demonstrated": ["basic_routing", "escalation_policies"],
+      "required_features": [
+        "basic_routing",
+        "escalation_policies"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "escalation_policies"
+      ],
       "target_service": "DevOps - CI/CD Platform",
       "expected_priority": null,
-      "rules_triggered": ["Pipeline failure routing"],
+      "rules_triggered": [
+        "Pipeline failure routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1604,8 +3165,14 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to DevOps CI/CD" },
-        { "stage": "Assignment", "result": "DevOps - CI/CD Platform" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to DevOps CI/CD"
+        },
+        {
+          "stage": "Assignment",
+          "result": "DevOps - CI/CD Platform"
+        }
       ]
     },
     {
@@ -1614,17 +3181,43 @@
       "description": "Website health check failing from multiple regions",
       "severity": "critical",
       "tags": {
-        "industry": ["retail", "ecommerce", "saas"],
-        "team_type": ["sre", "support"],
-        "org_style": ["structured"],
-        "features": ["routing", "priority_assignment"],
-        "integration": "uptimerobot"
+        "industry": [
+          "retail",
+          "ecommerce",
+          "saas"
+        ],
+        "team_type": [
+          "sre",
+          "support"
+        ],
+        "org_style": [
+          "structured"
+        ],
+        "features": [
+          "routing",
+          "priority_assignment"
+        ],
+        "integration": "uptimerobot",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "uptimerobot"
+        ]
       },
-      "required_features": ["basic_routing", "priority_assignment"],
-      "features_demonstrated": ["basic_routing", "priority_assignment"],
+      "required_features": [
+        "basic_routing",
+        "priority_assignment"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "priority_assignment"
+      ],
       "target_service": "Platform - Frontend",
       "expected_priority": "P1",
-      "rules_triggered": ["Uptime failure routing"],
+      "rules_triggered": [
+        "Uptime failure routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1635,15 +3228,28 @@
             "pd_service": "Platform - Frontend",
             "env": "production",
             "url": "https://www.example.com",
-            "regions_failing": ["us-east", "eu-west", "ap-southeast"],
+            "regions_failing": [
+              "us-east",
+              "eu-west",
+              "ap-southeast"
+            ],
             "downtime_duration_seconds": 180
           }
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Frontend Platform" },
-        { "stage": "Priority", "action": "Assign P1 (customer-facing outage)" },
-        { "stage": "Assignment", "result": "Platform - Frontend [P1]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Frontend Platform"
+        },
+        {
+          "stage": "Priority",
+          "action": "Assign P1 (customer-facing outage)"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Platform - Frontend [P1]"
+        }
       ]
     },
     {
@@ -1652,17 +3258,42 @@
       "description": "Sudden increase in application errors detected by Sentry",
       "severity": "error",
       "tags": {
-        "industry": ["technology", "saas"],
-        "team_type": ["devops", "sre"],
-        "org_style": ["startup", "structured"],
-        "features": ["routing"],
-        "integration": "sentry"
+        "industry": [
+          "technology",
+          "saas"
+        ],
+        "team_type": [
+          "devops",
+          "sre"
+        ],
+        "org_style": [
+          "startup",
+          "structured"
+        ],
+        "features": [
+          "routing"
+        ],
+        "integration": "sentry",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "sentry"
+        ]
       },
-      "required_features": ["basic_routing", "escalation_policies"],
-      "features_demonstrated": ["basic_routing", "escalation_policies"],
+      "required_features": [
+        "basic_routing",
+        "escalation_policies"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "escalation_policies"
+      ],
       "target_service": "App - Backend API",
       "expected_priority": null,
-      "rules_triggered": ["Error spike routing"],
+      "rules_triggered": [
+        "Error spike routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1680,8 +3311,14 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Backend API team" },
-        { "stage": "Assignment", "result": "App - Backend API" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Backend API team"
+        },
+        {
+          "stage": "Assignment",
+          "result": "App - Backend API"
+        }
       ]
     },
     {
@@ -1690,17 +3327,42 @@
       "description": "Product quality metrics outside acceptable range",
       "severity": "warning",
       "tags": {
-        "industry": ["manufacturing", "retail"],
-        "team_type": ["ot_ops", "support"],
-        "org_style": ["structured", "enterprise"],
-        "features": ["routing"],
-        "integration": "cloudwatch"
+        "industry": [
+          "manufacturing",
+          "retail"
+        ],
+        "team_type": [
+          "ot_ops",
+          "support"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "routing"
+        ],
+        "integration": "cloudwatch",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "cloudwatch"
+        ]
       },
-      "required_features": ["basic_routing", "escalation_policies"],
-      "features_demonstrated": ["basic_routing", "escalation_policies"],
+      "required_features": [
+        "basic_routing",
+        "escalation_policies"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "escalation_policies"
+      ],
       "target_service": "Quality Control - Manufacturing",
       "expected_priority": "P2",
-      "rules_triggered": ["Quality alert routing"],
+      "rules_triggered": [
+        "Quality alert routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1718,9 +3380,18 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Quality Control" },
-        { "stage": "Escalation", "action": "Notify shift supervisor" },
-        { "stage": "Assignment", "result": "Quality Control - Manufacturing [P2]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Quality Control"
+        },
+        {
+          "stage": "Escalation",
+          "action": "Notify shift supervisor"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Quality Control - Manufacturing [P2]"
+        }
       ]
     },
     {
@@ -1729,17 +3400,42 @@
       "description": "Predictive maintenance alert for mining heavy equipment",
       "severity": "warning",
       "tags": {
-        "industry": ["mining", "manufacturing"],
-        "team_type": ["ot_ops", "noc"],
-        "org_style": ["structured", "enterprise"],
-        "features": ["routing"],
-        "integration": "prometheus"
+        "industry": [
+          "mining",
+          "manufacturing"
+        ],
+        "team_type": [
+          "ot_ops",
+          "noc"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "routing"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "integration"
+        ],
+        "tool": [
+          "prometheus"
+        ]
       },
-      "required_features": ["basic_routing", "escalation_policies"],
-      "features_demonstrated": ["basic_routing", "escalation_policies"],
+      "required_features": [
+        "basic_routing",
+        "escalation_policies"
+      ],
+      "features_demonstrated": [
+        "basic_routing",
+        "escalation_policies"
+      ],
       "target_service": "Mining Operations - Equipment",
       "expected_priority": "P2",
-      "rules_triggered": ["Equipment maintenance routing"],
+      "rules_triggered": [
+        "Equipment maintenance routing"
+      ],
       "payload": {
         "event_action": "trigger",
         "payload": {
@@ -1758,25 +3454,1038 @@
         }
       },
       "orchestration_trace": [
-        { "stage": "Service Rules", "action": "Route to Mining Operations" },
-        { "stage": "Escalation", "action": "Notify maintenance team" },
-        { "stage": "Assignment", "result": "Mining Operations - Equipment [P2]" }
+        {
+          "stage": "Service Rules",
+          "action": "Route to Mining Operations"
+        },
+        {
+          "stage": "Escalation",
+          "action": "Notify maintenance team"
+        },
+        {
+          "stage": "Assignment",
+          "result": "Mining Operations - Equipment [P2]"
+        }
       ]
-    }
+    },
+    {
+      "id": "SRE-001",
+      "name": "Autonomous Pod Crash Investigation",
+      "description": "SRE Agent autonomously investigates a Kubernetes pod crash loop, gathering diagnostics and identifying root cause",
+      "severity": "critical",
+      "tags": {
+          "industry": ["technology", "ecommerce", "saas"],
+          "team_type": ["sre", "platform", "devops"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_sre", "autonomous_investigation", "diagnostics"],
+          "integration": "datadog",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_sre"]
+        },
+        "required_features": ["sre_agent", "kubernetes_access"],
+        "features_demonstrated": ["autonomous_investigation", "diagnostic_gathering", "pattern_matching", "root_cause_identification"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": "P1",
+        "rules_triggered": ["SRE Agent activation on critical incident"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Pod CrashLoopBackOff: payment-service-7d8f9 - OOMKilled",
+            "source": "datadog-kubernetes",
+            "severity": "critical",
+            "custom_details": {
+              "pd_service": "Platform - Kubernetes/Platform",
+              "env": "production",
+              "pod": "payment-service-7d8f9",
+              "namespace": "production",
+              "restart_count": 5,
+              "last_state": "OOMKilled"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Alert Received", "action": "Pod crash detected by Datadog"},
+          {"stage": "SRE Agent Activated", "action": "Autonomous investigation begins"},
+          {"stage": "Pod Status Check", "action": "kubectl describe pod - CrashLoopBackOff"},
+          {"stage": "Log Analysis", "action": "Identified OutOfMemoryError"},
+          {"stage": "Resource Analysis", "action": "Memory limit 512Mi approaching limit"},
+          {"stage": "Historical Match", "action": "Found similar incident #4521 - resolved with memory increase"},
+          {"stage": "Recommendation", "action": "Increase memory limit to 1Gi"}
+        ]
+      },
+      {
+        "id": "SRE-002",
+        "name": "Autonomous Remediation with Approval",
+        "description": "SRE Agent proposes and executes remediation with human approval workflow",
+        "severity": "critical",
+        "tags": {
+          "industry": ["technology", "ecommerce", "saas"],
+          "team_type": ["sre", "platform", "devops"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_sre", "remediation", "approval_workflow"],
+          "integration": "datadog",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_sre"]
+        },
+        "required_features": ["sre_agent", "kubernetes_write_access", "approval_workflow"],
+        "features_demonstrated": ["remediation_execution", "human_approval", "safe_automation", "verification"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": "P1",
+        "rules_triggered": ["SRE Agent remediation proposal"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "SRE Agent: Remediation proposal for payment-service memory increase",
+            "source": "pagerduty-sre-agent",
+            "severity": "critical",
+            "custom_details": {
+              "pd_service": "Platform - Kubernetes/Platform",
+              "env": "production",
+              "proposed_action": "Increase memory limit 512Mi to 1Gi",
+              "confidence": "92%",
+              "requires_approval": true
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Agent Proposes", "action": "Memory limit increase recommended"},
+          {"stage": "Human Review", "action": "On-call reviews proposal"},
+          {"stage": "Approval", "action": "Engineer clicks Approve"},
+          {"stage": "Execution", "action": "kubectl patch deployment"},
+          {"stage": "Verification", "action": "Pod running, 0 restarts, healthy memory usage"},
+          {"stage": "Resolution", "action": "Incident resolved after stability window"}
+        ]
+      },
+      {
+        "id": "SRE-003",
+        "name": "Database Connection Pool Remediation",
+        "description": "SRE Agent diagnoses database connection pool exhaustion and identifies long-running queries",
+        "severity": "critical",
+        "tags": {
+          "industry": ["technology", "saas", "fintech"],
+          "team_type": ["sre", "dba", "platform"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_sre", "database_diagnostics", "connection_pool"],
+          "integration": "prometheus",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_sre"]
+        },
+        "required_features": ["sre_agent", "database_access"],
+        "features_demonstrated": ["database_diagnostics", "connection_analysis", "query_analysis", "cascading_impact"],
+        "target_service": "Platform - DBRE",
+        "expected_priority": "P1",
+        "rules_triggered": ["SRE Agent database investigation"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Database Connection Pool Exhausted - 100/100 connections active",
+            "source": "prometheus",
+            "severity": "critical",
+            "custom_details": {
+              "pd_service": "Platform - DBRE",
+              "env": "production",
+              "database": "primary-postgres",
+              "active_connections": 100,
+              "max_connections": 100,
+              "waiting_queries": 45
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Alert Received", "action": "Connection pool exhausted alert"},
+          {"stage": "SRE Agent Activated", "action": "Database investigation begins"},
+          {"stage": "Connection Analysis", "action": "Breakdown by application identified"},
+          {"stage": "Query Analysis", "action": "Found long-running analytics query (45 min)"},
+          {"stage": "Root Cause", "action": "Analytics job holding connections with full table scan"},
+          {"stage": "Recommendation", "action": "Terminate analytics query, add index"}
+        ]
+      },
+      {
+        "id": "SRE-004",
+        "name": "Multi-Service Incident Correlation",
+        "description": "SRE Agent correlates alerts across multiple services and identifies common root cause",
+        "severity": "critical",
+        "tags": {
+          "industry": ["technology", "ecommerce", "enterprise"],
+          "team_type": ["sre", "platform", "noc"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_sre", "correlation", "multi_service"],
+          "integration": "datadog",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_sre"]
+        },
+        "required_features": ["sre_agent", "aiops_correlation"],
+        "features_demonstrated": ["alert_correlation", "dependency_mapping", "blast_radius_analysis"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": "P1",
+        "rules_triggered": ["SRE Agent multi-service correlation"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Multiple services reporting errors - potential upstream failure",
+            "source": "datadog",
+            "severity": "critical",
+            "custom_details": {
+              "pd_service": "Platform - Kubernetes/Platform",
+              "env": "production",
+              "affected_services": ["checkout", "payment", "inventory"],
+              "correlation_id": "upstream-auth-failure"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Multiple Alerts", "action": "3 services reporting errors simultaneously"},
+          {"stage": "SRE Agent Correlation", "action": "Identifies common dependency: auth-service"},
+          {"stage": "Dependency Analysis", "action": "Auth service is upstream of all affected services"},
+          {"stage": "Root Cause", "action": "Auth service certificate expired"},
+          {"stage": "Recommendation", "action": "Renew certificate on auth-service"}
+        ]
+      },
+      {
+        "id": "SRE-005",
+        "name": "Proactive Capacity Issue Prevention",
+        "description": "SRE Agent detects trending capacity issues and recommends scaling before outage",
+        "severity": "warning",
+        "tags": {
+          "industry": ["technology", "saas", "ecommerce"],
+          "team_type": ["sre", "platform", "devops"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_sre", "proactive", "capacity_planning"],
+          "integration": "prometheus",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_sre"]
+        },
+        "required_features": ["sre_agent", "trend_analysis"],
+        "features_demonstrated": ["proactive_detection", "trend_analysis", "capacity_forecasting"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": "P3",
+        "rules_triggered": ["SRE Agent proactive analysis"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Capacity trending: API cluster projected to exceed limits in 4 hours",
+            "source": "prometheus",
+            "severity": "warning",
+            "custom_details": {
+              "pd_service": "Platform - Kubernetes/Platform",
+              "env": "production",
+              "current_cpu": "68%",
+              "projected_cpu_4h": "95%",
+              "trend": "increasing"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Trend Detection", "action": "CPU usage trending upward"},
+          {"stage": "Forecast", "action": "Projected to reach 95% in 4 hours"},
+          {"stage": "Context Gathering", "action": "Marketing campaign starting tomorrow"},
+          {"stage": "Recommendation", "action": "Scale cluster from 5 to 8 nodes proactively"}
+        ]
+      },
+      {
+        "id": "SRE-006",
+        "name": "Learning from Past Incidents",
+        "description": "SRE Agent uses historical incident data to accelerate resolution of similar issues",
+        "severity": "error",
+        "tags": {
+          "industry": ["technology", "saas", "enterprise"],
+          "team_type": ["sre", "platform", "devops"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_sre", "learning", "historical_analysis"],
+          "integration": "datadog",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_sre"]
+        },
+        "required_features": ["sre_agent", "incident_history"],
+        "features_demonstrated": ["pattern_recognition", "historical_learning", "resolution_acceleration"],
+        "target_service": "App - Checkout Team",
+        "expected_priority": "P2",
+        "rules_triggered": ["SRE Agent historical pattern match"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Checkout API response time degraded - 2.5s average",
+            "source": "datadog",
+            "severity": "error",
+            "custom_details": {
+              "pd_service": "App - Checkout Team",
+              "env": "production",
+              "response_time_ms": 2500,
+              "threshold_ms": 500
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Alert Received", "action": "Response time degradation detected"},
+          {"stage": "Historical Search", "action": "Found 3 similar incidents in past 90 days"},
+          {"stage": "Pattern Match", "action": "All 3 resolved by clearing Redis cache"},
+          {"stage": "Confidence", "action": "High confidence (87%) - same symptoms"},
+          {"stage": "Recommendation", "action": "Clear checkout Redis cache"}
+        ]
+      },
+      {
+        "id": "SCRIBE-001",
+        "name": "Automated Incident Timeline Documentation",
+        "description": "Scribe Agent automatically documents incident timeline with key events and actions",
+        "severity": "critical",
+        "tags": {
+          "industry": ["technology", "enterprise", "healthcare"],
+          "team_type": ["sre", "platform", "compliance"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_scribe", "documentation", "timeline"],
+          "integration": "datadog",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_scribe"]
+        },
+        "required_features": ["scribe_agent"],
+        "features_demonstrated": ["automatic_documentation", "timeline_generation", "action_logging"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": "P1",
+        "rules_triggered": ["Scribe Agent documentation trigger"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Major incident requiring detailed documentation",
+            "source": "datadog",
+            "severity": "critical",
+            "custom_details": {
+              "pd_service": "Platform - Kubernetes/Platform",
+              "env": "production",
+              "incident_type": "major_outage"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Incident Start", "action": "Scribe Agent begins recording"},
+          {"stage": "Alert Capture", "action": "Initial alert details documented"},
+          {"stage": "Response Tracking", "action": "Responder actions automatically logged"},
+          {"stage": "Communication Log", "action": "Slack messages and decisions captured"},
+          {"stage": "Resolution", "action": "Timeline summary generated"}
+        ]
+      },
+      {
+        "id": "SCRIBE-002",
+        "name": "Automated Post-Incident Summary Generation",
+        "description": "Scribe Agent generates comprehensive post-incident summary for PIR preparation",
+        "severity": "critical",
+        "tags": {
+          "industry": ["technology", "enterprise", "fintech"],
+          "team_type": ["sre", "platform", "compliance"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_scribe", "pir", "summary_generation"],
+          "integration": "datadog",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_scribe"]
+        },
+        "required_features": ["scribe_agent"],
+        "features_demonstrated": ["summary_generation", "pir_preparation", "impact_analysis"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": "P1",
+        "rules_triggered": ["Scribe Agent PIR summary"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Generate post-incident summary for PIR",
+            "source": "pagerduty-scribe-agent",
+            "severity": "critical",
+            "custom_details": {
+              "pd_service": "Platform - Kubernetes/Platform",
+              "env": "production",
+              "incident_duration_minutes": 45,
+              "services_affected": 3
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Resolution Detected", "action": "Incident resolved, summary generation triggered"},
+          {"stage": "Data Collection", "action": "Gather all incident artifacts"},
+          {"stage": "Impact Analysis", "action": "Calculate customer impact and duration"},
+          {"stage": "Summary Generation", "action": "Create executive summary and technical details"},
+          {"stage": "PIR Scheduling", "action": "Schedule review meeting with all responders"}
+        ]
+      },
+      {
+        "id": "SCRIBE-003",
+        "name": "Knowledge Pattern Recognition",
+        "description": "Scribe Agent identifies recurring incident patterns and suggests runbook creation",
+        "severity": "warning",
+        "tags": {
+          "industry": ["technology", "enterprise", "saas"],
+          "team_type": ["sre", "platform", "devops"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_scribe", "pattern_recognition", "knowledge_management"],
+          "integration": "prometheus",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_scribe"]
+        },
+        "required_features": ["scribe_agent", "incident_history"],
+        "features_demonstrated": ["pattern_recognition", "knowledge_extraction", "runbook_suggestion"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": "P3",
+        "rules_triggered": ["Scribe Agent pattern analysis"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Recurring incident pattern detected - runbook opportunity",
+            "source": "pagerduty-scribe-agent",
+            "severity": "warning",
+            "custom_details": {
+              "pd_service": "Platform - Kubernetes/Platform",
+              "pattern": "redis_cache_exhaustion",
+              "occurrences": 5,
+              "last_30_days": true
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Pattern Analysis", "action": "5 similar incidents detected in 30 days"},
+          {"stage": "Resolution Comparison", "action": "All resolved with same steps"},
+          {"stage": "Suggestion", "action": "Recommend creating runbook for Redis cache clearing"},
+          {"stage": "Draft Generation", "action": "Auto-generate runbook draft from incident notes"}
+        ]
+      },
+      {
+        "id": "SHIFT-001",
+        "name": "Automated On-Call Handoff",
+        "description": "Shift Agent automates on-call handoff with context transfer and active incident reassignment",
+        "severity": "info",
+        "tags": {
+          "industry": ["technology", "enterprise", "saas"],
+          "team_type": ["sre", "platform", "noc"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_shift", "handoff", "context_transfer"],
+          "integration": "slack",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_shift"]
+        },
+        "required_features": ["shift_agent", "slack_integration"],
+        "features_demonstrated": ["automatic_handoff", "context_preservation", "incident_reassignment"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": null,
+        "rules_triggered": ["Shift Agent handoff automation"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "On-call rotation in 30 minutes - handoff preparation",
+            "source": "pagerduty-shift-agent",
+            "severity": "info",
+            "custom_details": {
+              "current_oncall": "Ginny Tonic",
+              "next_oncall": "Jim Beam",
+              "active_incidents": 1,
+              "rotation_in_minutes": 30
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Rotation Approaching", "action": "Detect handoff in 30 minutes"},
+          {"stage": "Context Preparation", "action": "Gather active incidents and notes"},
+          {"stage": "Handoff Message", "action": "Post context summary to incoming on-call"},
+          {"stage": "Confirmation", "action": "Incoming on-call confirms readiness"},
+          {"stage": "Transfer", "action": "Reassign incidents and update escalation"}
+        ]
+      },
+      {
+        "id": "SHIFT-002",
+        "name": "Schedule Coverage Gap Detection",
+        "description": "Shift Agent proactively identifies coverage gaps and requests substitutes",
+        "severity": "warning",
+        "tags": {
+          "industry": ["technology", "enterprise", "saas"],
+          "team_type": ["sre", "platform", "noc"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_shift", "coverage", "scheduling"],
+          "integration": "slack",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_shift"]
+        },
+        "required_features": ["shift_agent", "calendar_integration"],
+        "features_demonstrated": ["gap_detection", "coverage_request", "schedule_management"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": null,
+        "rules_triggered": ["Shift Agent coverage gap alert"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Coverage gap detected - Paddy Losty on PTO, no override configured",
+            "source": "pagerduty-shift-agent",
+            "severity": "warning",
+            "custom_details": {
+              "gap_start": "Tuesday 09:00",
+              "gap_end": "Wednesday 09:00",
+              "reason": "PTO synced from calendar",
+              "recommended_coverage": "Jack Daniels"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Gap Detected", "action": "PTO identified with no coverage"},
+          {"stage": "Analysis", "action": "Evaluate available responders"},
+          {"stage": "Recommendation", "action": "Jack Daniels - 78% schedule compatibility"},
+          {"stage": "Coverage Request", "action": "Send automated coverage request"},
+          {"stage": "Confirmation", "action": "Override created when accepted"}
+        ]
+      },
+      {
+        "id": "SHIFT-003",
+        "name": "On-Call Load Balancing and Wellness",
+        "description": "Shift Agent monitors responder load and suggests schedule adjustments for wellness",
+        "severity": "info",
+        "tags": {
+          "industry": ["technology", "enterprise", "saas"],
+          "team_type": ["sre", "platform", "noc"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["agent_shift", "wellness", "load_balancing"],
+          "integration": "slack",
+          "tool_type": ["agent"],
+          "tool": ["pagerduty_agent_shift"]
+        },
+        "required_features": ["shift_agent", "incident_history"],
+        "features_demonstrated": ["workload_analysis", "wellness_monitoring", "fair_distribution"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": null,
+        "rules_triggered": ["Shift Agent wellness report"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Weekly On-Call Wellness Report - attention required for Ginny Tonic",
+            "source": "pagerduty-shift-agent",
+            "severity": "info",
+            "custom_details": {
+              "period": "January 8-14",
+              "high_load_responder": "Ginny Tonic",
+              "incidents_handled": 12,
+              "sleep_interrupts": 4,
+              "recommendation": "Reduce next week load"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Weekly Analysis", "action": "Analyze on-call load across team"},
+          {"stage": "Load Report", "action": "Generate responder load summary"},
+          {"stage": "Wellness Alert", "action": "Flag high-load responders"},
+          {"stage": "Recommendation", "action": "Suggest schedule swaps for balance"},
+          {"stage": "Adjustment", "action": "Apply approved schedule changes"}
+        ]
+      },
+      {
+        "id": "AA-001",
+        "name": "Automated Diagnostic Collection",
+        "description": "Automation Actions gather diagnostics immediately upon incident creation",
+        "severity": "critical",
+        "tags": {
+          "industry": ["technology", "saas", "ecommerce"],
+          "team_type": ["sre", "platform", "devops"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["automation_actions", "diagnostics", "enrichment"],
+          "integration": "datadog",
+          "tool_type": ["automation"],
+          "tool": ["runbook_automation"]
+        },
+        "required_features": ["automation_actions", "rba_runner"],
+        "features_demonstrated": ["automatic_diagnostics", "incident_enrichment", "reduced_mttd"],
+        "target_service": "Payments Ops",
+        "expected_priority": "P1",
+        "rules_triggered": ["Automation Action: Collect Diagnostics on P1/P2"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "High CPU on payment-service - Automation collecting diagnostics",
+            "source": "datadog",
+            "severity": "critical",
+            "custom_details": {
+              "pd_service": "Payments Ops",
+              "env": "production",
+              "automation_action": "collect-diagnostics-payment-service",
+              "runner": "runner-gamma"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Incident Created", "action": "P1 incident triggers Automation Action"},
+          {"stage": "Diagnostic Collection", "action": "RBA job gathers pod status, logs, deployment history"},
+          {"stage": "Analysis", "action": "Identify memory leak in v2.3.4"},
+          {"stage": "Results Attached", "action": "Diagnostic summary added to incident notes"},
+          {"stage": "Responder Ready", "action": "On-call arrives with full context"}
+        ]
+      },
+      {
+        "id": "AA-002",
+        "name": "Auto-Remediation with Approval Gate",
+        "description": "Automation Actions propose and execute remediation with human approval",
+        "severity": "error",
+        "tags": {
+          "industry": ["technology", "saas", "fintech"],
+          "team_type": ["sre", "platform", "devops"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["automation_actions", "remediation", "approval"],
+          "integration": "prometheus",
+          "tool_type": ["automation"],
+          "tool": ["runbook_automation"]
+        },
+        "required_features": ["automation_actions", "rba_runner", "approval_workflow"],
+        "features_demonstrated": ["auto_remediation", "approval_gates", "safe_execution"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": "P2",
+        "rules_triggered": ["Automation Action: Remediation with approval"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Memory pressure detected - automated remediation available",
+            "source": "prometheus",
+            "severity": "error",
+            "custom_details": {
+              "pd_service": "Platform - Kubernetes/Platform",
+              "env": "production",
+              "proposed_action": "Clear application cache",
+              "approval_required": true
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Alert", "action": "Memory pressure detected"},
+          {"stage": "Remediation Proposed", "action": "Clear cache recommended"},
+          {"stage": "Approval Request", "action": "Sent to on-call for approval"},
+          {"stage": "Approved", "action": "On-call approves action"},
+          {"stage": "Execution", "action": "Cache cleared, memory normalized"}
+        ]
+      },
+      {
+        "id": "AA-003",
+        "name": "Cascading Automation for Complex Issues",
+        "description": "Multiple Automation Actions chain together for complex incident response",
+        "severity": "critical",
+        "tags": {
+          "industry": ["technology", "enterprise", "fintech"],
+          "team_type": ["sre", "platform", "noc"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["automation_actions", "cascading", "complex_remediation"],
+          "integration": "datadog",
+          "tool_type": ["automation"],
+          "tool": ["runbook_automation"]
+        },
+        "required_features": ["automation_actions", "rba_runner", "workflow_automation"],
+        "features_demonstrated": ["cascading_automation", "complex_orchestration", "multi_step_remediation"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": "P1",
+        "rules_triggered": ["Automation Action: Cascading response"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Complex infrastructure issue - cascading automation engaged",
+            "source": "datadog",
+            "severity": "critical",
+            "custom_details": {
+              "pd_service": "Platform - Kubernetes/Platform",
+              "env": "production",
+              "automation_chain": ["diagnostics", "traffic_drain", "restart", "verify"]
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Trigger", "action": "Complex issue detected"},
+          {"stage": "Step 1", "action": "Diagnostics collected"},
+          {"stage": "Step 2", "action": "Traffic drained from affected pod"},
+          {"stage": "Step 3", "action": "Pod restarted with new config"},
+          {"stage": "Step 4", "action": "Health verification passed"},
+          {"stage": "Traffic Restore", "action": "Traffic restored, incident resolved"}
+        ]
+      },
+      {
+        "id": "RBA-001",
+        "name": "Interactive Database Failover Runbook",
+        "description": "Complex runbook with decision points and human checkpoints for database failover",
+        "severity": "critical",
+        "tags": {
+          "industry": ["healthcare", "fintech", "enterprise"],
+          "team_type": ["dba", "sre", "platform"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["runbook_automation", "interactive", "compliance"],
+          "integration": "prometheus",
+          "tool_type": ["automation"],
+          "tool": ["runbook_automation"]
+        },
+        "required_features": ["runbook_automation", "rba_runner", "database_access"],
+        "features_demonstrated": ["interactive_runbook", "decision_points", "compliance_documentation"],
+        "target_service": "Platform - DBRE",
+        "expected_priority": "P1",
+        "rules_triggered": ["Manual runbook invocation"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Database failover required - interactive runbook initiated",
+            "source": "manual-invocation",
+            "severity": "critical",
+            "custom_details": {
+              "pd_service": "Platform - DBRE",
+              "env": "production",
+              "runbook": "database-failover",
+              "database": "primary-postgres"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Pre-Flight Checks", "action": "Secondary healthy, replication lag 0.2s"},
+          {"stage": "Human Confirmation", "action": "Operator confirms proceed"},
+          {"stage": "Service Notification", "action": "Dependent services notified"},
+          {"stage": "Failover Execution", "action": "Secondary promoted to primary"},
+          {"stage": "Verification", "action": "Operator verifies connectivity"},
+          {"stage": "Completion", "action": "Compliance report generated, 12s downtime"}
+        ]
+      },
+      {
+        "id": "RBA-002",
+        "name": "Scheduled Maintenance Runbook",
+        "description": "RBA executes scheduled maintenance with automatic rollback on failure",
+        "severity": "info",
+        "tags": {
+          "industry": ["telecom", "enterprise", "technology"],
+          "team_type": ["noc", "platform", "sre"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["runbook_automation", "scheduled", "rollback"],
+          "integration": "prometheus",
+          "tool_type": ["automation"],
+          "tool": ["runbook_automation"]
+        },
+        "required_features": ["runbook_automation", "rba_runner", "maintenance_windows"],
+        "features_demonstrated": ["scheduled_execution", "staged_rollout", "automatic_rollback"],
+        "target_service": "Platform - Network",
+        "expected_priority": null,
+        "rules_triggered": ["Scheduled maintenance window"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Scheduled maintenance: Network equipment upgrade",
+            "source": "scheduled",
+            "severity": "info",
+            "custom_details": {
+              "pd_service": "Platform - Network",
+              "maintenance_window": "Sunday 02:00 UTC",
+              "runbook": "network-equipment-upgrade"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Window Start", "action": "Maintenance runbook auto-starts"},
+          {"stage": "Snapshot", "action": "Pre-maintenance configuration backed up"},
+          {"stage": "Stage 1", "action": "Router-edge-01 upgraded successfully"},
+          {"stage": "Stage 2", "action": "Router-edge-02 health check failed"},
+          {"stage": "Rollback", "action": "Automatic rollback triggered"},
+          {"stage": "Incident Created", "action": "Maintenance failed incident for review"}
+        ]
+      },
+      {
+        "id": "RBA-003",
+        "name": "Self-Service Runbooks for L1 Support",
+        "description": "RBAC-controlled runbooks enabling L1 to handle complex troubleshooting safely",
+        "severity": "warning",
+        "tags": {
+          "industry": ["msp", "enterprise", "saas"],
+          "team_type": ["support", "noc", "l1"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["runbook_automation", "self_service", "rbac"],
+          "integration": "uptimerobot",
+          "tool_type": ["automation"],
+          "tool": ["runbook_automation"]
+        },
+        "required_features": ["runbook_automation", "rba_runner", "rbac"],
+        "features_demonstrated": ["self_service", "guided_troubleshooting", "safe_escalation"],
+        "target_service": "App - Checkout Team",
+        "expected_priority": "P3",
+        "rules_triggered": ["L1 runbook invocation"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Customer Portal Slow Response - L1 troubleshooting",
+            "source": "uptimerobot",
+            "severity": "warning",
+            "custom_details": {
+              "pd_service": "App - Checkout Team",
+              "env": "production",
+              "runbook": "customer-portal-troubleshooting",
+              "access_level": "L1"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "L1 Receives Alert", "action": "Acknowledges and sees suggested runbooks"},
+          {"stage": "Runbook Start", "action": "Selects Slow page loads path"},
+          {"stage": "Diagnostics", "action": "CDN healthy, origin slow, database query slow"},
+          {"stage": "Root Cause", "action": "Missing index identified"},
+          {"stage": "L1 Action", "action": "Restarts app pool (temporary fix)"},
+          {"stage": "Escalation", "action": "Escalates to L2 with full context for index fix"}
+        ]
+      },
+      {
+        "id": "RBA-004",
+        "name": "Infrastructure Provisioning Runbook",
+        "description": "On-demand infrastructure provisioning with cost tracking and approval workflows",
+        "severity": "info",
+        "tags": {
+          "industry": ["technology", "saas", "enterprise"],
+          "team_type": ["devops", "platform", "sre"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["runbook_automation", "provisioning", "cost_tracking"],
+          "integration": "github_actions",
+          "tool_type": ["automation"],
+          "tool": ["runbook_automation"]
+        },
+        "required_features": ["runbook_automation", "rba_runner", "terraform"],
+        "features_demonstrated": ["self_service_infra", "cost_approval", "iac_execution"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": null,
+        "rules_triggered": ["Service request triggers provisioning"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Environment provisioning request: staging for feature-X",
+            "source": "service-request",
+            "severity": "info",
+            "custom_details": {
+              "pd_service": "Platform - Kubernetes/Platform",
+              "requestor": "dev-sarah",
+              "environment_type": "staging",
+              "estimated_cost": "$45/week"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Request Received", "action": "Developer requests staging environment"},
+          {"stage": "Cost Calculation", "action": "Estimated $45/week - auto-approved"},
+          {"stage": "Terraform Plan", "action": "12 resources to create"},
+          {"stage": "Terraform Apply", "action": "Namespace, pods, services created"},
+          {"stage": "Post-Setup", "action": "Test data seeded, monitoring configured"},
+          {"stage": "Ready", "action": "Environment URL provided, 7-day expiry set"}
+        ]
+      },
+      {
+        "id": "COMBO-001",
+        "name": "Full Incident Automation Pipeline",
+        "description": "End-to-end automation from alert correlation through remediation with continuous learning",
+        "severity": "critical",
+        "tags": {
+          "industry": ["enterprise", "technology", "fintech"],
+          "team_type": ["sre", "platform", "noc"],
+          "org_style": ["structured", "enterprise"],
+          "features": ["automation_actions", "runbook_automation", "aiops", "learning"],
+          "integration": "datadog",
+          "tool_type": ["automation", "agent"],
+          "tool": ["runbook_automation", "pagerduty_agent_sre"]
+        },
+        "required_features": ["automation_actions", "rba_runner", "aiops", "ml_patterns"],
+        "features_demonstrated": ["full_automation", "human_in_loop", "continuous_improvement"],
+        "target_service": "Platform - Kubernetes/Platform",
+        "expected_priority": "P1",
+        "rules_triggered": ["Full automation pipeline"],
+        "payload": {
+          "event_action": "trigger",
+          "payload": {
+            "summary": "Multi-tool correlation: API errors + response time degradation",
+            "source": "datadog",
+            "severity": "critical",
+            "custom_details": {
+              "pd_service": "Platform - Kubernetes/Platform",
+              "env": "production",
+              "correlated_sources": ["datadog", "newrelic"],
+              "pattern_match": "post-deployment-error-spike"
+            }
+          }
+        },
+        "orchestration_trace": [
+          {"stage": "Correlation", "action": "Datadog + New Relic alerts correlated"},
+          {"stage": "Enrichment", "action": "Diagnostics collected, deployment detected"},
+          {"stage": "Pattern Match", "action": "94% confidence - known deployment issue"},
+          {"stage": "Proposal", "action": "Rollback recommended, 100% historical success"},
+          {"stage": "Human Approval", "action": "On-call approves in 45 seconds"},
+          {"stage": "Execution", "action": "Rollback completed, health restored"},
+          {"stage": "Learning", "action": "Pattern confidence increased for future"}
+        ]
+      }
   ],
   "integrations": {
-    "prometheus": { "name": "Prometheus/Alertmanager", "scenarios": ["FREE-001", "PRO-001", "PRO-003", "DIGOPS-001", "DIGOPS-002", "DIGOPS-006", "AIOPS-002", "AIOPS-004", "EIM-004", "AUTO-001", "AUTO-002", "WF-001"] },
-    "grafana": { "name": "Grafana Cloud", "scenarios": ["FREE-002"] },
-    "datadog": { "name": "Datadog", "scenarios": ["BUS-001", "BUS-003", "BUS-005", "DIGOPS-003", "DIGOPS-005", "DIGOPS-007", "AIOPS-003", "EIM-001", "EIM-002", "EIM-005", "AUTO-003", "CSO-001", "WF-002", "WF-003"] },
-    "splunk": { "name": "Splunk SIEM", "scenarios": ["AIOPS-001", "EIM-003"] }
+    "prometheus": {
+      "name": "Prometheus/Alertmanager",
+      "scenarios": [
+        "FREE-001",
+        "PRO-001",
+        "PRO-003",
+        "DIGOPS-001",
+        "DIGOPS-002",
+        "DIGOPS-006",
+        "AIOPS-002",
+        "AIOPS-004",
+        "EIM-004",
+        "AUTO-001",
+        "AUTO-002",
+        "WF-001",
+        "SRE-003",
+        "SRE-005",
+        "SCRIBE-003",
+        "AA-002",
+        "RBA-001",
+        "RBA-002"
+      ]
+    },
+    "grafana": {
+      "name": "Grafana Cloud",
+      "scenarios": [
+        "FREE-002"
+      ]
+    },
+    "datadog": {
+      "name": "Datadog",
+      "scenarios": [
+        "BUS-001",
+        "BUS-003",
+        "BUS-005",
+        "DIGOPS-003",
+        "DIGOPS-005",
+        "DIGOPS-007",
+        "AIOPS-003",
+        "EIM-001",
+        "EIM-002",
+        "EIM-005",
+        "AUTO-003",
+        "CSO-001",
+        "WF-002",
+        "WF-003",
+        "SRE-001",
+        "SRE-002",
+        "SRE-004",
+        "SRE-006",
+        "SCRIBE-001",
+        "SCRIBE-002",
+        "AA-001",
+        "AA-003",
+        "COMBO-001"
+      ]
+    },
+    "splunk": {
+      "name": "Splunk SIEM",
+      "scenarios": [
+        "AIOPS-001",
+        "EIM-003"
+      ]
+    },
+    "slack": {
+      "name": "Slack",
+      "scenarios": [
+        "SHIFT-001",
+        "SHIFT-002",
+        "SHIFT-003"
+      ]
+    },
+    "github_actions": {
+      "name": "GitHub Actions",
+      "scenarios": [
+        "RBA-004"
+      ]
+    },
+    "uptimerobot": {
+      "name": "UptimeRobot",
+      "scenarios": [
+        "RBA-003"
+      ]
+    }
   },
   "filters": {
-    "industry": ["banking", "fintech", "healthcare", "retail", "ecommerce", "technology", "mining", "manufacturing", "energy", "telecom", "enterprise", "saas", "startup"],
-    "team_type": ["soc", "noc", "devops", "platform", "sre", "support", "dba", "ot_ops", "compliance"],
-    "org_style": ["structured", "messy", "distributed", "startup", "enterprise"],
-    "features": ["routing", "enrichment", "suppression", "priority_assignment", "severity_normalization", "suspension", "maintenance_windows", "vendor_detection", "deduplication", "escalation", "incident_tasks", "incident_roles", "automation"],
-    "integration": ["prometheus", "grafana", "datadog", "newrelic", "sentry", "splunk", "cloudwatch", "github_actions", "uptimerobot"],
-    "plan_tier": ["free", "professional", "business", "digital_operations", "enterprise_im"],
-    "addon": ["aiops", "automation_actions", "customer_service_ops", "workflow_automation", "runbook_automation"]
+    "industry": [
+      "banking",
+      "fintech",
+      "healthcare",
+      "retail",
+      "ecommerce",
+      "technology",
+      "mining",
+      "manufacturing",
+      "energy",
+      "telecom",
+      "enterprise",
+      "saas",
+      "startup",
+      "msp"
+    ],
+    "team_type": [
+      "soc",
+      "noc",
+      "devops",
+      "platform",
+      "sre",
+      "support",
+      "dba",
+      "ot_ops",
+      "compliance",
+      "l1"
+    ],
+    "org_style": [
+      "structured",
+      "messy",
+      "distributed",
+      "startup",
+      "enterprise"
+    ],
+    "features": [
+      "routing",
+      "enrichment",
+      "suppression",
+      "priority_assignment",
+      "severity_normalization",
+      "suspension",
+      "maintenance_windows",
+      "vendor_detection",
+      "deduplication",
+      "escalation",
+      "incident_tasks",
+      "incident_roles",
+      "automation",
+      "agent_sre",
+      "agent_scribe",
+      "agent_shift",
+      "autonomous_investigation",
+      "remediation",
+      "documentation",
+      "handoff",
+      "runbook_automation",
+      "self_service"
+    ],
+    "integration": [
+      "prometheus",
+      "grafana",
+      "datadog",
+      "newrelic",
+      "sentry",
+      "splunk",
+      "cloudwatch",
+      "github_actions",
+      "uptimerobot",
+      "slack"
+    ],
+    "plan_tier": [
+      "free",
+      "professional",
+      "business",
+      "digital_operations",
+      "enterprise_im"
+    ],
+    "addon": [
+      "aiops",
+      "automation_actions",
+      "customer_service_ops",
+      "workflow_automation",
+      "runbook_automation",
+      "pagerduty_agent"
+    ],
+    "tool_type": [
+      "integration",
+      "orchestration",
+      "workflow",
+      "automation",
+      "agent"
+    ],
+    "agent_type": [
+      "sre",
+      "scribe",
+      "shift"
+    ]
   }
 }

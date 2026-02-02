@@ -9,6 +9,7 @@ import TraceModal from './components/TraceModal';
 import SettingsModal from './components/SettingsModal';
 import { sendEvent, getRoutingKeys, saveRoutingKeys, getRoutingKey, getInstance, saveInstance } from './services/pagerduty';
 import { getLicenseConfig, saveLicenseConfig, filterByLicense } from './services/license';
+import { triggerNativeIntegration, isIntegrationConfigured } from './services/integrations';
 
 function App() {
   const [filters, setFilters] = useState({});
@@ -23,7 +24,7 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlFilters = {};
-    ['industry', 'team_type', 'org_style', 'features', 'integration', 'severity'].forEach(key => {
+    ['industry', 'team_type', 'org_style', 'features', 'integration', 'tool', 'tool_type', 'severity', 'agent_type'].forEach(key => {
       const value = params.get(key);
       if (value) urlFilters[key] = value.split(',');
     });
@@ -55,6 +56,34 @@ function App() {
         if (!filters.features.some(f => scenarioFeatures.includes(f))) return false;
       }
       if (filters.integration?.length && !filters.integration.includes(scenario.tags.integration)) return false;
+      if (filters.tool?.length) {
+        const scenarioTools = Array.isArray(scenario.tags.tool)
+          ? scenario.tags.tool
+          : scenario.tags.tool
+            ? [scenario.tags.tool]
+            : scenario.tags.integration
+              ? [scenario.tags.integration]
+              : [];
+        if (!filters.tool.some(t => scenarioTools.includes(t))) return false;
+      }
+      if (filters.tool_type?.length) {
+        const scenarioToolTypes = Array.isArray(scenario.tags.tool_type)
+          ? scenario.tags.tool_type
+          : scenario.tags.tool_type
+            ? [scenario.tags.tool_type]
+            : [];
+        if (!filters.tool_type.some(t => scenarioToolTypes.includes(t))) return false;
+      }
+      if (filters.agent_type?.length) {
+        const scenarioTools = Array.isArray(scenario.tags.tool) ? scenario.tags.tool : (scenario.tags.tool ? [scenario.tags.tool] : []);
+        const scenarioFeatures = scenario.tags.features || [];
+        const hasAgentType = filters.agent_type.some(agentType => {
+          const toolMatch = scenarioTools.some(t => t === `pagerduty_agent_${agentType}`);
+          const featureMatch = scenarioFeatures.some(f => f === `agent_${agentType}`);
+          return toolMatch || featureMatch;
+        });
+        if (!hasAgentType) return false;
+      }
       if (filters.severity?.length && !filters.severity.includes(scenario.severity)) return false;
       return true;
     });
@@ -90,15 +119,44 @@ function App() {
   };
 
   const handleTrigger = async (scenario) => {
-    const key = getRoutingKey(scenario.tags.integration);
+    const integration = scenario.tags?.integration;
+    const nativeConfigured = isIntegrationConfigured(integration);
+
+    if (nativeConfigured) {
+      try {
+        const nativeResult = await triggerNativeIntegration(scenario);
+
+        if (nativeResult.nativeTriggered) {
+          showNotification(
+            `${scenario.id} sent via ${nativeResult.integration}! ${nativeResult.message}`,
+            'success'
+          );
+          return;
+        }
+
+        if (!nativeResult.requiresFallback) {
+          return;
+        }
+
+        console.log(`Native integration fallback: ${nativeResult.reason}`);
+      } catch (error) {
+        console.error('Native integration error:', error);
+      }
+    }
+
+    const key = getRoutingKey(integration);
     if (!key) {
-      showNotification('No routing key configured for ' + scenario.tags.integration, 'error');
+      showNotification(
+        `No routing key configured for ${integration}. Configure in Settings → PagerDuty tab.`,
+        'error'
+      );
       return;
     }
 
     try {
       const response = await sendEvent(scenario, key);
-      showNotification(`${scenario.id} sent! Dedup: ${response.dedup_key}`, 'success');
+      const source = nativeConfigured ? ' (Events API fallback)' : '';
+      showNotification(`${scenario.id} sent${source}! Dedup: ${response.dedup_key}`, 'success');
     } catch (error) {
       showNotification(`Failed: ${error.message}`, 'error');
     }

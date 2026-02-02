@@ -149,10 +149,10 @@ export const FEATURE_HIERARCHY = {
     'Enterprise Incident Management': {
       features: [
         { key: 'incident_tasks', name: 'Incident Tasks', plans: ['enterprise_im'], addons: [] },
-        { key: 'incident_roles', name: 'Incident Roles', plans: ['enterprise_im'], addons: [] },
-        { key: 'incident_types', name: 'Incident Types', plans: ['enterprise_im'], addons: [] },
-        { key: 'status_updates', name: 'Status Updates', plans: ['enterprise_im'], addons: [] },
-        { key: 'incident_timeline', name: 'Incident Timeline', plans: ['enterprise_im'], addons: [] }
+        { key: 'incident_roles', name: 'Incident Roles', plans: ['professional'], addons: [] },
+        { key: 'incident_types', name: 'Custom Incident Types', plans: ['business'], addons: [] },
+        { key: 'status_updates', name: 'Status Updates', plans: ['professional'], addons: [] },
+        { key: 'incident_timeline', name: 'Incident Timeline', plans: ['professional'], addons: [] }
       ]
     }
   },
@@ -218,7 +218,7 @@ export const FEATURE_HIERARCHY = {
       'ServiceNow': {
         features: [
           { key: 'servicenow_sync', name: 'ServiceNow Sync', plans: ['business'], addons: [] },
-          { key: 'servicenow_bidirectional', name: 'Bi-directional ServiceNow', plans: ['business'], addons: [] }
+          { key: 'servicenow_bidirectional', name: 'Bi-directional ServiceNow (ITSM)', plans: ['enterprise_im'], addons: [] }
         ]
       },
       'Jira': {

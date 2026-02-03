@@ -36,7 +36,8 @@ const externalTools = [
     { name: 'uptimerobot_api_key', label: 'API Key', placeholder: 'u1234567-...' }
   ]},
   { key: 'cloudwatch', name: 'AWS CloudWatch', icon: '☁️', fields: [
-    { name: 'aws_api_key', label: 'API Gateway Key', placeholder: 'Your AWS API key' },
+    { name: 'aws_access_key', label: 'Access Key ID', placeholder: 'AKIA...' },
+    { name: 'aws_secret_key', label: 'Secret Access Key', placeholder: 'Your AWS secret key' },
     { name: 'aws_region', label: 'Region', placeholder: 'us-east-1' }
   ]}
 ];

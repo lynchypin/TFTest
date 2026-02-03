@@ -1,20 +1,20 @@
 export function getCloudWatchCredentials() {
   return {
-    accessKeyId: localStorage.getItem('aws_access_key_id') || '',
-    secretAccessKey: localStorage.getItem('aws_secret_access_key') || '',
+    accessKeyId: localStorage.getItem('aws_access_key') || '',
+    secretAccessKey: localStorage.getItem('aws_secret_key') || '',
     region: localStorage.getItem('aws_region') || 'us-east-1'
   };
 }
 
 export function saveCloudWatchCredentials(accessKeyId, secretAccessKey, region) {
-  if (accessKeyId) localStorage.setItem('aws_access_key_id', accessKeyId);
-  if (secretAccessKey) localStorage.setItem('aws_secret_access_key', secretAccessKey);
+  if (accessKeyId) localStorage.setItem('aws_access_key', accessKeyId);
+  if (secretAccessKey) localStorage.setItem('aws_secret_key', secretAccessKey);
   if (region) localStorage.setItem('aws_region', region);
 }
 
 export function clearCloudWatchCredentials() {
-  localStorage.removeItem('aws_access_key_id');
-  localStorage.removeItem('aws_secret_access_key');
+  localStorage.removeItem('aws_access_key');
+  localStorage.removeItem('aws_secret_key');
   localStorage.removeItem('aws_region');
 }
 

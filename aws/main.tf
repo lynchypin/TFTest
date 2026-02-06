@@ -107,6 +107,12 @@ variable "newrelic_account_id" {
   default = ""
 }
 
+variable "grafana_api_key" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
 locals {
   function_name           = "demo-simulator-orchestrator"
   lifecycle_function_name = "demo-simulator-lifecycle"

@@ -700,10 +700,203 @@ def perform_responder_action(incident_id: str, user: Dict, action_type: str, pd:
         state.update(incident_id, {'responder_actions': responder_actions})
 
 
+def trigger_datadog(scenario: Dict) -> Dict:
+    api_key = os.environ.get('DATADOG_API_KEY', '')
+    site = os.environ.get('DATADOG_SITE', 'us5.datadoghq.com')
+
+    if not api_key:
+        return {'success': False, 'error': 'DATADOG_API_KEY not configured'}
+
+    event = {
+        'title': f"[DEMO] {scenario.get('title', 'Demo Incident')}",
+        'text': scenario.get('description', 'Demo incident triggered from PagerDuty Demo Picker'),
+        'priority': 'normal',
+        'alert_type': 'error',
+        'source_type_name': 'pagerduty_demo',
+        'tags': [
+            f"scenario:{scenario.get('id', 'unknown')}",
+            f"integration:{scenario.get('integration', 'datadog')}",
+            'demo:true'
+        ]
+    }
+
+    try:
+        resp = requests.post(
+            f'https://api.{site}/api/v1/events',
+            headers={'DD-API-KEY': api_key, 'Content-Type': 'application/json'},
+            json=event,
+            timeout=15
+        )
+        if resp.ok:
+            return {'success': True, 'response': resp.json()}
+        return {'success': False, 'error': f'Datadog API returned {resp.status_code}: {resp.text}'}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+
+def trigger_grafana(scenario: Dict) -> Dict:
+    api_key = os.environ.get('GRAFANA_API_KEY', '')
+    url = os.environ.get('GRAFANA_URL', '')
+
+    if not api_key or not url:
+        return {'success': False, 'error': 'GRAFANA_API_KEY or GRAFANA_URL not configured'}
+
+    annotation = {
+        'text': f"[DEMO] {scenario.get('title', 'Demo Incident')}: {scenario.get('description', '')}",
+        'tags': ['demo', 'pagerduty', scenario.get('id', 'unknown')],
+        'time': int(datetime.now(timezone.utc).timestamp() * 1000)
+    }
+
+    try:
+        resp = requests.post(
+            f'{url}/api/annotations',
+            headers={'Authorization': f'Bearer {api_key}', 'Content-Type': 'application/json'},
+            json=annotation,
+            timeout=15
+        )
+        if resp.ok:
+            return {'success': True, 'response': resp.json()}
+        return {'success': False, 'error': f'Grafana API returned {resp.status_code}: {resp.text}'}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+
+def trigger_newrelic(scenario: Dict) -> Dict:
+    api_key = os.environ.get('NEWRELIC_API_KEY', '')
+    account_id = os.environ.get('NEWRELIC_ACCOUNT_ID', '')
+
+    if not api_key:
+        return {'success': False, 'error': 'NEWRELIC_API_KEY not configured'}
+
+    event = {
+        'eventType': 'PagerDutyDemo',
+        'title': f"[DEMO] {scenario.get('title', 'Demo Incident')}",
+        'description': scenario.get('description', 'Demo incident triggered'),
+        'scenarioId': scenario.get('id', 'unknown'),
+        'integration': scenario.get('integration', 'newrelic'),
+        'demo': True
+    }
+
+    try:
+        url = f'https://insights-collector.newrelic.com/v1/accounts/{account_id}/events' if account_id else 'https://insights-collector.newrelic.com/v1/events'
+        resp = requests.post(
+            url,
+            headers={'Api-Key': api_key, 'Content-Type': 'application/json'},
+            json=event,
+            timeout=15
+        )
+        if resp.ok:
+            return {'success': True, 'response': resp.json() if resp.text else {'status': 'accepted'}}
+        return {'success': False, 'error': f'New Relic API returned {resp.status_code}: {resp.text}'}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+
+def trigger_cloudwatch(scenario: Dict) -> Dict:
+    try:
+        cloudwatch = boto3.client('cloudwatch')
+        metric_name = scenario.get('metric_name', 'DemoIncidentMetric')
+        namespace = os.environ.get('CLOUDWATCH_NAMESPACE', 'PagerDutyDemo')
+
+        cloudwatch.put_metric_data(
+            Namespace=namespace,
+            MetricData=[{
+                'MetricName': metric_name,
+                'Value': scenario.get('metric_value', 100),
+                'Unit': 'Count',
+                'Dimensions': [
+                    {'Name': 'ScenarioId', 'Value': scenario.get('id', 'unknown')},
+                    {'Name': 'Demo', 'Value': 'true'}
+                ]
+            }]
+        )
+        return {'success': True, 'message': f'Published metric {metric_name} to {namespace}'}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+
+def trigger_pagerduty_events(scenario: Dict) -> Dict:
+    routing_key = scenario.get('routing_key') or os.environ.get('PAGERDUTY_ROUTING_KEY', '')
+
+    if not routing_key:
+        return {'success': False, 'error': 'No routing key provided or configured'}
+
+    payload = {
+        'routing_key': routing_key,
+        'event_action': 'trigger',
+        'dedup_key': f"demo-{scenario.get('id', 'unknown')}-{int(datetime.now().timestamp())}",
+        'payload': {
+            'summary': f"[DEMO] {scenario.get('title', 'Demo Incident')}",
+            'severity': scenario.get('severity', 'error'),
+            'source': scenario.get('integration', 'demo-picker'),
+            'custom_details': {
+                'scenario_id': scenario.get('id'),
+                'scenario_name': scenario.get('title'),
+                'description': scenario.get('description', ''),
+                'triggered_by': 'Demo Picker UI'
+            }
+        }
+    }
+
+    if scenario.get('service_key'):
+        payload['payload']['custom_details']['service_key'] = scenario.get('service_key')
+
+    try:
+        resp = requests.post(
+            PAGERDUTY_EVENTS_URL,
+            json=payload,
+            timeout=15
+        )
+        if resp.ok:
+            return {'success': True, 'response': resp.json()}
+        return {'success': False, 'error': f'PagerDuty Events API returned {resp.status_code}: {resp.text}'}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+
+def handle_trigger(body: Dict) -> Dict:
+    integration = body.get('integration', '').lower()
+    scenario = body.get('scenario', {})
+    use_fallback = body.get('use_fallback', False)
+
+    if not scenario:
+        return {'success': False, 'error': 'No scenario provided'}
+
+    result = {'integration': integration, 'fallback_used': False}
+
+    if use_fallback:
+        trigger_result = trigger_pagerduty_events(scenario)
+        result['fallback_used'] = True
+    else:
+        triggers = {
+            'datadog': trigger_datadog,
+            'grafana': trigger_grafana,
+            'newrelic': trigger_newrelic,
+            'cloudwatch': trigger_cloudwatch,
+            'pagerduty': trigger_pagerduty_events,
+        }
+
+        trigger_fn = triggers.get(integration)
+        if trigger_fn:
+            trigger_result = trigger_fn(scenario)
+            if not trigger_result.get('success'):
+                logger.warning(f"Integration {integration} failed: {trigger_result.get('error')}. Using fallback.")
+                trigger_result = trigger_pagerduty_events(scenario)
+                result['fallback_used'] = True
+                result['original_error'] = trigger_result.get('error')
+        else:
+            trigger_result = trigger_pagerduty_events(scenario)
+            result['fallback_used'] = True
+            result['reason'] = f'Integration {integration} not supported, using PagerDuty Events API'
+
+    result.update(trigger_result)
+    return result
+
+
 def handle_api_request(event: Dict) -> Dict:
     path = event.get('rawPath', event.get('path', ''))
     method = event.get('requestContext', {}).get('http', {}).get('method', event.get('httpMethod', 'GET'))
-    
+
     try:
         body = json.loads(event.get('body', '{}') or '{}')
     except json.JSONDecodeError:
@@ -775,10 +968,25 @@ def handle_api_request(event: Dict) -> Dict:
         else:
             active = state.get_active_demos()
             return {'statusCode': 200, 'headers': cors_headers, 'body': json.dumps({'active_demos': active, 'count': len(active)})}
-    
+
+    elif '/trigger' in path and method == 'POST':
+        result = handle_trigger(body)
+        status_code = 200 if result.get('success') else 400
+        return {'statusCode': status_code, 'headers': cors_headers, 'body': json.dumps(result)}
+
+    elif '/integrations' in path and method == 'GET':
+        integrations = {
+            'datadog': {'configured': bool(os.environ.get('DATADOG_API_KEY')), 'site': os.environ.get('DATADOG_SITE', 'us5.datadoghq.com')},
+            'grafana': {'configured': bool(os.environ.get('GRAFANA_API_KEY') and os.environ.get('GRAFANA_URL'))},
+            'newrelic': {'configured': bool(os.environ.get('NEWRELIC_API_KEY'))},
+            'cloudwatch': {'configured': True},
+            'pagerduty': {'configured': bool(os.environ.get('PAGERDUTY_ROUTING_KEY'))}
+        }
+        return {'statusCode': 200, 'headers': cors_headers, 'body': json.dumps({'integrations': integrations})}
+
     elif '/health' in path:
         return {'statusCode': 200, 'headers': cors_headers, 'body': json.dumps({'status': 'healthy', 'timestamp': datetime.now(timezone.utc).isoformat()})}
-    
+
     return {'statusCode': 404, 'headers': cors_headers, 'body': json.dumps({'error': 'Not found'})}
 
 

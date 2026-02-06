@@ -71,3 +71,25 @@ export async function checkOrchestratorHealth() {
     return { healthy: false, error: error.message };
   }
 }
+
+export async function triggerIncident(scenario, integration, useFallback = false) {
+  return callOrchestrator('/trigger', 'POST', {
+    integration,
+    scenario: {
+      id: scenario.id,
+      title: scenario.name || scenario.title,
+      description: scenario.description || '',
+      severity: scenario.payload?.payload?.severity || 'error',
+      integration: integration,
+      routing_key: scenario.routing_key,
+      service_key: scenario.service_key,
+      metric_name: scenario.metric_name,
+      metric_value: scenario.metric_value
+    },
+    use_fallback: useFallback
+  });
+}
+
+export async function getConfiguredIntegrations() {
+  return callOrchestrator('/integrations', 'GET');
+}

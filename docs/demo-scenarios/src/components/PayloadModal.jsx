@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getFullPayload, maskKey } from '../services/pagerduty';
 import { getPagerDutyCredentials } from '../services/integrations';
 import { FEATURES, getScenarioLicenseInfo, getPlanDisplay, ADDONS } from '../services/license';
+import { hasOrchestratorConfigured, triggerIncident } from '../services/orchestrator';
 
 const FEATURE_TIER_COLORS = {
   tier1: { bg: 'bg-cyan-900/50', text: 'text-cyan-300' },
@@ -130,8 +131,32 @@ export default function PayloadModal({ scenario, onClose, onSend }) {
   };
 
   const handleSend = async () => {
+    const orchestratorConfigured = hasOrchestratorConfigured();
+
+    if (orchestratorConfigured) {
+      setSending(true);
+      setResult(null);
+      try {
+        const useFallback = payloadType === 'pagerduty';
+        const response = await triggerIncident(scenario, integration, useFallback);
+        if (response.success) {
+          let message = `Event sent via ${response.fallback_used ? 'PagerDuty fallback' : integration}`;
+          if (response.reason) message += ` (${response.reason})`;
+          setResult({ success: true, message, dedup_key: response.response?.dedup_key });
+          handleReset();
+        } else {
+          setResult({ success: false, message: response.error || 'Failed to send event' });
+        }
+      } catch (error) {
+        setResult({ success: false, message: error.message });
+      } finally {
+        setSending(false);
+      }
+      return;
+    }
+
     if (!routingKey) {
-      setResult({ success: false, message: 'No fallback routing key configured. Add one in Settings → PagerDuty tab.' });
+      setResult({ success: false, message: 'No fallback routing key configured. Add one in Settings → PagerDuty tab, or configure orchestrator URL.' });
       return;
     }
 

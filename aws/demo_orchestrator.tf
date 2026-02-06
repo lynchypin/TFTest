@@ -86,6 +86,18 @@ resource "aws_iam_role_policy" "demo_orchestrator_policy" {
           "iam:PassRole"
         ]
         Resource = aws_iam_role.scheduler_role.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "cloudwatch:PutMetricData"
+        ]
+        Resource = "*"
+        Condition = {
+          StringEquals = {
+            "cloudwatch:namespace" = "PagerDutyDemo"
+          }
+        }
       }
     ]
   })
@@ -136,12 +148,20 @@ resource "aws_lambda_function" "demo_orchestrator" {
 
   environment {
     variables = {
-      PAGERDUTY_TOKEN    = var.pagerduty_admin_token
-      SLACK_BOT_TOKEN    = var.slack_bot_token
-      DEMO_STATE_TABLE   = aws_dynamodb_table.demo_state.name
-      SELF_LAMBDA_ARN    = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:demo-simulator-orchestrator-v2"
-      SCHEDULER_ROLE_ARN = aws_iam_role.scheduler_role.arn
-      WEBHOOK_SECRET     = var.webhook_secret
+      PAGERDUTY_TOKEN      = var.pagerduty_admin_token
+      SLACK_BOT_TOKEN      = var.slack_bot_token
+      DEMO_STATE_TABLE     = aws_dynamodb_table.demo_state.name
+      SELF_LAMBDA_ARN      = "arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:demo-simulator-orchestrator-v2"
+      SCHEDULER_ROLE_ARN   = aws_iam_role.scheduler_role.arn
+      WEBHOOK_SECRET       = var.webhook_secret
+      DATADOG_API_KEY      = var.datadog_api_key
+      DATADOG_SITE         = var.datadog_site
+      GRAFANA_API_KEY      = var.grafana_api_key
+      GRAFANA_URL          = var.grafana_url
+      NEWRELIC_API_KEY     = var.newrelic_api_key
+      NEWRELIC_ACCOUNT_ID  = var.newrelic_account_id
+      PAGERDUTY_ROUTING_KEY = var.pagerduty_routing_key
+      CLOUDWATCH_NAMESPACE = "PagerDutyDemo"
     }
   }
 

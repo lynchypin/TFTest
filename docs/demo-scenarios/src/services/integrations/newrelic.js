@@ -71,6 +71,9 @@ export async function sendNewRelicEvent(scenario) {
       message: `Event sent to account ${accountId}`
     };
   } catch (error) {
+    if (error.message.includes('Failed to fetch') || error.message.includes('CORS') || error.message.includes('NetworkError')) {
+      return { requiresFallback: true, reason: 'New Relic API blocked by CORS - using PagerDuty fallback' };
+    }
     return { requiresFallback: true, reason: error.message };
   }
 }

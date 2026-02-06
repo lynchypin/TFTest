@@ -9,7 +9,44 @@ const PLAN_COLORS = {
   enterprise_im: { bg: 'bg-emerald-900/50', text: 'text-emerald-300', border: 'border-emerald-700/50' }
 };
 
-const ADDON_COLOR = { bg: 'bg-purple-900/50', text: 'text-purple-300', border: 'border-purple-700/50' };
+const ADDON_COLORS = {
+  aiops: { bg: 'bg-purple-900/50', text: 'text-purple-300', border: 'border-purple-700/50' },
+  automation_actions: { bg: 'bg-orange-900/50', text: 'text-orange-300', border: 'border-orange-700/50' },
+  status_pages: { bg: 'bg-cyan-900/50', text: 'text-cyan-300', border: 'border-cyan-700/50' },
+  runbook_automation: { bg: 'bg-rose-900/50', text: 'text-rose-300', border: 'border-rose-700/50' }
+};
+
+const TOOL_TYPE_COLORS = {
+  integration: { bg: 'bg-blue-900/50', text: 'text-blue-300', border: 'border-blue-700/50' },
+  extension: { bg: 'bg-green-900/50', text: 'text-green-300', border: 'border-green-700/50' },
+  chatops: { bg: 'bg-pink-900/50', text: 'text-pink-300', border: 'border-pink-700/50' },
+  bidirectional: { bg: 'bg-yellow-900/50', text: 'text-yellow-300', border: 'border-yellow-700/50' },
+  automation: { bg: 'bg-orange-900/50', text: 'text-orange-300', border: 'border-orange-700/50' },
+  agent: { bg: 'bg-purple-900/50', text: 'text-purple-300', border: 'border-purple-700/50' }
+};
+
+const TOOL_DISPLAY_NAMES = {
+  prometheus: 'Prometheus',
+  grafana: 'Grafana',
+  datadog: 'Datadog',
+  newrelic: 'New Relic',
+  sentry: 'Sentry',
+  splunk: 'Splunk',
+  cloudwatch: 'CloudWatch',
+  github_actions: 'GitHub Actions',
+  uptimerobot: 'UptimeRobot',
+  slack: 'Slack',
+  teams: 'Teams',
+  jira: 'Jira',
+  servicenow: 'ServiceNow',
+  statuspage: 'Statuspage',
+  zoom: 'Zoom',
+  pagerduty_api: 'PagerDuty API',
+  runbook_automation: 'Runbook Automation',
+  pagerduty_agent_sre: 'SRE Agent',
+  pagerduty_agent_scribe: 'Scribe Agent',
+  pagerduty_agent_shift: 'Shift Agent'
+};
 
 const FEATURE_TIER_COLORS = {
   tier1: { bg: 'bg-cyan-900/50', text: 'text-cyan-300' },
@@ -19,7 +56,7 @@ const FEATURE_TIER_COLORS = {
 
 export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onViewTrace }) {
   const [showFeaturesModal, setShowFeaturesModal] = useState(false);
-  
+
   const featuresDemo = scenario.features_demonstrated || scenario.required_features || [];
   const licenseInfo = getScenarioLicenseInfo(scenario);
   const planDisplay = getPlanDisplay(licenseInfo.minimumPlan);
@@ -28,7 +65,7 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
   const requiredAddons = licenseInfo.requiredAddons || [];
   const addonLabels = requiredAddons.map(key => {
     const addon = ADDONS.find(a => a.key === key);
-    return addon?.label || key;
+    return { key, label: addon?.shortLabel || addon?.label || key };
   });
 
   const getFeatureTier = (featureKey, index) => {
@@ -48,6 +85,19 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
     return name.substring(0, maxLen - 1) + '…';
   };
 
+  const getToolTypeLabel = (type, tools) => {
+    const mainTool = Array.isArray(tools) ? tools[0] : tools;
+    const toolName = TOOL_DISPLAY_NAMES[mainTool] || mainTool;
+
+    if (type === 'integration') return `→ ${toolName}`;
+    if (type === 'extension') return `← ${toolName}`;
+    if (type === 'chatops') return `💬 ${toolName}`;
+    if (type === 'bidirectional') return `↔ ${toolName}`;
+    if (type === 'automation') return `⚙️ ${toolName}`;
+    if (type === 'agent') return `🤖 ${toolName}`;
+    return type;
+  };
+
   return (
     <>
       <div className="group bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-black/50 hover:-translate-y-1 hover:border-gray-700">
@@ -63,33 +113,29 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
             <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg border ${planColor.bg} ${planColor.text} ${planColor.border}`}>
               {truncateName(planDisplay.label, 20)}
             </span>
-            {addonLabels.map((label, idx) => (
-              <span
-                key={idx}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-lg border ${ADDON_COLOR.bg} ${ADDON_COLOR.text} ${ADDON_COLOR.border}`}
-              >
-                {truncateName(label, 18)}
-              </span>
-            ))}
-            {scenario.tags?.tool_type && (
-              (Array.isArray(scenario.tags.tool_type) ? scenario.tags.tool_type : [scenario.tags.tool_type]).map((type, idx) => (
+            {addonLabels.map(({ key, label }, idx) => {
+              const addonColor = ADDON_COLORS[key] || ADDON_COLORS.aiops;
+              return (
                 <span
-                  key={`tt-${idx}`}
-                  className={`px-2 py-0.5 text-xs font-semibold rounded-lg border ${
-                    type === 'integration' ? 'bg-blue-900/50 text-blue-300 border-blue-700/50' :
-                    type === 'extension' ? 'bg-green-900/50 text-green-300 border-green-700/50' :
-                    type === 'chatops' ? 'bg-pink-900/50 text-pink-300 border-pink-700/50' :
-                    type === 'bidirectional' ? 'bg-yellow-900/50 text-yellow-300 border-yellow-700/50' :
-                    'bg-gray-800 text-gray-400 border-gray-700'
-                  }`}
+                  key={idx}
+                  className={`px-2.5 py-1 text-xs font-semibold rounded-lg border ${addonColor.bg} ${addonColor.text} ${addonColor.border}`}
                 >
-                  {type === 'integration' ? '→ Integration' :
-                   type === 'extension' ? '← Extension' :
-                   type === 'chatops' ? '💬 ChatOps' :
-                   type === 'bidirectional' ? '↔ Bidirectional' :
-                   type}
+                  {truncateName(label, 18)}
                 </span>
-              ))
+              );
+            })}
+            {scenario.tags?.tool_type && (
+              (Array.isArray(scenario.tags.tool_type) ? scenario.tags.tool_type : [scenario.tags.tool_type]).map((type, idx) => {
+                const toolTypeColor = TOOL_TYPE_COLORS[type] || TOOL_TYPE_COLORS.integration;
+                return (
+                  <span
+                    key={`tt-${idx}`}
+                    className={`px-2 py-0.5 text-xs font-semibold rounded-lg border ${toolTypeColor.bg} ${toolTypeColor.text} ${toolTypeColor.border}`}
+                  >
+                    {getToolTypeLabel(type, scenario.tags?.tool)}
+                  </span>
+                );
+              })
             )}
           </div>
 

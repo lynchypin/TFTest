@@ -1,6 +1,38 @@
 import { useState, useMemo } from 'react';
 import { FEATURE_HIERARCHY, isFeatureAvailable } from '../services/license';
 
+const TOOL_TYPE_COLORS = {
+  integration: { bg: 'bg-blue-900/50', text: 'text-blue-300', border: 'border-blue-700/50', bgLight: 'bg-blue-900/30' },
+  extension: { bg: 'bg-green-900/50', text: 'text-green-300', border: 'border-green-700/50', bgLight: 'bg-green-900/30' },
+  chatops: { bg: 'bg-pink-900/50', text: 'text-pink-300', border: 'border-pink-700/50', bgLight: 'bg-pink-900/30' },
+  bidirectional: { bg: 'bg-yellow-900/50', text: 'text-yellow-300', border: 'border-yellow-700/50', bgLight: 'bg-yellow-900/30' },
+  automation: { bg: 'bg-orange-900/50', text: 'text-orange-300', border: 'border-orange-700/50', bgLight: 'bg-orange-900/30' },
+  agent: { bg: 'bg-purple-900/50', text: 'text-purple-300', border: 'border-purple-700/50', bgLight: 'bg-purple-900/30' }
+};
+
+const TOOL_DISPLAY_NAMES = {
+  prometheus: 'Prometheus',
+  grafana: 'Grafana',
+  datadog: 'Datadog',
+  newrelic: 'New Relic',
+  sentry: 'Sentry',
+  splunk: 'Splunk',
+  cloudwatch: 'CloudWatch',
+  github_actions: 'GitHub Actions',
+  uptimerobot: 'UptimeRobot',
+  slack: 'Slack',
+  teams: 'Teams',
+  jira: 'Jira',
+  servicenow: 'ServiceNow',
+  statuspage: 'Statuspage',
+  zoom: 'Zoom',
+  pagerduty_api: 'PagerDuty API',
+  runbook_automation: 'Runbook Automation',
+  pagerduty_agent_sre: 'SRE Agent',
+  pagerduty_agent_scribe: 'Scribe Agent',
+  pagerduty_agent_shift: 'Shift Agent'
+};
+
 const FILTER_CONFIG = {
   industry: {
     label: 'Industry',
@@ -16,7 +48,7 @@ const FILTER_CONFIG = {
   },
   tool_type: {
     label: 'Tool Type',
-    options: ['integration', 'extension', 'chatops', 'bidirectional', 'orchestration', 'workflow', 'automation', 'agent']
+    options: ['integration', 'extension', 'chatops', 'bidirectional', 'automation', 'agent']
   },
   agent_type: {
     label: 'PagerDuty Agent',
@@ -310,22 +342,35 @@ export default function FilterPanel({ filters, scenarios, filteredScenarios, onF
                   const isSelected = (filters[key] || []).includes(option);
                   const isAvailable = availableOptions[key]?.has(option);
                   const severityColor = key === 'severity' ? SEVERITY_COLORS[option] : null;
-                  
+                  const toolTypeColor = key === 'tool_type' ? TOOL_TYPE_COLORS[option] : null;
+                  const displayName = key === 'tool' ? (TOOL_DISPLAY_NAMES[option] || formatLabel(option)) : formatLabel(option);
+
+                  const getButtonClasses = () => {
+                    if (!isAvailable) {
+                      return 'bg-gray-900 text-gray-600 border-gray-800 cursor-not-allowed opacity-50';
+                    }
+                    if (severityColor) {
+                      return isSelected ? severityColor.active : severityColor.inactive;
+                    }
+                    if (toolTypeColor) {
+                      return isSelected
+                        ? `${toolTypeColor.bg} ${toolTypeColor.text} ${toolTypeColor.border}`
+                        : `${toolTypeColor.bgLight} ${toolTypeColor.text} ${toolTypeColor.border} hover:${toolTypeColor.bg}`;
+                    }
+                    return isSelected
+                      ? 'bg-indigo-600 text-white border-indigo-600'
+                      : 'bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700 hover:text-gray-300';
+                  };
+
                   return (
                     <button
                       key={option}
                       onClick={() => isAvailable && handleToggle(key, option)}
                       disabled={!isAvailable}
-                      className={`px-2 py-0.5 text-xs rounded-md transition-all border ${
-                        !isAvailable
-                          ? 'bg-gray-900 text-gray-600 border-gray-800 cursor-not-allowed opacity-50'
-                          : isSelected
-                          ? severityColor?.active || 'bg-indigo-600 text-white border-indigo-600'
-                          : severityColor?.inactive || 'bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700 hover:text-gray-300'
-                      }`}
+                      className={`px-2 py-0.5 text-xs rounded-md transition-all border ${getButtonClasses()}`}
                       title={!isAvailable ? 'No scenarios available with current filters' : ''}
                     >
-                      {formatLabel(option)}
+                      {displayName}
                     </button>
                   );
                 })}

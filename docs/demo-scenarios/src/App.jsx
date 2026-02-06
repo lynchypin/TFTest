@@ -19,7 +19,7 @@ function App() {
   const [selectedScenario, setSelectedScenario] = useState(null);
   const [modalType, setModalType] = useState(null);
   const [notification, setNotification] = useState(null);
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const [demoPaused, setDemoPaused] = useState(false);
   const [activeDemos, setActiveDemos] = useState(0);
   const [isLoading, setIsLoading] = useState(false);

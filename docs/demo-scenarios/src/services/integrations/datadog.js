@@ -53,26 +53,39 @@ export function hasDatadogCredentials() {
 
 export async function sendDatadogEvent(scenario) {
   const { apiKey } = getDatadogCredentials();
-  
+
   if (!apiKey) {
-    throw new Error('Datadog API key not configured');
+    return {
+      requiresFallback: true,
+      reason: 'Datadog API key not configured - using PagerDuty fallback'
+    };
   }
 
   const payload = scenario.payload.payload;
   const metricConfig = getMetricForScenario(scenario);
-  
-  const eventResponse = await sendEvent(apiKey, scenario, payload);
-  const metricResponse = await sendMetricSpike(apiKey, scenario, payload, metricConfig);
 
-  return {
-    status: 'success',
-    message: `Event + metric spike (${metricConfig.metric}=${metricConfig.spikeValue}) sent to Datadog`,
-    event_id: eventResponse.event?.id,
-    metric: metricConfig.metric,
-    spikeValue: metricConfig.spikeValue,
-    threshold: metricConfig.threshold,
-    integration: 'datadog'
-  };
+  try {
+    const eventResponse = await sendEvent(apiKey, scenario, payload);
+    const metricResponse = await sendMetricSpike(apiKey, scenario, payload, metricConfig);
+
+    return {
+      status: 'success',
+      message: `Event + metric spike (${metricConfig.metric}=${metricConfig.spikeValue}) sent to Datadog`,
+      event_id: eventResponse.event?.id,
+      metric: metricConfig.metric,
+      spikeValue: metricConfig.spikeValue,
+      threshold: metricConfig.threshold,
+      integration: 'datadog'
+    };
+  } catch (error) {
+    if (error.message.includes('Failed to fetch') || error.message.includes('CORS') || error.message.includes('NetworkError')) {
+      return {
+        requiresFallback: true,
+        reason: 'Datadog API blocked by CORS (browser security) - using PagerDuty fallback'
+      };
+    }
+    throw error;
+  }
 }
 
 async function sendEvent(apiKey, scenario, payload) {

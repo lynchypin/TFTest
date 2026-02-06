@@ -2,8 +2,8 @@ export const PLANS = [
   { key: null, label: 'All Plans (No Filter)', color: 'gray' },
   { key: 'professional', label: 'Professional', color: 'blue' },
   { key: 'business', label: 'Business', color: 'purple' },
-  { key: 'digital_operations', label: 'Digital Operations', color: 'orange' },
-  { key: 'enterprise_im', label: 'Enterprise', color: 'green' }
+  { key: 'digital_operations', label: 'Dig Ops', color: 'orange' },
+  { key: 'enterprise_im', label: 'EIM', color: 'green' }
 ];
 
 export const PLAN_RANK = {
@@ -15,10 +15,9 @@ export const PLAN_RANK = {
 
 export const ADDONS = [
   { key: 'aiops', label: 'AIOps', shortLabel: 'AIOps', description: 'Event Intelligence, Noise Reduction & Automation' },
-  { key: 'automation_actions', label: 'Automation Actions', shortLabel: 'Actions', description: 'Automated Diagnostics & Remediation' },
-  { key: 'status_pages', label: 'Status Pages', shortLabel: 'Status', description: 'Internal & External Status Communication' },
-  { key: 'incident_workflows', label: 'Incident Workflows', shortLabel: 'Workflows', description: 'Advanced Workflow Automation' },
-  { key: 'runbook_automation', label: 'Runbook Automation', shortLabel: 'Runbook', description: 'Process Automation Integration' }
+  { key: 'automation_actions', label: 'Automation Actions', shortLabel: 'AA', description: 'Automated Diagnostics & Remediation' },
+  { key: 'status_pages', label: 'Status Pages', shortLabel: 'Status Pages', description: 'Internal & External Status Communication' },
+  { key: 'runbook_automation', label: 'Runbook Automation', shortLabel: 'RBA', description: 'Process Automation Integration' }
 ];
 
 export const FEATURE_HIERARCHY = {

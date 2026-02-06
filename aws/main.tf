@@ -61,23 +61,28 @@ variable "slack_channel" {
 }
 
 variable "routing_key_dbre" {
-  type    = string
-  default = "R02HFHFV8Z3RZBCUIWLKN5NBDM0YXWDR"
+  type      = string
+  sensitive = true
 }
 
 variable "routing_key_api" {
-  type    = string
-  default = "R02HFHFV8Z3PQOOCBZ42SL1LNLZ4L3VN"
+  type      = string
+  sensitive = true
 }
 
 variable "routing_key_k8s" {
-  type    = string
-  default = "R02HFHFV8Z3UJWCGCXLTMSJUHQFHWW2W"
+  type      = string
+  sensitive = true
 }
 
 variable "routing_key_streaming" {
-  type    = string
-  default = "R02HFHFV8Z38X1J5PT3R2Y4WUQHH2QKL"
+  type      = string
+  sensitive = true
+}
+
+variable "pagerduty_routing_key" {
+  type      = string
+  sensitive = true
 }
 
 variable "datadog_api_key" {
@@ -241,7 +246,7 @@ resource "aws_lambda_function" "metrics" {
       DATADOG_SITE          = var.datadog_site
       NEW_RELIC_LICENSE_KEY = var.newrelic_license_key
       NEW_RELIC_ACCOUNT_ID  = var.newrelic_account_id
-      PAGERDUTY_ROUTING_KEY = "ed6b71f8718b4302d054db5f4cf7228f"
+      PAGERDUTY_ROUTING_KEY = var.pagerduty_routing_key
       SLACK_BOT_TOKEN       = var.slack_bot_token
       SLACK_CHANNEL         = var.slack_channel
     }

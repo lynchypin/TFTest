@@ -4,17 +4,18 @@
 
 set -e
 
-# Service routing keys (from Events API v2 integrations)
+# Service routing keys (from environment variables)
+# Set these in your shell: export PD_ROUTING_KEY_PAYMENTS=xxx
 get_routing_key() {
     case "$1" in
-        payments) echo "b56d9bd924ea4404c0a189c12faef4d4" ;;
-        database) echo "ed6b71f8718b4302d054db5f4cf7228f" ;;
-        security) echo "6f1b5676a9cb4d0bd061e4c1c9f5f82b" ;;
-        networking) echo "e79d36284bbd4406c0e636bb2eba9932" ;;
-        grafana) echo "97ad8b11bc164707d088b9d76b33d621" ;;
-        checkout) echo "7d6b339366c34b00d0a18788e22aa911" ;;
-        orders) echo "d70bbf9c8f104703c06b04fc241c0d20" ;;
-        identity) echo "615cd96aae294a09c0a1323eae9e83ad" ;;
+        payments) echo "${PD_ROUTING_KEY_PAYMENTS}" ;;
+        database) echo "${PD_ROUTING_KEY_DATABASE}" ;;
+        security) echo "${PD_ROUTING_KEY_SECURITY}" ;;
+        networking) echo "${PD_ROUTING_KEY_NETWORKING}" ;;
+        grafana) echo "${PD_ROUTING_KEY_GRAFANA}" ;;
+        checkout) echo "${PD_ROUTING_KEY_CHECKOUT}" ;;
+        orders) echo "${PD_ROUTING_KEY_ORDERS}" ;;
+        identity) echo "${PD_ROUTING_KEY_IDENTITY}" ;;
         *) echo "" ;;
     esac
 }

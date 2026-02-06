@@ -10,14 +10,14 @@ import json
 import requests
 from typing import Optional
 
-DATADOG_API_KEY = os.environ.get("DATADOG_API_KEY", "29bd7e2c438d43f329b2980ddb1ec747")
-DATADOG_APP_KEY = os.environ.get("DATADOG_APP_KEY", "")
+DATADOG_API_KEY = os.environ.get("DATADOG_API_KEY")
+DATADOG_APP_KEY = os.environ.get("DATADOG_APP_KEY")
 DATADOG_SITE = os.environ.get("DATADOG_SITE", "us5.datadoghq.com")
 
-NEWRELIC_API_KEY = os.environ.get("NEWRELIC_API_KEY", "")
-NEWRELIC_ACCOUNT_ID = os.environ.get("NEWRELIC_ACCOUNT_ID", "6576386")
+NEWRELIC_API_KEY = os.environ.get("NEWRELIC_API_KEY")
+NEWRELIC_ACCOUNT_ID = os.environ.get("NEWRELIC_ACCOUNT_ID")
 
-PAGERDUTY_ROUTING_KEY = os.environ.get("PAGERDUTY_ROUTING_KEY", "R02HFHFV8Z3RZBCUIWLKN5NBDM0YXWDR")
+PAGERDUTY_ROUTING_KEY = os.environ.get("PAGERDUTY_ROUTING_KEY")
 
 
 class DatadogSetup:

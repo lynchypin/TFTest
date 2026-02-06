@@ -113,6 +113,7 @@ export default function SettingsModal({ instance, onSave, onClose }) {
   };
 
   const { routingKey: storedFallbackKey } = getPagerDutyCredentials();
+  const storedOrchestratorUrl = getOrchestratorUrl();
   const integrationStatus = getIntegrationStatus();
 
   return (

@@ -10,6 +10,7 @@ import SettingsModal from './components/SettingsModal';
 import { getInstance, saveInstance } from './services/pagerduty';
 import { getLicenseConfig, saveLicenseConfig, filterByLicense } from './services/license';
 import { triggerNativeIntegration, isIntegrationConfigured, hasPagerDutyCredentials } from './services/integrations';
+import { hasOrchestratorConfigured, cleanupDemoIncidents, pauseDemo, resumeDemo, getDemoStatus } from './services/orchestrator';
 
 function App() {
   const [filters, setFilters] = useState({});
@@ -19,6 +20,9 @@ function App() {
   const [modalType, setModalType] = useState(null);
   const [notification, setNotification] = useState(null);
   const [showFilters, setShowFilters] = useState(true);
+  const [demoPaused, setDemoPaused] = useState(false);
+  const [activeDemos, setActiveDemos] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -99,6 +103,70 @@ function App() {
   const handleClearFilters = () => {
     setFilters({});
   };
+
+  const handleCleanup = async () => {
+    if (!hasOrchestratorConfigured()) {
+      showNotification('Configure Orchestrator URL in Settings first', 'error');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const result = await cleanupDemoIncidents();
+      showNotification(`Cleaned up ${result.resolved} demo incidents`, 'success');
+      refreshDemoStatus();
+    } catch (e) {
+      showNotification(`Cleanup failed: ${e.message}`, 'error');
+    }
+    setIsLoading(false);
+  };
+
+  const handlePause = async () => {
+    if (!hasOrchestratorConfigured()) {
+      showNotification('Configure Orchestrator URL in Settings first', 'error');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await pauseDemo();
+      setDemoPaused(true);
+      showNotification('Demo paused (15 min timeout)', 'success');
+    } catch (e) {
+      showNotification(`Pause failed: ${e.message}`, 'error');
+    }
+    setIsLoading(false);
+  };
+
+  const handleResume = async () => {
+    if (!hasOrchestratorConfigured()) {
+      showNotification('Configure Orchestrator URL in Settings first', 'error');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await resumeDemo();
+      setDemoPaused(false);
+      showNotification('Demo resumed', 'success');
+    } catch (e) {
+      showNotification(`Resume failed: ${e.message}`, 'error');
+    }
+    setIsLoading(false);
+  };
+
+  const refreshDemoStatus = async () => {
+    if (!hasOrchestratorConfigured()) return;
+    try {
+      const status = await getDemoStatus();
+      setActiveDemos(status.count || 0);
+    } catch (e) {
+      console.error('Failed to get demo status:', e);
+    }
+  };
+
+  useEffect(() => {
+    refreshDemoStatus();
+    const interval = setInterval(refreshDemoStatus, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLicenseChange = (newConfig) => {
     setLicenseConfig(newConfig);
@@ -203,6 +271,43 @@ function App() {
           </div>
 
           <div className="flex items-center gap-3">
+            {hasOrchestratorConfigured() && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-800/80 rounded-lg border border-gray-700">
+                {activeDemos > 0 && (
+                  <span className="flex items-center gap-1.5 text-xs text-amber-400">
+                    <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
+                    {activeDemos} active
+                  </span>
+                )}
+                <button
+                  onClick={handleCleanup}
+                  disabled={isLoading}
+                  className="px-2 py-1 text-xs text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded transition-colors disabled:opacity-50"
+                  title="Resolve all demo incidents"
+                >
+                  Cleanup
+                </button>
+                {demoPaused ? (
+                  <button
+                    onClick={handleResume}
+                    disabled={isLoading}
+                    className="px-2 py-1 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-900/30 rounded transition-colors disabled:opacity-50"
+                    title="Resume demo actions"
+                  >
+                    Resume
+                  </button>
+                ) : (
+                  <button
+                    onClick={handlePause}
+                    disabled={isLoading}
+                    className="px-2 py-1 text-xs text-amber-400 hover:text-amber-300 hover:bg-amber-900/30 rounded transition-colors disabled:opacity-50"
+                    title="Pause demo (15 min timeout)"
+                  >
+                    Pause
+                  </button>
+                )}
+              </div>
+            )}
             <div className="flex items-center gap-2 px-4 py-2 bg-gray-800/80 rounded-xl border border-gray-700">
               <span className="text-2xl font-bold text-emerald-400">{filteredScenarios.length}</span>
               <span className="text-sm text-gray-400">of {licenseFilteredCount}</span>

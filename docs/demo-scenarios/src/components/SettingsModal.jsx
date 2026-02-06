@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { maskKey } from '../services/pagerduty';
 import { getIntegrationStatus, getPagerDutyCredentials, savePagerDutyCredentials, clearPagerDutyCredentials } from '../services/integrations';
+import { getOrchestratorUrl, saveOrchestratorUrl, clearOrchestratorUrl, checkOrchestratorHealth } from '../services/orchestrator';
 
 const externalTools = [
   { key: 'datadog', name: 'Datadog', icon: '🐕', fields: [
@@ -49,6 +50,9 @@ export default function SettingsModal({ instance, onSave, onClose }) {
   const [showKeys, setShowKeys] = useState({});
   const [externalCreds, setExternalCreds] = useState({});
   const [activeTab, setActiveTab] = useState('pagerduty');
+  const [orchestratorUrl, setOrchestratorUrl] = useState('');
+  const [orchestratorHealth, setOrchestratorHealth] = useState(null);
+  const [checkingHealth, setCheckingHealth] = useState(false);
 
   useEffect(() => {
     const savedCreds = {};
@@ -56,6 +60,7 @@ export default function SettingsModal({ instance, onSave, onClose }) {
       tool.fields.forEach(field => { savedCreds[field.name] = ''; });
     });
     setExternalCreds(savedCreds);
+    setOrchestratorUrl(getOrchestratorUrl());
   }, []);
 
   const handleExternalCredChange = (fieldName, value) => {
@@ -65,6 +70,9 @@ export default function SettingsModal({ instance, onSave, onClose }) {
   const handleSave = () => {
     if (fallbackKey && fallbackKey.trim()) {
       savePagerDutyCredentials(fallbackKey.trim());
+    }
+    if (orchestratorUrl && orchestratorUrl.trim()) {
+      saveOrchestratorUrl(orchestratorUrl.trim());
     }
     Object.entries(externalCreds).forEach(([key, value]) => {
       if (value && value.trim()) localStorage.setItem(key, value.trim());
@@ -76,6 +84,23 @@ export default function SettingsModal({ instance, onSave, onClose }) {
   const handleClearFallbackKey = () => {
     clearPagerDutyCredentials();
     setFallbackKey('');
+  };
+
+  const handleClearOrchestratorUrl = () => {
+    clearOrchestratorUrl();
+    setOrchestratorUrl('');
+    setOrchestratorHealth(null);
+  };
+
+  const handleCheckOrchestratorHealth = async () => {
+    setCheckingHealth(true);
+    try {
+      const health = await checkOrchestratorHealth();
+      setOrchestratorHealth(health);
+    } catch (e) {
+      setOrchestratorHealth({ healthy: false, error: e.message });
+    }
+    setCheckingHealth(false);
   };
 
   const handleClearExternalCred = (fieldName) => {
@@ -147,6 +172,27 @@ export default function SettingsModal({ instance, onSave, onClose }) {
                   <div className="relative">
                     <input type={showFallbackKey ? 'text' : 'password'} value={fallbackKey} onChange={(e) => setFallbackKey(e.target.value)} placeholder={storedFallbackKey ? 'Enter new key to replace' : 'R0...'} className="w-full input-field pr-10" />
                     <button type="button" onClick={() => setShowFallbackKey(!showFallbackKey)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300">{showFallbackKey ? '🙈' : '👁️'}</button>
+                  </div>
+                )}
+              </div>
+
+              <div className="mb-6 p-4 bg-cyan-900/30 rounded-xl border border-cyan-700/50">
+                <label className="block text-sm font-semibold text-cyan-300 mb-2">Demo Orchestrator URL</label>
+                <p className="text-xs text-cyan-400 mb-3">Lambda URL that coordinates demo flow (cleanup, pause/resume, actions).</p>
+                {storedOrchestratorUrl && !orchestratorUrl ? (
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 px-3 py-2 bg-gray-800/50 rounded-lg border border-gray-700 text-cyan-400 font-mono text-xs truncate">{storedOrchestratorUrl}</div>
+                    <button type="button" onClick={handleCheckOrchestratorHealth} disabled={checkingHealth} className="px-3 py-2 text-sm text-cyan-400 hover:text-cyan-300 hover:bg-cyan-900/30 rounded-lg transition-colors disabled:opacity-50">
+                      {checkingHealth ? '...' : 'Test'}
+                    </button>
+                    <button type="button" onClick={handleClearOrchestratorUrl} className="px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded-lg transition-colors">Clear</button>
+                  </div>
+                ) : (
+                  <input type="text" value={orchestratorUrl} onChange={(e) => setOrchestratorUrl(e.target.value)} placeholder="https://xxx.lambda-url.us-east-1.on.aws/" className="w-full input-field text-sm" />
+                )}
+                {orchestratorHealth && (
+                  <div className={`mt-2 text-xs ${orchestratorHealth.healthy ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {orchestratorHealth.healthy ? '✓ Connected' : `✗ ${orchestratorHealth.error}`}
                   </div>
                 )}
               </div>

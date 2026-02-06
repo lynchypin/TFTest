@@ -1,0 +1,39 @@
+# ServiceNow PDI Keep-Alive Workflow
+# Prevents instance reclamation due to 10-day inactivity
+# Runs every 3 days at 9 AM UTC
+
+name: SNOW Keep-Alive
+
+on:
+  schedule:
+    - cron: '0 9 */3 * *'  # Every 3 days at 9 AM UTC
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up ServiceNow instance
+        env:
+          SNOW_INSTANCE: ${{ secrets.SNOW_INSTANCE }}
+          SNOW_USER: ${{ secrets.SNOW_USER }}
+          SNOW_PASSWORD: ${{ secrets.SNOW_PASSWORD }}
+        run: |
+          # Simple curl to wake instance and simulate activity
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -u "${SNOW_USER}:${SNOW_PASSWORD}" \
+            -H "Accept: application/json" \
+            "https://${SNOW_INSTANCE}.service-now.com/api/now/table/sys_user?sysparm_limit=1")
+          
+          if [ "$response" = "200" ]; then
+            echo "✅ Instance ${SNOW_INSTANCE} is active"
+          elif [ "$response" = "503" ]; then
+            echo "⏳ Instance hibernating, waking up..."
+            sleep 120
+            curl -s -u "${SNOW_USER}:${SNOW_PASSWORD}" \
+              "https://${SNOW_INSTANCE}.service-now.com/api/now/table/sys_user?sysparm_limit=1"
+            echo "✅ Instance should be awake now"
+          else
+            echo "❌ Error: HTTP $response"
+            exit 1
+          fi

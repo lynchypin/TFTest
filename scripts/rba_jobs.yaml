@@ -1,0 +1,74 @@
+- name: Diagnostics-Collect-Logs
+  description: Collects diagnostic logs from target systems for incident analysis
+  loglevel: INFO
+  sequence:
+    commands:
+      - exec: echo "Collecting diagnostic logs for incident ${option.incident_id}"
+      - exec: echo "Log collection completed at $(date)"
+  options:
+    - name: incident_id
+      description: PagerDuty Incident ID
+      required: true
+
+- name: Remediation-Restart-Service
+  description: Restarts a specified service for remediation
+  loglevel: INFO
+  sequence:
+    commands:
+      - exec: echo "Restarting service ${option.service_name}..."
+      - exec: echo "Service restart completed at $(date)"
+  options:
+    - name: service_name
+      description: Name of the service to restart
+      required: true
+    - name: incident_id
+      description: PagerDuty Incident ID
+      required: true
+
+- name: Security-Isolate-Host
+  description: Isolates a host from the network for security response
+  loglevel: INFO
+  sequence:
+    commands:
+      - exec: echo "Isolating host ${option.hostname}..."
+      - exec: echo "Host isolation completed at $(date)"
+  options:
+    - name: hostname
+      description: Hostname to isolate
+      required: true
+    - name: incident_id
+      description: PagerDuty Incident ID
+      required: true
+
+- name: Payments-Process-Retry
+  description: Retries failed payment processing jobs
+  loglevel: INFO
+  sequence:
+    commands:
+      - exec: echo "Retrying payment processing for ${option.transaction_id}..."
+      - exec: echo "Payment retry completed at $(date)"
+  options:
+    - name: transaction_id
+      description: Transaction ID to retry
+      required: true
+    - name: incident_id
+      description: PagerDuty Incident ID
+      required: true
+
+- name: Platform-Scale-Pods
+  description: Scales Kubernetes pods for platform services
+  loglevel: INFO
+  sequence:
+    commands:
+      - exec: echo "Scaling ${option.deployment} to ${option.replicas} replicas..."
+      - exec: echo "Pod scaling completed at $(date)"
+  options:
+    - name: deployment
+      description: Kubernetes deployment name
+      required: true
+    - name: replicas
+      description: Target number of replicas
+      required: true
+    - name: incident_id
+      description: PagerDuty Incident ID
+      required: true

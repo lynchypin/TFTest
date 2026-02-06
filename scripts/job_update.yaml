@@ -1,0 +1,27 @@
+- description: Collects diagnostic logs from target systems for incident analysis
+  executionEnabled: true
+  id: ee57a217-ddff-48ba-8c80-2ec3a79b4052
+  loglevel: INFO
+  name: Diagnostics-Collect-Logs
+  nodeFilterEditable: true
+  nodefilters:
+    dispatch:
+      excludePrecedence: true
+      keepgoing: false
+      rankOrder: ascending
+      successOnEmptyNodeFilter: false
+      threadcount: '1'
+    filter: 'tags: RUNNER'
+  nodesSelectedByDefault: true
+  options:
+  - description: PagerDuty Incident ID
+    name: incident_id
+    required: true
+  scheduleEnabled: true
+  sequence:
+    commands:
+    - exec: echo "Collecting diagnostic logs for incident ${option.incident_id}"
+    - exec: echo "Log collection completed at $(date)"
+    keepgoing: false
+    strategy: node-first
+  uuid: ee57a217-ddff-48ba-8c80-2ec3a79b4052

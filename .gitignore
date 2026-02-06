@@ -10,6 +10,51 @@
 !docs/demo-scenarios/
 !docs/demo-scenarios/**
 
+# Allow AWS infrastructure (source only)
+!aws/
+!aws/*.tf
+!aws/*.sh
+!aws/*.py
+!aws/shared/
+!aws/shared/*.py
+!aws/lambda-*/
+!aws/lambda-*/handler.py
+!aws/lambda-*/requirements.txt
+
+# Exclude AWS build artifacts and secrets
+aws/terraform.tfvars
+aws/*.tfstate*
+aws/.terraform/
+aws/.terraform.lock.hcl
+aws/tfplan
+aws/**/*.zip
+aws/**/__pycache__/
+aws/**/*.pyc
+aws/**/*.dist-info/
+aws/**/bin/
+aws/**/certifi/
+aws/**/charset_normalizer/
+aws/**/idna/
+aws/**/requests/
+aws/**/urllib3/
+
+# Allow scripts (source only)
+!scripts/
+!scripts/*.py
+!scripts/*.sh
+!scripts/*.yaml
+!scripts/*.yml
+!scripts/diagnostics/
+!scripts/diagnostics/*.sh
+!scripts/remediation/
+!scripts/remediation/*.sh
+!scripts/security/
+!scripts/security/*.sh
+
+# Exclude script build artifacts
+scripts/**/__pycache__/
+scripts/**/*.pyc
+
 # But exclude node_modules and dev files within demo-scenarios
 docs/demo-scenarios/node_modules/
 docs/demo-scenarios/.env*

@@ -9,6 +9,77 @@ const FEATURE_TIER_COLORS = {
   tier3: { bg: 'bg-cyan-900/20', text: 'text-cyan-500' }
 };
 
+const FULL_FLOW_INTEGRATIONS = ['datadog', 'grafana', 'cloudwatch', 'newrelic', 'github_actions', 'prometheus'];
+
+function getIntegrationPayload(scenario) {
+  const integration = scenario.integration || 'pagerduty';
+  const isFullFlow = FULL_FLOW_INTEGRATIONS.includes(integration);
+  const payload = scenario.payload?.payload || {};
+
+  if (!isFullFlow) {
+    return null;
+  }
+
+  switch (integration) {
+    case 'datadog':
+      return {
+        _info: `This payload is sent to Datadog API. Datadog monitors then trigger PagerDuty via native integration.`,
+        _endpoint: 'https://api.us5.datadoghq.com/api/v1/events',
+        event: {
+          title: `[DEMO] ${payload.summary}`,
+          text: `Demo scenario: ${scenario.name}\n\n${scenario.description}`,
+          alert_type: payload.severity === 'critical' ? 'error' : payload.severity === 'warning' ? 'warning' : 'info',
+          source_type_name: 'pagerduty-demo',
+          tags: [
+            `env:${payload.custom_details?.env || 'production'}`,
+            `service:${payload.custom_details?.service || 'demo'}`,
+            `scenario:${scenario.id}`
+          ]
+        },
+        metric_spike: {
+          metric: 'demo.api.response_time',
+          value: 2500,
+          threshold: 500
+        }
+      };
+    case 'newrelic':
+      return {
+        _info: `This payload is sent to New Relic Events API. New Relic alerts then trigger PagerDuty.`,
+        _endpoint: 'https://insights-collector.newrelic.com/v1/accounts/{account_id}/events',
+        event: {
+          eventType: 'DemoIncident',
+          summary: payload.summary,
+          severity: payload.severity,
+          scenario_id: scenario.id,
+          ...payload.custom_details
+        }
+      };
+    case 'grafana':
+      return {
+        _info: `This payload creates a Grafana annotation. Grafana alerts then trigger PagerDuty.`,
+        _endpoint: 'https://{instance}.grafana.net/api/annotations',
+        annotation: {
+          text: `[DEMO] ${payload.summary}`,
+          tags: ['demo', 'pagerduty', scenario.id]
+        }
+      };
+    case 'cloudwatch':
+      return {
+        _info: `This payload is sent to AWS CloudWatch. CloudWatch alarms then trigger PagerDuty via SNS.`,
+        _endpoint: 'cloudwatch:PutMetricData',
+        metric_data: {
+          Namespace: 'PagerDutyDemo',
+          MetricName: 'DemoAlert',
+          Value: 100,
+          Unit: 'Count',
+          Dimensions: [{ Name: 'Scenario', Value: scenario.id }]
+        }
+      };
+    default:
+      return null;
+  }
+}
+
 export default function PayloadModal({ scenario, onClose, onSend }) {
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
@@ -16,9 +87,15 @@ export default function PayloadModal({ scenario, onClose, onSend }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedPayload, setEditedPayload] = useState('');
   const [parseError, setParseError] = useState(null);
+  const [payloadType, setPayloadType] = useState('integration');
 
   const { routingKey } = getPagerDutyCredentials();
-  const originalPayload = getFullPayload(scenario, routingKey || 'YOUR_ROUTING_KEY');
+  const integration = scenario.integration || 'pagerduty';
+  const isFullFlow = FULL_FLOW_INTEGRATIONS.includes(integration);
+  const integrationPayload = getIntegrationPayload(scenario);
+  const pagerdutyPayload = getFullPayload(scenario, routingKey || 'YOUR_ROUTING_KEY');
+
+  const originalPayload = (payloadType === 'integration' && integrationPayload) ? integrationPayload : pagerdutyPayload;
   const originalJsonString = JSON.stringify(originalPayload, null, 2);
 
   const licenseInfo = getScenarioLicenseInfo(scenario);
@@ -28,7 +105,7 @@ export default function PayloadModal({ scenario, onClose, onSend }) {
 
   useEffect(() => {
     setEditedPayload(originalJsonString);
-  }, [originalJsonString]);
+  }, [originalJsonString, payloadType]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(isEditing ? editedPayload : originalJsonString);
@@ -125,6 +202,30 @@ export default function PayloadModal({ scenario, onClose, onSend }) {
         </div>
 
         <div className="flex-1 overflow-auto p-6">
+          {isFullFlow && integrationPayload && (
+            <div className="mb-4 flex items-center gap-2">
+              <span className="text-xs text-gray-500">View:</span>
+              <button
+                onClick={() => setPayloadType('integration')}
+                className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-colors ${payloadType === 'integration' ? 'bg-emerald-900/50 text-emerald-300 border border-emerald-700/50' : 'bg-gray-800 text-gray-400 hover:bg-gray-700 border border-gray-700'}`}
+              >
+                {integration.charAt(0).toUpperCase() + integration.slice(1)} Payload
+              </button>
+              <button
+                onClick={() => setPayloadType('pagerduty')}
+                className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-colors ${payloadType === 'pagerduty' ? 'bg-emerald-900/50 text-emerald-300 border border-emerald-700/50' : 'bg-gray-800 text-gray-400 hover:bg-gray-700 border border-gray-700'}`}
+              >
+                PagerDuty Fallback
+              </button>
+            </div>
+          )}
+
+          {payloadType === 'integration' && integrationPayload?._info && (
+            <div className="mb-3 p-3 bg-blue-900/30 border border-blue-700/50 rounded-lg text-xs text-blue-300">
+              ℹ️ {integrationPayload._info}
+            </div>
+          )}
+
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-gray-300">
               {isEditing ? 'Edit Payload' : 'Payload Preview'}

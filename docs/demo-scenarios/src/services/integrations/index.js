@@ -8,6 +8,7 @@ import { sendAlertmanagerAlert, hasPrometheusCredentials } from './prometheus.js
 import { sendGrafanaAnnotation, hasGrafanaCredentials } from './grafana.js';
 import { triggerUptimeRobotAlert, hasUptimeRobotCredentials } from './uptimerobot.js';
 import { triggerPagerDutyDirect, hasPagerDutyCredentials } from './pagerduty.js';
+import { hasOrchestratorConfigured, triggerIncident } from '../orchestrator.js';
 
 export * from './datadog.js';
 export * from './sentry.js';
@@ -63,13 +64,56 @@ export function isIntegrationConfigured(integration) {
 
 export async function triggerNativeIntegration(scenario) {
   const integration = scenario.tags?.integration;
-  
+
+  if (hasOrchestratorConfigured()) {
+    return await triggerViaOrchestrator(scenario, integration);
+  }
+
+  return await triggerDirectFromBrowser(scenario, integration);
+}
+
+async function triggerViaOrchestrator(scenario, integration) {
+  try {
+    const result = await triggerIncident(scenario, integration || 'pagerduty');
+
+    if (result.success) {
+      return {
+        success: true,
+        nativeTriggered: !result.fallback_used,
+        fallbackUsed: result.fallback_used,
+        integration: result.integration,
+        message: result.fallback_used
+          ? `Sent via PagerDuty (fallback from ${integration})`
+          : `Sent via ${result.integration}`,
+        dedup_key: result.response?.dedup_key,
+        response: result.response,
+        flow: result.fallback_used
+          ? `${integration} (fallback) -> PagerDuty via orchestrator`
+          : `${result.integration} -> via orchestrator`
+      };
+    } else {
+      return {
+        success: false,
+        error: result.error || 'Unknown orchestrator error',
+        integration
+      };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: `Orchestrator error: ${error.message}`,
+      integration
+    };
+  }
+}
+
+async function triggerDirectFromBrowser(scenario, integration) {
   if (!integration) {
     return await triggerWithPagerDutyFallback(scenario, null, 'No integration specified');
   }
 
   const config = integrationTriggers[integration];
-  
+
   if (!config) {
     return await triggerWithPagerDutyFallback(scenario, integration, `Unknown integration: ${integration}`);
   }
@@ -77,7 +121,7 @@ export async function triggerNativeIntegration(scenario) {
   try {
     let nativeResult = null;
     let nativeError = null;
-    
+
     if (config.hasCredentials()) {
       try {
         nativeResult = await config.trigger(scenario);
@@ -87,8 +131,8 @@ export async function triggerNativeIntegration(scenario) {
     }
 
     if (config.fullFlow && nativeResult && !nativeResult.requiresFallback) {
-      return { 
-        ...nativeResult, 
+      return {
+        ...nativeResult,
         nativeTriggered: true,
         integration,
         flow: 'native -> tool -> PagerDuty'
@@ -96,8 +140,8 @@ export async function triggerNativeIntegration(scenario) {
     }
 
     const pdResult = await triggerWithPagerDutyFallback(
-      scenario, 
-      integration, 
+      scenario,
+      integration,
       nativeError || (nativeResult?.reason) || 'Integration does not support full flow'
     );
 

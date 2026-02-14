@@ -56,6 +56,7 @@ const FEATURE_TIER_COLORS = {
 
 export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onViewTrace }) {
   const [showFeaturesModal, setShowFeaturesModal] = useState(false);
+  const isDisabled = scenario.enabled === false;
 
   const featuresDemo = scenario.features_demonstrated || scenario.required_features || [];
   const licenseInfo = getScenarioLicenseInfo(scenario);
@@ -71,7 +72,7 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
   const getFeatureTier = (featureKey, index) => {
     const feature = FEATURES[featureKey];
     if (!feature) return FEATURE_TIER_COLORS.tier1;
-    
+
     if (index < 2) return FEATURE_TIER_COLORS.tier1;
     if (index < 4) return FEATURE_TIER_COLORS.tier2;
     return FEATURE_TIER_COLORS.tier3;
@@ -100,7 +101,18 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
 
   return (
     <>
-      <div className="group bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-black/50 hover:-translate-y-1 hover:border-gray-700">
+      <div className={`group relative rounded-2xl border overflow-hidden transition-all duration-300 ${
+        isDisabled
+          ? 'bg-gray-950 border-gray-800/50 opacity-60 grayscale'
+          : 'bg-gray-900 border-gray-800 hover:shadow-2xl hover:shadow-black/50 hover:-translate-y-1 hover:border-gray-700'
+      }`}>
+        {isDisabled && (
+          <div className="absolute top-0 right-0 z-10 overflow-hidden w-28 h-28 pointer-events-none">
+            <div className="absolute top-[14px] right-[-34px] w-[170px] text-center transform rotate-45 bg-red-600 text-white text-[10px] font-bold py-1 shadow-lg tracking-wide">
+              Coming Soon!
+            </div>
+          </div>
+        )}
         <div className="p-5">
           <div className="flex items-start justify-between gap-3 mb-3">
             <h3 className="font-bold text-gray-100 text-lg leading-tight group-hover:text-emerald-400 transition-colors line-clamp-2">
@@ -188,13 +200,15 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
 
           <div className="flex gap-2">
             <button
-              onClick={() => onTrigger(scenario)}
-              className="flex-1 btn-success text-sm py-2.5"
+              onClick={() => !isDisabled && onTrigger(scenario)}
+              disabled={isDisabled}
+              className={`flex-1 text-sm py-2.5 ${isDisabled ? 'btn-secondary opacity-50 cursor-not-allowed' : 'btn-success'}`}
+              title={isDisabled ? 'Coming Soon - This scenario is not yet available' : ''}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              Trigger
+              {isDisabled ? 'TBD' : 'Trigger'}
             </button>
             <button
               onClick={() => onViewPayload(scenario)}

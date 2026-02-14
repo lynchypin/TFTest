@@ -68,7 +68,8 @@
           "stage": "Escalation",
           "action": "Notify on-call responder"
         }
-      ]
+      ],
+      "tier": "FREE"
     },
     {
       "id": "FREE-002",
@@ -135,7 +136,8 @@
           "stage": "Assignment",
           "result": "App - Checkout Team"
         }
-      ]
+      ],
+      "tier": "FREE"
     },
     {
       "id": "PRO-001",
@@ -205,7 +207,8 @@
           "stage": "Assignment",
           "result": "Platform - DBRE [P1]"
         }
-      ]
+      ],
+      "tier": "PROFESSIONAL"
     },
     {
       "id": "PRO-002",
@@ -276,7 +279,8 @@
           "stage": "PIR",
           "action": "Generate timeline, collect learnings"
         }
-      ]
+      ],
+      "tier": "PROFESSIONAL"
     },
     {
       "id": "PRO-003",
@@ -347,7 +351,8 @@
           "stage": "Assignment",
           "result": "App - Orders API Team [P2]"
         }
-      ]
+      ],
+      "tier": "PROFESSIONAL"
     },
     {
       "id": "BUS-001",
@@ -430,7 +435,8 @@
           "stage": "Assignment",
           "result": "Platform - Kubernetes/Platform [P1] + mobilized teams"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "BUS-002",
@@ -504,7 +510,8 @@
           "stage": "Assignment",
           "result": "App - Checkout Team [P1]"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "BUS-003",
@@ -588,7 +595,8 @@
           "stage": "Assignment",
           "result": "Platform - Networking [P1]"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "BUS-004",
@@ -661,7 +669,8 @@
           "stage": "Assignment",
           "result": "Platform - DBRE [P2]"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "BUS-005",
@@ -739,7 +748,8 @@
           "stage": "Assignment",
           "result": "App - Checkout Team [P1]"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "DIGOPS-001",
@@ -825,7 +835,8 @@
           "stage": "Assignment",
           "result": "Platform - Kubernetes/Platform [P1]"
         }
-      ]
+      ],
+      "tier": "DIGITAL_OPERATIONS"
     },
     {
       "id": "DIGOPS-002",
@@ -892,7 +903,8 @@
           "stage": "Result",
           "action": "Event suppressed - no incident created"
         }
-      ]
+      ],
+      "tier": "DIGITAL_OPERATIONS"
     },
     {
       "id": "DIGOPS-003",
@@ -956,7 +968,8 @@
           "stage": "Timeout",
           "action": "Self-resolved, incident dropped"
         }
-      ]
+      ],
+      "tier": "DIGITAL_OPERATIONS"
     },
     {
       "id": "DIGOPS-004",
@@ -1030,7 +1043,8 @@
           "stage": "Assignment",
           "result": "Platform - DBRE [P2]"
         }
-      ]
+      ],
+      "tier": "DIGITAL_OPERATIONS"
     },
     {
       "id": "DIGOPS-005",
@@ -1094,7 +1108,8 @@
           "stage": "Assignment",
           "result": "Platform - Kubernetes/Platform [P3]"
         }
-      ]
+      ],
+      "tier": "DIGITAL_OPERATIONS"
     },
     {
       "id": "DIGOPS-006",
@@ -1171,7 +1186,8 @@
           "stage": "Assignment",
           "result": "App - Checkout Team [P1]"
         }
-      ]
+      ],
+      "tier": "DIGITAL_OPERATIONS"
     },
     {
       "id": "DIGOPS-007",
@@ -1253,7 +1269,8 @@
           "stage": "Assignment",
           "result": "App - Orders API Team [P1]"
         }
-      ]
+      ],
+      "tier": "DIGITAL_OPERATIONS"
     },
     {
       "id": "AIOPS-001",
@@ -1308,7 +1325,8 @@
             "env": "production",
             "source_ip": "10.0.5.23",
             "target_database": "customers_pii",
-            "threat_score": 95
+            "threat_score": 95,
+            "pd_service": "SecOps"
           }
         }
       },
@@ -1332,7 +1350,8 @@
           "stage": "Assignment",
           "result": "SecOps [P1]"
         }
-      ]
+      ],
+      "tier": "AIOPS"
     },
     {
       "id": "AIOPS-002",
@@ -1388,7 +1407,8 @@
               "orders-api",
               "inventory-api"
             ],
-            "network_segment": "datacenter-east"
+            "network_segment": "datacenter-east",
+            "pd_service": "Platform - Networking"
           }
         }
       },
@@ -1416,7 +1436,8 @@
           "stage": "Assignment",
           "result": "Platform - Networking [P1]"
         }
-      ]
+      ],
+      "tier": "AIOPS"
     },
     {
       "id": "AIOPS-003",
@@ -1474,7 +1495,8 @@
               "inventory-api",
               "checkout-api"
             ],
-            "cascade_detected": true
+            "cascade_detected": true,
+            "pd_service": "Platform - DBRE"
           }
         }
       },
@@ -1499,7 +1521,9 @@
           "stage": "Assignment",
           "result": "Platform - DBRE [P1]"
         }
-      ]
+      ],
+      "tier": "AIOPS",
+      "enabled": false
     },
     {
       "id": "AIOPS-004",
@@ -1572,7 +1596,8 @@
           "stage": "Assignment",
           "result": "Platform - Kubernetes/Platform [P2]"
         }
-      ]
+      ],
+      "tier": "AIOPS"
     },
     {
       "id": "EIM-001",
@@ -1651,7 +1676,8 @@
           "stage": "Assignment",
           "result": "Platform - DBRE [P1] with 3 tasks"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "EIM-002",
@@ -1731,7 +1757,8 @@
           "stage": "Assignment",
           "result": "Platform - Kubernetes/Platform [P1] with defined roles"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "EIM-003",
@@ -1811,7 +1838,8 @@
           "stage": "Assignment",
           "result": "SecOps [P1] - Type: Security Breach"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "EIM-004",
@@ -1889,7 +1917,8 @@
           "stage": "Assignment",
           "result": "Platform - Kubernetes/Platform [P1]"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "EIM-005",
@@ -1965,7 +1994,8 @@
           "stage": "Assignment",
           "result": "App - Checkout Team [P1]"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "AUTO-001",
@@ -2044,7 +2074,8 @@
           "stage": "Assignment",
           "result": "Platform - Kubernetes/Platform [P1] + diagnostics"
         }
-      ]
+      ],
+      "tier": "AUTOMATION"
     },
     {
       "id": "AUTO-002",
@@ -2118,7 +2149,8 @@
           "stage": "Auto-Resolve",
           "action": "Incident resolved automatically"
         }
-      ]
+      ],
+      "tier": "AUTOMATION"
     },
     {
       "id": "AUTO-003",
@@ -2194,7 +2226,8 @@
           "stage": "Assignment",
           "result": "Platform - DBRE [P1] + runbook"
         }
-      ]
+      ],
+      "tier": "AUTOMATION"
     },
     {
       "id": "CSO-001",
@@ -2274,7 +2307,8 @@
           "stage": "Assignment",
           "result": "App - Checkout Team [P1]"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "WF-001",
@@ -2346,7 +2380,8 @@
           "stage": "Assignment",
           "result": "Platform - Kubernetes/Platform [P1]"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "WF-002",
@@ -2436,7 +2471,8 @@
           "stage": "Assignment",
           "result": "Platform - Kubernetes/Platform [P1]"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "WF-003",
@@ -2515,7 +2551,8 @@
           "stage": "Assignment",
           "result": "Platform - Kubernetes/Platform [P1]"
         }
-      ]
+      ],
+      "tier": "BUSINESS"
     },
     {
       "id": "IND-001",
@@ -2589,7 +2626,8 @@
           "stage": "Assignment",
           "result": "OT Operations - Factory Floor [P1]"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-002",
@@ -2667,7 +2705,8 @@
           "stage": "Assignment",
           "result": "Safety Operations [P1]"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-003",
@@ -2740,7 +2779,8 @@
           "stage": "Assignment",
           "result": "Retail Systems - POS [P1]"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-004",
@@ -2813,7 +2853,8 @@
           "stage": "Assignment",
           "result": "Payment Processing - Gateway [P1]"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-005",
@@ -2887,7 +2928,8 @@
           "stage": "Assignment",
           "result": "Grid Operations Center [P1]"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-006",
@@ -2960,7 +3002,8 @@
           "stage": "Assignment",
           "result": "Network Operations - Core [P2]"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-007",
@@ -3033,7 +3076,8 @@
           "stage": "Assignment",
           "result": "Clinical Systems - EMR [P1]"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-008",
@@ -3105,7 +3149,8 @@
           "stage": "Assignment",
           "result": "Database - DBRE Team [P2]"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-009",
@@ -3173,7 +3218,8 @@
           "stage": "Assignment",
           "result": "DevOps - CI/CD Platform"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-010",
@@ -3250,7 +3296,8 @@
           "stage": "Assignment",
           "result": "Platform - Frontend [P1]"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-011",
@@ -3319,7 +3366,8 @@
           "stage": "Assignment",
           "result": "App - Backend API"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-012",
@@ -3392,7 +3440,8 @@
           "stage": "Assignment",
           "result": "Quality Control - Manufacturing [P2]"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "IND-013",
@@ -3466,7 +3515,8 @@
           "stage": "Assignment",
           "result": "Mining Operations - Equipment [P2]"
         }
-      ]
+      ],
+      "tier": "INDUSTRY"
     },
     {
       "id": "SRE-001",
@@ -3474,833 +3524,1786 @@
       "description": "SRE Agent autonomously investigates a Kubernetes pod crash loop, gathering diagnostics and identifying root cause",
       "severity": "critical",
       "tags": {
-          "industry": ["technology", "ecommerce", "saas"],
-          "team_type": ["sre", "platform", "devops"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_sre", "autonomous_investigation", "diagnostics"],
-          "integration": "datadog",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_sre"]
-        },
-        "required_features": ["sre_agent", "kubernetes_access"],
-        "features_demonstrated": ["autonomous_investigation", "diagnostic_gathering", "pattern_matching", "root_cause_identification"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": "P1",
-        "rules_triggered": ["SRE Agent activation on critical incident"],
-        "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Pod CrashLoopBackOff: payment-service-7d8f9 - OOMKilled",
-            "source": "datadog-kubernetes",
-            "severity": "critical",
-            "custom_details": {
-              "pd_service": "Platform - Kubernetes/Platform",
-              "env": "production",
-              "pod": "payment-service-7d8f9",
-              "namespace": "production",
-              "restart_count": 5,
-              "last_state": "OOMKilled"
-            }
-          }
-        },
-        "orchestration_trace": [
-          {"stage": "Alert Received", "action": "Pod crash detected by Datadog"},
-          {"stage": "SRE Agent Activated", "action": "Autonomous investigation begins"},
-          {"stage": "Pod Status Check", "action": "kubectl describe pod - CrashLoopBackOff"},
-          {"stage": "Log Analysis", "action": "Identified OutOfMemoryError"},
-          {"stage": "Resource Analysis", "action": "Memory limit 512Mi approaching limit"},
-          {"stage": "Historical Match", "action": "Found similar incident #4521 - resolved with memory increase"},
-          {"stage": "Recommendation", "action": "Increase memory limit to 1Gi"}
+        "industry": [
+          "technology",
+          "ecommerce",
+          "saas"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "devops"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_sre",
+          "autonomous_investigation",
+          "diagnostics"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_sre"
         ]
       },
-      {
-        "id": "SRE-002",
-        "name": "Autonomous Remediation with Approval",
-        "description": "SRE Agent proposes and executes remediation with human approval workflow",
-        "severity": "critical",
-        "tags": {
-          "industry": ["technology", "ecommerce", "saas"],
-          "team_type": ["sre", "platform", "devops"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_sre", "remediation", "approval_workflow"],
-          "integration": "datadog",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_sre"]
-        },
-        "required_features": ["sre_agent", "kubernetes_write_access", "approval_workflow"],
-        "features_demonstrated": ["remediation_execution", "human_approval", "safe_automation", "verification"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": "P1",
-        "rules_triggered": ["SRE Agent remediation proposal"],
+      "required_features": [
+        "sre_agent",
+        "kubernetes_access"
+      ],
+      "features_demonstrated": [
+        "autonomous_investigation",
+        "diagnostic_gathering",
+        "pattern_matching",
+        "root_cause_identification"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": "P1",
+      "rules_triggered": [
+        "SRE Agent activation on critical incident"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "SRE Agent: Remediation proposal for payment-service memory increase",
-            "source": "pagerduty-sre-agent",
-            "severity": "critical",
-            "custom_details": {
-              "pd_service": "Platform - Kubernetes/Platform",
-              "env": "production",
-              "proposed_action": "Increase memory limit 512Mi to 1Gi",
-              "confidence": "92%",
-              "requires_approval": true
-            }
+          "summary": "Pod CrashLoopBackOff: payment-service-7d8f9 - OOMKilled",
+          "source": "datadog-kubernetes",
+          "severity": "critical",
+          "custom_details": {
+            "pd_service": "Platform - Kubernetes/Platform",
+            "env": "production",
+            "pod": "payment-service-7d8f9",
+            "namespace": "production",
+            "restart_count": 5,
+            "last_state": "OOMKilled"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Alert Received",
+          "action": "Pod crash detected by Datadog"
         },
-        "orchestration_trace": [
-          {"stage": "Agent Proposes", "action": "Memory limit increase recommended"},
-          {"stage": "Human Review", "action": "On-call reviews proposal"},
-          {"stage": "Approval", "action": "Engineer clicks Approve"},
-          {"stage": "Execution", "action": "kubectl patch deployment"},
-          {"stage": "Verification", "action": "Pod running, 0 restarts, healthy memory usage"},
-          {"stage": "Resolution", "action": "Incident resolved after stability window"}
+        {
+          "stage": "SRE Agent Activated",
+          "action": "Autonomous investigation begins"
+        },
+        {
+          "stage": "Pod Status Check",
+          "action": "kubectl describe pod - CrashLoopBackOff"
+        },
+        {
+          "stage": "Log Analysis",
+          "action": "Identified OutOfMemoryError"
+        },
+        {
+          "stage": "Resource Analysis",
+          "action": "Memory limit 512Mi approaching limit"
+        },
+        {
+          "stage": "Historical Match",
+          "action": "Found similar incident #4521 - resolved with memory increase"
+        },
+        {
+          "stage": "Recommendation",
+          "action": "Increase memory limit to 1Gi"
+        }
+      ],
+      "tier": "AI_AGENTS",
+      "enabled": false
+    },
+    {
+      "id": "SRE-002",
+      "name": "Autonomous Remediation with Approval",
+      "description": "SRE Agent proposes and executes remediation with human approval workflow",
+      "severity": "critical",
+      "tags": {
+        "industry": [
+          "technology",
+          "ecommerce",
+          "saas"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "devops"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_sre",
+          "remediation",
+          "approval_workflow"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_sre"
         ]
       },
-      {
-        "id": "SRE-003",
-        "name": "Database Connection Pool Remediation",
-        "description": "SRE Agent diagnoses database connection pool exhaustion and identifies long-running queries",
-        "severity": "critical",
-        "tags": {
-          "industry": ["technology", "saas", "fintech"],
-          "team_type": ["sre", "dba", "platform"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_sre", "database_diagnostics", "connection_pool"],
-          "integration": "prometheus",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_sre"]
-        },
-        "required_features": ["sre_agent", "database_access"],
-        "features_demonstrated": ["database_diagnostics", "connection_analysis", "query_analysis", "cascading_impact"],
-        "target_service": "Platform - DBRE",
-        "expected_priority": "P1",
-        "rules_triggered": ["SRE Agent database investigation"],
+      "required_features": [
+        "sre_agent",
+        "kubernetes_write_access",
+        "approval_workflow"
+      ],
+      "features_demonstrated": [
+        "remediation_execution",
+        "human_approval",
+        "safe_automation",
+        "verification"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": "P1",
+      "rules_triggered": [
+        "SRE Agent remediation proposal"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Database Connection Pool Exhausted - 100/100 connections active",
-            "source": "prometheus",
-            "severity": "critical",
-            "custom_details": {
-              "pd_service": "Platform - DBRE",
-              "env": "production",
-              "database": "primary-postgres",
-              "active_connections": 100,
-              "max_connections": 100,
-              "waiting_queries": 45
-            }
+          "summary": "SRE Agent: Remediation proposal for payment-service memory increase",
+          "source": "pagerduty-sre-agent",
+          "severity": "critical",
+          "custom_details": {
+            "pd_service": "Platform - Kubernetes/Platform",
+            "env": "production",
+            "proposed_action": "Increase memory limit 512Mi to 1Gi",
+            "confidence": "92%",
+            "requires_approval": true
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Agent Proposes",
+          "action": "Memory limit increase recommended"
         },
-        "orchestration_trace": [
-          {"stage": "Alert Received", "action": "Connection pool exhausted alert"},
-          {"stage": "SRE Agent Activated", "action": "Database investigation begins"},
-          {"stage": "Connection Analysis", "action": "Breakdown by application identified"},
-          {"stage": "Query Analysis", "action": "Found long-running analytics query (45 min)"},
-          {"stage": "Root Cause", "action": "Analytics job holding connections with full table scan"},
-          {"stage": "Recommendation", "action": "Terminate analytics query, add index"}
+        {
+          "stage": "Human Review",
+          "action": "On-call reviews proposal"
+        },
+        {
+          "stage": "Approval",
+          "action": "Engineer clicks Approve"
+        },
+        {
+          "stage": "Execution",
+          "action": "kubectl patch deployment"
+        },
+        {
+          "stage": "Verification",
+          "action": "Pod running, 0 restarts, healthy memory usage"
+        },
+        {
+          "stage": "Resolution",
+          "action": "Incident resolved after stability window"
+        }
+      ],
+      "tier": "AI_AGENTS",
+      "enabled": false
+    },
+    {
+      "id": "SRE-003",
+      "name": "Database Connection Pool Remediation",
+      "description": "SRE Agent diagnoses database connection pool exhaustion and identifies long-running queries",
+      "severity": "critical",
+      "tags": {
+        "industry": [
+          "technology",
+          "saas",
+          "fintech"
+        ],
+        "team_type": [
+          "sre",
+          "dba",
+          "platform"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_sre",
+          "database_diagnostics",
+          "connection_pool"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_sre"
         ]
       },
-      {
-        "id": "SRE-004",
-        "name": "Multi-Service Incident Correlation",
-        "description": "SRE Agent correlates alerts across multiple services and identifies common root cause",
-        "severity": "critical",
-        "tags": {
-          "industry": ["technology", "ecommerce", "enterprise"],
-          "team_type": ["sre", "platform", "noc"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_sre", "correlation", "multi_service"],
-          "integration": "datadog",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_sre"]
-        },
-        "required_features": ["sre_agent", "aiops_correlation"],
-        "features_demonstrated": ["alert_correlation", "dependency_mapping", "blast_radius_analysis"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": "P1",
-        "rules_triggered": ["SRE Agent multi-service correlation"],
+      "required_features": [
+        "sre_agent",
+        "database_access"
+      ],
+      "features_demonstrated": [
+        "database_diagnostics",
+        "connection_analysis",
+        "query_analysis",
+        "cascading_impact"
+      ],
+      "target_service": "Platform - DBRE",
+      "expected_priority": "P1",
+      "rules_triggered": [
+        "SRE Agent database investigation"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Multiple services reporting errors - potential upstream failure",
-            "source": "datadog",
-            "severity": "critical",
-            "custom_details": {
-              "pd_service": "Platform - Kubernetes/Platform",
-              "env": "production",
-              "affected_services": ["checkout", "payment", "inventory"],
-              "correlation_id": "upstream-auth-failure"
-            }
+          "summary": "Database Connection Pool Exhausted - 100/100 connections active",
+          "source": "prometheus",
+          "severity": "critical",
+          "custom_details": {
+            "pd_service": "Platform - DBRE",
+            "env": "production",
+            "database": "primary-postgres",
+            "active_connections": 100,
+            "max_connections": 100,
+            "waiting_queries": 45
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Alert Received",
+          "action": "Connection pool exhausted alert"
         },
-        "orchestration_trace": [
-          {"stage": "Multiple Alerts", "action": "3 services reporting errors simultaneously"},
-          {"stage": "SRE Agent Correlation", "action": "Identifies common dependency: auth-service"},
-          {"stage": "Dependency Analysis", "action": "Auth service is upstream of all affected services"},
-          {"stage": "Root Cause", "action": "Auth service certificate expired"},
-          {"stage": "Recommendation", "action": "Renew certificate on auth-service"}
+        {
+          "stage": "SRE Agent Activated",
+          "action": "Database investigation begins"
+        },
+        {
+          "stage": "Connection Analysis",
+          "action": "Breakdown by application identified"
+        },
+        {
+          "stage": "Query Analysis",
+          "action": "Found long-running analytics query (45 min)"
+        },
+        {
+          "stage": "Root Cause",
+          "action": "Analytics job holding connections with full table scan"
+        },
+        {
+          "stage": "Recommendation",
+          "action": "Terminate analytics query, add index"
+        }
+      ],
+      "tier": "AI_AGENTS",
+      "enabled": false
+    },
+    {
+      "id": "SRE-004",
+      "name": "Multi-Service Incident Correlation",
+      "description": "SRE Agent correlates alerts across multiple services and identifies common root cause",
+      "severity": "critical",
+      "tags": {
+        "industry": [
+          "technology",
+          "ecommerce",
+          "enterprise"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "noc"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_sre",
+          "correlation",
+          "multi_service"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_sre"
         ]
       },
-      {
-        "id": "SRE-005",
-        "name": "Proactive Capacity Issue Prevention",
-        "description": "SRE Agent detects trending capacity issues and recommends scaling before outage",
-        "severity": "warning",
-        "tags": {
-          "industry": ["technology", "saas", "ecommerce"],
-          "team_type": ["sre", "platform", "devops"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_sre", "proactive", "capacity_planning"],
-          "integration": "prometheus",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_sre"]
-        },
-        "required_features": ["sre_agent", "trend_analysis"],
-        "features_demonstrated": ["proactive_detection", "trend_analysis", "capacity_forecasting"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": "P3",
-        "rules_triggered": ["SRE Agent proactive analysis"],
+      "required_features": [
+        "sre_agent",
+        "aiops_correlation"
+      ],
+      "features_demonstrated": [
+        "alert_correlation",
+        "dependency_mapping",
+        "blast_radius_analysis"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": "P1",
+      "rules_triggered": [
+        "SRE Agent multi-service correlation"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Capacity trending: API cluster projected to exceed limits in 4 hours",
-            "source": "prometheus",
-            "severity": "warning",
-            "custom_details": {
-              "pd_service": "Platform - Kubernetes/Platform",
-              "env": "production",
-              "current_cpu": "68%",
-              "projected_cpu_4h": "95%",
-              "trend": "increasing"
-            }
+          "summary": "Multiple services reporting errors - potential upstream failure",
+          "source": "datadog",
+          "severity": "critical",
+          "custom_details": {
+            "pd_service": "Platform - Kubernetes/Platform",
+            "env": "production",
+            "affected_services": [
+              "checkout",
+              "payment",
+              "inventory"
+            ],
+            "correlation_id": "upstream-auth-failure"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Multiple Alerts",
+          "action": "3 services reporting errors simultaneously"
         },
-        "orchestration_trace": [
-          {"stage": "Trend Detection", "action": "CPU usage trending upward"},
-          {"stage": "Forecast", "action": "Projected to reach 95% in 4 hours"},
-          {"stage": "Context Gathering", "action": "Marketing campaign starting tomorrow"},
-          {"stage": "Recommendation", "action": "Scale cluster from 5 to 8 nodes proactively"}
+        {
+          "stage": "SRE Agent Correlation",
+          "action": "Identifies common dependency: auth-service"
+        },
+        {
+          "stage": "Dependency Analysis",
+          "action": "Auth service is upstream of all affected services"
+        },
+        {
+          "stage": "Root Cause",
+          "action": "Auth service certificate expired"
+        },
+        {
+          "stage": "Recommendation",
+          "action": "Renew certificate on auth-service"
+        }
+      ],
+      "tier": "AI_AGENTS"
+    },
+    {
+      "id": "SRE-005",
+      "name": "Proactive Capacity Issue Prevention",
+      "description": "SRE Agent detects trending capacity issues and recommends scaling before outage",
+      "severity": "warning",
+      "tags": {
+        "industry": [
+          "technology",
+          "saas",
+          "ecommerce"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "devops"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_sre",
+          "proactive",
+          "capacity_planning"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_sre"
         ]
       },
-      {
-        "id": "SRE-006",
-        "name": "Learning from Past Incidents",
-        "description": "SRE Agent uses historical incident data to accelerate resolution of similar issues",
-        "severity": "error",
-        "tags": {
-          "industry": ["technology", "saas", "enterprise"],
-          "team_type": ["sre", "platform", "devops"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_sre", "learning", "historical_analysis"],
-          "integration": "datadog",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_sre"]
-        },
-        "required_features": ["sre_agent", "incident_history"],
-        "features_demonstrated": ["pattern_recognition", "historical_learning", "resolution_acceleration"],
-        "target_service": "App - Checkout Team",
-        "expected_priority": "P2",
-        "rules_triggered": ["SRE Agent historical pattern match"],
+      "required_features": [
+        "sre_agent",
+        "trend_analysis"
+      ],
+      "features_demonstrated": [
+        "proactive_detection",
+        "trend_analysis",
+        "capacity_forecasting"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": "P3",
+      "rules_triggered": [
+        "SRE Agent proactive analysis"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Checkout API response time degraded - 2.5s average",
-            "source": "datadog",
-            "severity": "error",
-            "custom_details": {
-              "pd_service": "App - Checkout Team",
-              "env": "production",
-              "response_time_ms": 2500,
-              "threshold_ms": 500
-            }
+          "summary": "Capacity trending: API cluster projected to exceed limits in 4 hours",
+          "source": "prometheus",
+          "severity": "warning",
+          "custom_details": {
+            "pd_service": "Platform - Kubernetes/Platform",
+            "env": "production",
+            "current_cpu": "68%",
+            "projected_cpu_4h": "95%",
+            "trend": "increasing"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Trend Detection",
+          "action": "CPU usage trending upward"
         },
-        "orchestration_trace": [
-          {"stage": "Alert Received", "action": "Response time degradation detected"},
-          {"stage": "Historical Search", "action": "Found 3 similar incidents in past 90 days"},
-          {"stage": "Pattern Match", "action": "All 3 resolved by clearing Redis cache"},
-          {"stage": "Confidence", "action": "High confidence (87%) - same symptoms"},
-          {"stage": "Recommendation", "action": "Clear checkout Redis cache"}
+        {
+          "stage": "Forecast",
+          "action": "Projected to reach 95% in 4 hours"
+        },
+        {
+          "stage": "Context Gathering",
+          "action": "Marketing campaign starting tomorrow"
+        },
+        {
+          "stage": "Recommendation",
+          "action": "Scale cluster from 5 to 8 nodes proactively"
+        }
+      ],
+      "tier": "AI_AGENTS",
+      "enabled": false
+    },
+    {
+      "id": "SRE-006",
+      "name": "Learning from Past Incidents",
+      "description": "SRE Agent uses historical incident data to accelerate resolution of similar issues",
+      "severity": "error",
+      "tags": {
+        "industry": [
+          "technology",
+          "saas",
+          "enterprise"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "devops"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_sre",
+          "learning",
+          "historical_analysis"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_sre"
         ]
       },
-      {
-        "id": "SCRIBE-001",
-        "name": "Automated Incident Timeline Documentation",
-        "description": "Scribe Agent automatically documents incident timeline with key events and actions",
-        "severity": "critical",
-        "tags": {
-          "industry": ["technology", "enterprise", "healthcare"],
-          "team_type": ["sre", "platform", "compliance"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_scribe", "documentation", "timeline"],
-          "integration": "datadog",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_scribe"]
-        },
-        "required_features": ["scribe_agent"],
-        "features_demonstrated": ["automatic_documentation", "timeline_generation", "action_logging"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": "P1",
-        "rules_triggered": ["Scribe Agent documentation trigger"],
+      "required_features": [
+        "sre_agent",
+        "incident_history"
+      ],
+      "features_demonstrated": [
+        "pattern_recognition",
+        "historical_learning",
+        "resolution_acceleration"
+      ],
+      "target_service": "App - Checkout Team",
+      "expected_priority": "P2",
+      "rules_triggered": [
+        "SRE Agent historical pattern match"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Major incident requiring detailed documentation",
-            "source": "datadog",
-            "severity": "critical",
-            "custom_details": {
-              "pd_service": "Platform - Kubernetes/Platform",
-              "env": "production",
-              "incident_type": "major_outage"
-            }
+          "summary": "Checkout API response time degraded - 2.5s average",
+          "source": "datadog",
+          "severity": "error",
+          "custom_details": {
+            "pd_service": "App - Checkout Team",
+            "env": "production",
+            "response_time_ms": 2500,
+            "threshold_ms": 500
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Alert Received",
+          "action": "Response time degradation detected"
         },
-        "orchestration_trace": [
-          {"stage": "Incident Start", "action": "Scribe Agent begins recording"},
-          {"stage": "Alert Capture", "action": "Initial alert details documented"},
-          {"stage": "Response Tracking", "action": "Responder actions automatically logged"},
-          {"stage": "Communication Log", "action": "Slack messages and decisions captured"},
-          {"stage": "Resolution", "action": "Timeline summary generated"}
+        {
+          "stage": "Historical Search",
+          "action": "Found 3 similar incidents in past 90 days"
+        },
+        {
+          "stage": "Pattern Match",
+          "action": "All 3 resolved by clearing Redis cache"
+        },
+        {
+          "stage": "Confidence",
+          "action": "High confidence (87%) - same symptoms"
+        },
+        {
+          "stage": "Recommendation",
+          "action": "Clear checkout Redis cache"
+        }
+      ],
+      "tier": "AI_AGENTS"
+    },
+    {
+      "id": "SCRIBE-001",
+      "name": "Automated Incident Timeline Documentation",
+      "description": "Scribe Agent automatically documents incident timeline with key events and actions",
+      "severity": "critical",
+      "tags": {
+        "industry": [
+          "technology",
+          "enterprise",
+          "healthcare"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "compliance"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_scribe",
+          "documentation",
+          "timeline"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_scribe"
         ]
       },
-      {
-        "id": "SCRIBE-002",
-        "name": "Automated Post-Incident Summary Generation",
-        "description": "Scribe Agent generates comprehensive post-incident summary for PIR preparation",
-        "severity": "critical",
-        "tags": {
-          "industry": ["technology", "enterprise", "fintech"],
-          "team_type": ["sre", "platform", "compliance"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_scribe", "pir", "summary_generation"],
-          "integration": "datadog",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_scribe"]
-        },
-        "required_features": ["scribe_agent"],
-        "features_demonstrated": ["summary_generation", "pir_preparation", "impact_analysis"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": "P1",
-        "rules_triggered": ["Scribe Agent PIR summary"],
+      "required_features": [
+        "scribe_agent"
+      ],
+      "features_demonstrated": [
+        "automatic_documentation",
+        "timeline_generation",
+        "action_logging"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": "P1",
+      "rules_triggered": [
+        "Scribe Agent documentation trigger"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Generate post-incident summary for PIR",
-            "source": "pagerduty-scribe-agent",
-            "severity": "critical",
-            "custom_details": {
-              "pd_service": "Platform - Kubernetes/Platform",
-              "env": "production",
-              "incident_duration_minutes": 45,
-              "services_affected": 3
-            }
+          "summary": "Major incident requiring detailed documentation",
+          "source": "datadog",
+          "severity": "critical",
+          "custom_details": {
+            "pd_service": "Platform - Kubernetes/Platform",
+            "env": "production",
+            "incident_type": "major_outage"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Incident Start",
+          "action": "Scribe Agent begins recording"
         },
-        "orchestration_trace": [
-          {"stage": "Resolution Detected", "action": "Incident resolved, summary generation triggered"},
-          {"stage": "Data Collection", "action": "Gather all incident artifacts"},
-          {"stage": "Impact Analysis", "action": "Calculate customer impact and duration"},
-          {"stage": "Summary Generation", "action": "Create executive summary and technical details"},
-          {"stage": "PIR Scheduling", "action": "Schedule review meeting with all responders"}
+        {
+          "stage": "Alert Capture",
+          "action": "Initial alert details documented"
+        },
+        {
+          "stage": "Response Tracking",
+          "action": "Responder actions automatically logged"
+        },
+        {
+          "stage": "Communication Log",
+          "action": "Slack messages and decisions captured"
+        },
+        {
+          "stage": "Resolution",
+          "action": "Timeline summary generated"
+        }
+      ],
+      "tier": "AI_AGENTS",
+      "enabled": false
+    },
+    {
+      "id": "SCRIBE-002",
+      "name": "Automated Post-Incident Summary Generation",
+      "description": "Scribe Agent generates comprehensive post-incident summary for PIR preparation",
+      "severity": "critical",
+      "tags": {
+        "industry": [
+          "technology",
+          "enterprise",
+          "fintech"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "compliance"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_scribe",
+          "pir",
+          "summary_generation"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_scribe"
         ]
       },
-      {
-        "id": "SCRIBE-003",
-        "name": "Knowledge Pattern Recognition",
-        "description": "Scribe Agent identifies recurring incident patterns and suggests runbook creation",
-        "severity": "warning",
-        "tags": {
-          "industry": ["technology", "enterprise", "saas"],
-          "team_type": ["sre", "platform", "devops"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_scribe", "pattern_recognition", "knowledge_management"],
-          "integration": "prometheus",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_scribe"]
-        },
-        "required_features": ["scribe_agent", "incident_history"],
-        "features_demonstrated": ["pattern_recognition", "knowledge_extraction", "runbook_suggestion"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": "P3",
-        "rules_triggered": ["Scribe Agent pattern analysis"],
+      "required_features": [
+        "scribe_agent"
+      ],
+      "features_demonstrated": [
+        "summary_generation",
+        "pir_preparation",
+        "impact_analysis"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": "P1",
+      "rules_triggered": [
+        "Scribe Agent PIR summary"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Recurring incident pattern detected - runbook opportunity",
-            "source": "pagerduty-scribe-agent",
-            "severity": "warning",
-            "custom_details": {
-              "pd_service": "Platform - Kubernetes/Platform",
-              "pattern": "redis_cache_exhaustion",
-              "occurrences": 5,
-              "last_30_days": true
-            }
+          "summary": "Generate post-incident summary for PIR",
+          "source": "pagerduty-scribe-agent",
+          "severity": "critical",
+          "custom_details": {
+            "pd_service": "Platform - Kubernetes/Platform",
+            "env": "production",
+            "incident_duration_minutes": 45,
+            "services_affected": 3
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Resolution Detected",
+          "action": "Incident resolved, summary generation triggered"
         },
-        "orchestration_trace": [
-          {"stage": "Pattern Analysis", "action": "5 similar incidents detected in 30 days"},
-          {"stage": "Resolution Comparison", "action": "All resolved with same steps"},
-          {"stage": "Suggestion", "action": "Recommend creating runbook for Redis cache clearing"},
-          {"stage": "Draft Generation", "action": "Auto-generate runbook draft from incident notes"}
+        {
+          "stage": "Data Collection",
+          "action": "Gather all incident artifacts"
+        },
+        {
+          "stage": "Impact Analysis",
+          "action": "Calculate customer impact and duration"
+        },
+        {
+          "stage": "Summary Generation",
+          "action": "Create executive summary and technical details"
+        },
+        {
+          "stage": "PIR Scheduling",
+          "action": "Schedule review meeting with all responders"
+        }
+      ],
+      "tier": "AI_AGENTS",
+      "enabled": false
+    },
+    {
+      "id": "SCRIBE-003",
+      "name": "Knowledge Pattern Recognition",
+      "description": "Scribe Agent identifies recurring incident patterns and suggests runbook creation",
+      "severity": "warning",
+      "tags": {
+        "industry": [
+          "technology",
+          "enterprise",
+          "saas"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "devops"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_scribe",
+          "pattern_recognition",
+          "knowledge_management"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_scribe"
         ]
       },
-      {
-        "id": "SHIFT-001",
-        "name": "Automated On-Call Handoff",
-        "description": "Shift Agent automates on-call handoff with context transfer and active incident reassignment",
-        "severity": "info",
-        "tags": {
-          "industry": ["technology", "enterprise", "saas"],
-          "team_type": ["sre", "platform", "noc"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_shift", "handoff", "context_transfer"],
-          "integration": "slack",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_shift"]
-        },
-        "required_features": ["shift_agent", "slack_integration"],
-        "features_demonstrated": ["automatic_handoff", "context_preservation", "incident_reassignment"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": null,
-        "rules_triggered": ["Shift Agent handoff automation"],
+      "required_features": [
+        "scribe_agent",
+        "incident_history"
+      ],
+      "features_demonstrated": [
+        "pattern_recognition",
+        "knowledge_extraction",
+        "runbook_suggestion"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": "P3",
+      "rules_triggered": [
+        "Scribe Agent pattern analysis"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "On-call rotation in 30 minutes - handoff preparation",
-            "source": "pagerduty-shift-agent",
-            "severity": "info",
-            "custom_details": {
-              "current_oncall": "Ginny Tonic",
-              "next_oncall": "Jim Beam",
-              "active_incidents": 1,
-              "rotation_in_minutes": 30
-            }
+          "summary": "Recurring incident pattern detected - runbook opportunity",
+          "source": "pagerduty-scribe-agent",
+          "severity": "warning",
+          "custom_details": {
+            "pd_service": "Platform - Kubernetes/Platform",
+            "pattern": "redis_cache_exhaustion",
+            "occurrences": 5,
+            "last_30_days": true
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Pattern Analysis",
+          "action": "5 similar incidents detected in 30 days"
         },
-        "orchestration_trace": [
-          {"stage": "Rotation Approaching", "action": "Detect handoff in 30 minutes"},
-          {"stage": "Context Preparation", "action": "Gather active incidents and notes"},
-          {"stage": "Handoff Message", "action": "Post context summary to incoming on-call"},
-          {"stage": "Confirmation", "action": "Incoming on-call confirms readiness"},
-          {"stage": "Transfer", "action": "Reassign incidents and update escalation"}
+        {
+          "stage": "Resolution Comparison",
+          "action": "All resolved with same steps"
+        },
+        {
+          "stage": "Suggestion",
+          "action": "Recommend creating runbook for Redis cache clearing"
+        },
+        {
+          "stage": "Draft Generation",
+          "action": "Auto-generate runbook draft from incident notes"
+        }
+      ],
+      "tier": "AI_AGENTS",
+      "enabled": false
+    },
+    {
+      "id": "SHIFT-001",
+      "name": "Automated On-Call Handoff",
+      "description": "Shift Agent automates on-call handoff with context transfer and active incident reassignment",
+      "severity": "info",
+      "tags": {
+        "industry": [
+          "technology",
+          "enterprise",
+          "saas"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "noc"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_shift",
+          "handoff",
+          "context_transfer"
+        ],
+        "integration": "slack",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_shift"
         ]
       },
-      {
-        "id": "SHIFT-002",
-        "name": "Schedule Coverage Gap Detection",
-        "description": "Shift Agent proactively identifies coverage gaps and requests substitutes",
-        "severity": "warning",
-        "tags": {
-          "industry": ["technology", "enterprise", "saas"],
-          "team_type": ["sre", "platform", "noc"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_shift", "coverage", "scheduling"],
-          "integration": "slack",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_shift"]
-        },
-        "required_features": ["shift_agent", "calendar_integration"],
-        "features_demonstrated": ["gap_detection", "coverage_request", "schedule_management"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": null,
-        "rules_triggered": ["Shift Agent coverage gap alert"],
+      "required_features": [
+        "shift_agent",
+        "slack_integration"
+      ],
+      "features_demonstrated": [
+        "automatic_handoff",
+        "context_preservation",
+        "incident_reassignment"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": null,
+      "rules_triggered": [
+        "Shift Agent handoff automation"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Coverage gap detected - Paddy Losty on PTO, no override configured",
-            "source": "pagerduty-shift-agent",
-            "severity": "warning",
-            "custom_details": {
-              "gap_start": "Tuesday 09:00",
-              "gap_end": "Wednesday 09:00",
-              "reason": "PTO synced from calendar",
-              "recommended_coverage": "Jack Daniels"
-            }
+          "summary": "On-call rotation in 30 minutes - handoff preparation",
+          "source": "pagerduty-shift-agent",
+          "severity": "info",
+          "custom_details": {
+            "current_oncall": "Ginny Tonic",
+            "next_oncall": "Jim Beam",
+            "active_incidents": 1,
+            "rotation_in_minutes": 30,
+            "pd_service": "Platform - Kubernetes/Platform"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Rotation Approaching",
+          "action": "Detect handoff in 30 minutes"
         },
-        "orchestration_trace": [
-          {"stage": "Gap Detected", "action": "PTO identified with no coverage"},
-          {"stage": "Analysis", "action": "Evaluate available responders"},
-          {"stage": "Recommendation", "action": "Jack Daniels - 78% schedule compatibility"},
-          {"stage": "Coverage Request", "action": "Send automated coverage request"},
-          {"stage": "Confirmation", "action": "Override created when accepted"}
+        {
+          "stage": "Context Preparation",
+          "action": "Gather active incidents and notes"
+        },
+        {
+          "stage": "Handoff Message",
+          "action": "Post context summary to incoming on-call"
+        },
+        {
+          "stage": "Confirmation",
+          "action": "Incoming on-call confirms readiness"
+        },
+        {
+          "stage": "Transfer",
+          "action": "Reassign incidents and update escalation"
+        }
+      ],
+      "tier": "AI_AGENTS",
+      "enabled": false
+    },
+    {
+      "id": "SHIFT-002",
+      "name": "Schedule Coverage Gap Detection",
+      "description": "Shift Agent proactively identifies coverage gaps and requests substitutes",
+      "severity": "warning",
+      "tags": {
+        "industry": [
+          "technology",
+          "enterprise",
+          "saas"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "noc"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_shift",
+          "coverage",
+          "scheduling"
+        ],
+        "integration": "slack",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_shift"
         ]
       },
-      {
-        "id": "SHIFT-003",
-        "name": "On-Call Load Balancing and Wellness",
-        "description": "Shift Agent monitors responder load and suggests schedule adjustments for wellness",
-        "severity": "info",
-        "tags": {
-          "industry": ["technology", "enterprise", "saas"],
-          "team_type": ["sre", "platform", "noc"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["agent_shift", "wellness", "load_balancing"],
-          "integration": "slack",
-          "tool_type": ["agent"],
-          "tool": ["pagerduty_agent_shift"]
-        },
-        "required_features": ["shift_agent", "incident_history"],
-        "features_demonstrated": ["workload_analysis", "wellness_monitoring", "fair_distribution"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": null,
-        "rules_triggered": ["Shift Agent wellness report"],
+      "required_features": [
+        "shift_agent",
+        "calendar_integration"
+      ],
+      "features_demonstrated": [
+        "gap_detection",
+        "coverage_request",
+        "schedule_management"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": null,
+      "rules_triggered": [
+        "Shift Agent coverage gap alert"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Weekly On-Call Wellness Report - attention required for Ginny Tonic",
-            "source": "pagerduty-shift-agent",
-            "severity": "info",
-            "custom_details": {
-              "period": "January 8-14",
-              "high_load_responder": "Ginny Tonic",
-              "incidents_handled": 12,
-              "sleep_interrupts": 4,
-              "recommendation": "Reduce next week load"
-            }
+          "summary": "Coverage gap detected - Paddy Losty on PTO, no override configured",
+          "source": "pagerduty-shift-agent",
+          "severity": "warning",
+          "custom_details": {
+            "gap_start": "Tuesday 09:00",
+            "gap_end": "Wednesday 09:00",
+            "reason": "PTO synced from calendar",
+            "recommended_coverage": "Jack Daniels",
+            "pd_service": "Platform - Kubernetes/Platform"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Gap Detected",
+          "action": "PTO identified with no coverage"
         },
-        "orchestration_trace": [
-          {"stage": "Weekly Analysis", "action": "Analyze on-call load across team"},
-          {"stage": "Load Report", "action": "Generate responder load summary"},
-          {"stage": "Wellness Alert", "action": "Flag high-load responders"},
-          {"stage": "Recommendation", "action": "Suggest schedule swaps for balance"},
-          {"stage": "Adjustment", "action": "Apply approved schedule changes"}
+        {
+          "stage": "Analysis",
+          "action": "Evaluate available responders"
+        },
+        {
+          "stage": "Recommendation",
+          "action": "Jack Daniels - 78% schedule compatibility"
+        },
+        {
+          "stage": "Coverage Request",
+          "action": "Send automated coverage request"
+        },
+        {
+          "stage": "Confirmation",
+          "action": "Override created when accepted"
+        }
+      ],
+      "tier": "AI_AGENTS",
+      "enabled": false
+    },
+    {
+      "id": "SHIFT-003",
+      "name": "On-Call Load Balancing and Wellness",
+      "description": "Shift Agent monitors responder load and suggests schedule adjustments for wellness",
+      "severity": "info",
+      "tags": {
+        "industry": [
+          "technology",
+          "enterprise",
+          "saas"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "noc"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "agent_shift",
+          "wellness",
+          "load_balancing"
+        ],
+        "integration": "slack",
+        "tool_type": [
+          "agent"
+        ],
+        "tool": [
+          "pagerduty_agent_shift"
         ]
       },
-      {
-        "id": "AA-001",
-        "name": "Automated Diagnostic Collection",
-        "description": "Automation Actions gather diagnostics immediately upon incident creation",
-        "severity": "critical",
-        "tags": {
-          "industry": ["technology", "saas", "ecommerce"],
-          "team_type": ["sre", "platform", "devops"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["automation_actions", "diagnostics", "enrichment"],
-          "integration": "datadog",
-          "tool_type": ["automation"],
-          "tool": ["runbook_automation"]
-        },
-        "required_features": ["automation_actions", "rba_runner"],
-        "features_demonstrated": ["automatic_diagnostics", "incident_enrichment", "reduced_mttd"],
-        "target_service": "Payments Ops",
-        "expected_priority": "P1",
-        "rules_triggered": ["Automation Action: Collect Diagnostics on P1/P2"],
+      "required_features": [
+        "shift_agent",
+        "incident_history"
+      ],
+      "features_demonstrated": [
+        "workload_analysis",
+        "wellness_monitoring",
+        "fair_distribution"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": null,
+      "rules_triggered": [
+        "Shift Agent wellness report"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "High CPU on payment-service - Automation collecting diagnostics",
-            "source": "datadog",
-            "severity": "critical",
-            "custom_details": {
-              "pd_service": "Payments Ops",
-              "env": "production",
-              "automation_action": "collect-diagnostics-payment-service",
-              "runner": "runner-gamma"
-            }
+          "summary": "Weekly On-Call Wellness Report - attention required for Ginny Tonic",
+          "source": "pagerduty-shift-agent",
+          "severity": "info",
+          "custom_details": {
+            "period": "January 8-14",
+            "high_load_responder": "Ginny Tonic",
+            "incidents_handled": 12,
+            "sleep_interrupts": 4,
+            "recommendation": "Reduce next week load",
+            "pd_service": "Platform - Kubernetes/Platform"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Weekly Analysis",
+          "action": "Analyze on-call load across team"
         },
-        "orchestration_trace": [
-          {"stage": "Incident Created", "action": "P1 incident triggers Automation Action"},
-          {"stage": "Diagnostic Collection", "action": "RBA job gathers pod status, logs, deployment history"},
-          {"stage": "Analysis", "action": "Identify memory leak in v2.3.4"},
-          {"stage": "Results Attached", "action": "Diagnostic summary added to incident notes"},
-          {"stage": "Responder Ready", "action": "On-call arrives with full context"}
+        {
+          "stage": "Load Report",
+          "action": "Generate responder load summary"
+        },
+        {
+          "stage": "Wellness Alert",
+          "action": "Flag high-load responders"
+        },
+        {
+          "stage": "Recommendation",
+          "action": "Suggest schedule swaps for balance"
+        },
+        {
+          "stage": "Adjustment",
+          "action": "Apply approved schedule changes"
+        }
+      ],
+      "tier": "AI_AGENTS",
+      "enabled": false
+    },
+    {
+      "id": "AA-001",
+      "name": "Automated Diagnostic Collection",
+      "description": "Automation Actions gather diagnostics immediately upon incident creation",
+      "severity": "critical",
+      "tags": {
+        "industry": [
+          "technology",
+          "saas",
+          "ecommerce"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "devops"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "automation_actions",
+          "diagnostics",
+          "enrichment"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "automation"
+        ],
+        "tool": [
+          "runbook_automation"
         ]
       },
-      {
-        "id": "AA-002",
-        "name": "Auto-Remediation with Approval Gate",
-        "description": "Automation Actions propose and execute remediation with human approval",
-        "severity": "error",
-        "tags": {
-          "industry": ["technology", "saas", "fintech"],
-          "team_type": ["sre", "platform", "devops"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["automation_actions", "remediation", "approval"],
-          "integration": "prometheus",
-          "tool_type": ["automation"],
-          "tool": ["runbook_automation"]
-        },
-        "required_features": ["automation_actions", "rba_runner", "approval_workflow"],
-        "features_demonstrated": ["auto_remediation", "approval_gates", "safe_execution"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": "P2",
-        "rules_triggered": ["Automation Action: Remediation with approval"],
+      "required_features": [
+        "automation_actions",
+        "rba_runner"
+      ],
+      "features_demonstrated": [
+        "automatic_diagnostics",
+        "incident_enrichment",
+        "reduced_mttd"
+      ],
+      "target_service": "Payments Ops",
+      "expected_priority": "P1",
+      "rules_triggered": [
+        "Automation Action: Collect Diagnostics on P1/P2"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Memory pressure detected - automated remediation available",
-            "source": "prometheus",
-            "severity": "error",
-            "custom_details": {
-              "pd_service": "Platform - Kubernetes/Platform",
-              "env": "production",
-              "proposed_action": "Clear application cache",
-              "approval_required": true
-            }
+          "summary": "High CPU on payment-service - Automation collecting diagnostics",
+          "source": "datadog",
+          "severity": "critical",
+          "custom_details": {
+            "pd_service": "Payments Ops",
+            "env": "production",
+            "automation_action": "collect-diagnostics-payment-service",
+            "runner": "runner-gamma"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Incident Created",
+          "action": "P1 incident triggers Automation Action"
         },
-        "orchestration_trace": [
-          {"stage": "Alert", "action": "Memory pressure detected"},
-          {"stage": "Remediation Proposed", "action": "Clear cache recommended"},
-          {"stage": "Approval Request", "action": "Sent to on-call for approval"},
-          {"stage": "Approved", "action": "On-call approves action"},
-          {"stage": "Execution", "action": "Cache cleared, memory normalized"}
+        {
+          "stage": "Diagnostic Collection",
+          "action": "RBA job gathers pod status, logs, deployment history"
+        },
+        {
+          "stage": "Analysis",
+          "action": "Identify memory leak in v2.3.4"
+        },
+        {
+          "stage": "Results Attached",
+          "action": "Diagnostic summary added to incident notes"
+        },
+        {
+          "stage": "Responder Ready",
+          "action": "On-call arrives with full context"
+        }
+      ],
+      "tier": "AUTOMATION",
+      "enabled": false
+    },
+    {
+      "id": "AA-002",
+      "name": "Auto-Remediation with Approval Gate",
+      "description": "Automation Actions propose and execute remediation with human approval",
+      "severity": "error",
+      "tags": {
+        "industry": [
+          "technology",
+          "saas",
+          "fintech"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "devops"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "automation_actions",
+          "remediation",
+          "approval"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "automation"
+        ],
+        "tool": [
+          "runbook_automation"
         ]
       },
-      {
-        "id": "AA-003",
-        "name": "Cascading Automation for Complex Issues",
-        "description": "Multiple Automation Actions chain together for complex incident response",
-        "severity": "critical",
-        "tags": {
-          "industry": ["technology", "enterprise", "fintech"],
-          "team_type": ["sre", "platform", "noc"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["automation_actions", "cascading", "complex_remediation"],
-          "integration": "datadog",
-          "tool_type": ["automation"],
-          "tool": ["runbook_automation"]
-        },
-        "required_features": ["automation_actions", "rba_runner", "workflow_automation"],
-        "features_demonstrated": ["cascading_automation", "complex_orchestration", "multi_step_remediation"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": "P1",
-        "rules_triggered": ["Automation Action: Cascading response"],
+      "required_features": [
+        "automation_actions",
+        "rba_runner",
+        "approval_workflow"
+      ],
+      "features_demonstrated": [
+        "auto_remediation",
+        "approval_gates",
+        "safe_execution"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": "P2",
+      "rules_triggered": [
+        "Automation Action: Remediation with approval"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Complex infrastructure issue - cascading automation engaged",
-            "source": "datadog",
-            "severity": "critical",
-            "custom_details": {
-              "pd_service": "Platform - Kubernetes/Platform",
-              "env": "production",
-              "automation_chain": ["diagnostics", "traffic_drain", "restart", "verify"]
-            }
+          "summary": "Memory pressure detected - automated remediation available",
+          "source": "prometheus",
+          "severity": "error",
+          "custom_details": {
+            "pd_service": "Platform - Kubernetes/Platform",
+            "env": "production",
+            "proposed_action": "Clear application cache",
+            "approval_required": true
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Alert",
+          "action": "Memory pressure detected"
         },
-        "orchestration_trace": [
-          {"stage": "Trigger", "action": "Complex issue detected"},
-          {"stage": "Step 1", "action": "Diagnostics collected"},
-          {"stage": "Step 2", "action": "Traffic drained from affected pod"},
-          {"stage": "Step 3", "action": "Pod restarted with new config"},
-          {"stage": "Step 4", "action": "Health verification passed"},
-          {"stage": "Traffic Restore", "action": "Traffic restored, incident resolved"}
+        {
+          "stage": "Remediation Proposed",
+          "action": "Clear cache recommended"
+        },
+        {
+          "stage": "Approval Request",
+          "action": "Sent to on-call for approval"
+        },
+        {
+          "stage": "Approved",
+          "action": "On-call approves action"
+        },
+        {
+          "stage": "Execution",
+          "action": "Cache cleared, memory normalized"
+        }
+      ],
+      "tier": "AUTOMATION",
+      "enabled": false
+    },
+    {
+      "id": "AA-003",
+      "name": "Cascading Automation for Complex Issues",
+      "description": "Multiple Automation Actions chain together for complex incident response",
+      "severity": "critical",
+      "tags": {
+        "industry": [
+          "technology",
+          "enterprise",
+          "fintech"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "noc"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "automation_actions",
+          "cascading",
+          "complex_remediation"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "automation"
+        ],
+        "tool": [
+          "runbook_automation"
         ]
       },
-      {
-        "id": "RBA-001",
-        "name": "Interactive Database Failover Runbook",
-        "description": "Complex runbook with decision points and human checkpoints for database failover",
-        "severity": "critical",
-        "tags": {
-          "industry": ["healthcare", "fintech", "enterprise"],
-          "team_type": ["dba", "sre", "platform"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["runbook_automation", "interactive", "compliance"],
-          "integration": "prometheus",
-          "tool_type": ["automation"],
-          "tool": ["runbook_automation"]
-        },
-        "required_features": ["runbook_automation", "rba_runner", "database_access"],
-        "features_demonstrated": ["interactive_runbook", "decision_points", "compliance_documentation"],
-        "target_service": "Platform - DBRE",
-        "expected_priority": "P1",
-        "rules_triggered": ["Manual runbook invocation"],
+      "required_features": [
+        "automation_actions",
+        "rba_runner",
+        "workflow_automation"
+      ],
+      "features_demonstrated": [
+        "cascading_automation",
+        "complex_orchestration",
+        "multi_step_remediation"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": "P1",
+      "rules_triggered": [
+        "Automation Action: Cascading response"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Database failover required - interactive runbook initiated",
-            "source": "manual-invocation",
-            "severity": "critical",
-            "custom_details": {
-              "pd_service": "Platform - DBRE",
-              "env": "production",
-              "runbook": "database-failover",
-              "database": "primary-postgres"
-            }
+          "summary": "Complex infrastructure issue - cascading automation engaged",
+          "source": "datadog",
+          "severity": "critical",
+          "custom_details": {
+            "pd_service": "Platform - Kubernetes/Platform",
+            "env": "production",
+            "automation_chain": [
+              "diagnostics",
+              "traffic_drain",
+              "restart",
+              "verify"
+            ]
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Trigger",
+          "action": "Complex issue detected"
         },
-        "orchestration_trace": [
-          {"stage": "Pre-Flight Checks", "action": "Secondary healthy, replication lag 0.2s"},
-          {"stage": "Human Confirmation", "action": "Operator confirms proceed"},
-          {"stage": "Service Notification", "action": "Dependent services notified"},
-          {"stage": "Failover Execution", "action": "Secondary promoted to primary"},
-          {"stage": "Verification", "action": "Operator verifies connectivity"},
-          {"stage": "Completion", "action": "Compliance report generated, 12s downtime"}
+        {
+          "stage": "Step 1",
+          "action": "Diagnostics collected"
+        },
+        {
+          "stage": "Step 2",
+          "action": "Traffic drained from affected pod"
+        },
+        {
+          "stage": "Step 3",
+          "action": "Pod restarted with new config"
+        },
+        {
+          "stage": "Step 4",
+          "action": "Health verification passed"
+        },
+        {
+          "stage": "Traffic Restore",
+          "action": "Traffic restored, incident resolved"
+        }
+      ],
+      "tier": "AUTOMATION",
+      "enabled": false
+    },
+    {
+      "id": "RBA-001",
+      "name": "Interactive Database Failover Runbook",
+      "description": "Complex runbook with decision points and human checkpoints for database failover",
+      "severity": "critical",
+      "tags": {
+        "industry": [
+          "healthcare",
+          "fintech",
+          "enterprise"
+        ],
+        "team_type": [
+          "dba",
+          "sre",
+          "platform"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "runbook_automation",
+          "interactive",
+          "compliance"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "automation"
+        ],
+        "tool": [
+          "runbook_automation"
         ]
       },
-      {
-        "id": "RBA-002",
-        "name": "Scheduled Maintenance Runbook",
-        "description": "RBA executes scheduled maintenance with automatic rollback on failure",
-        "severity": "info",
-        "tags": {
-          "industry": ["telecom", "enterprise", "technology"],
-          "team_type": ["noc", "platform", "sre"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["runbook_automation", "scheduled", "rollback"],
-          "integration": "prometheus",
-          "tool_type": ["automation"],
-          "tool": ["runbook_automation"]
-        },
-        "required_features": ["runbook_automation", "rba_runner", "maintenance_windows"],
-        "features_demonstrated": ["scheduled_execution", "staged_rollout", "automatic_rollback"],
-        "target_service": "Platform - Network",
-        "expected_priority": null,
-        "rules_triggered": ["Scheduled maintenance window"],
+      "required_features": [
+        "runbook_automation",
+        "rba_runner",
+        "database_access"
+      ],
+      "features_demonstrated": [
+        "interactive_runbook",
+        "decision_points",
+        "compliance_documentation"
+      ],
+      "target_service": "Platform - DBRE",
+      "expected_priority": "P1",
+      "rules_triggered": [
+        "Manual runbook invocation"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Scheduled maintenance: Network equipment upgrade",
-            "source": "scheduled",
-            "severity": "info",
-            "custom_details": {
-              "pd_service": "Platform - Network",
-              "maintenance_window": "Sunday 02:00 UTC",
-              "runbook": "network-equipment-upgrade"
-            }
+          "summary": "Database failover required - interactive runbook initiated",
+          "source": "manual-invocation",
+          "severity": "critical",
+          "custom_details": {
+            "pd_service": "Platform - DBRE",
+            "env": "production",
+            "runbook": "database-failover",
+            "database": "primary-postgres"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Pre-Flight Checks",
+          "action": "Secondary healthy, replication lag 0.2s"
         },
-        "orchestration_trace": [
-          {"stage": "Window Start", "action": "Maintenance runbook auto-starts"},
-          {"stage": "Snapshot", "action": "Pre-maintenance configuration backed up"},
-          {"stage": "Stage 1", "action": "Router-edge-01 upgraded successfully"},
-          {"stage": "Stage 2", "action": "Router-edge-02 health check failed"},
-          {"stage": "Rollback", "action": "Automatic rollback triggered"},
-          {"stage": "Incident Created", "action": "Maintenance failed incident for review"}
+        {
+          "stage": "Human Confirmation",
+          "action": "Operator confirms proceed"
+        },
+        {
+          "stage": "Service Notification",
+          "action": "Dependent services notified"
+        },
+        {
+          "stage": "Failover Execution",
+          "action": "Secondary promoted to primary"
+        },
+        {
+          "stage": "Verification",
+          "action": "Operator verifies connectivity"
+        },
+        {
+          "stage": "Completion",
+          "action": "Compliance report generated, 12s downtime"
+        }
+      ],
+      "tier": "AUTOMATION",
+      "enabled": false
+    },
+    {
+      "id": "RBA-002",
+      "name": "Scheduled Maintenance Runbook",
+      "description": "RBA executes scheduled maintenance with automatic rollback on failure",
+      "severity": "info",
+      "tags": {
+        "industry": [
+          "telecom",
+          "enterprise",
+          "technology"
+        ],
+        "team_type": [
+          "noc",
+          "platform",
+          "sre"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "runbook_automation",
+          "scheduled",
+          "rollback"
+        ],
+        "integration": "prometheus",
+        "tool_type": [
+          "automation"
+        ],
+        "tool": [
+          "runbook_automation"
         ]
       },
-      {
-        "id": "RBA-003",
-        "name": "Self-Service Runbooks for L1 Support",
-        "description": "RBAC-controlled runbooks enabling L1 to handle complex troubleshooting safely",
-        "severity": "warning",
-        "tags": {
-          "industry": ["msp", "enterprise", "saas"],
-          "team_type": ["support", "noc", "l1"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["runbook_automation", "self_service", "rbac"],
-          "integration": "uptimerobot",
-          "tool_type": ["automation"],
-          "tool": ["runbook_automation"]
-        },
-        "required_features": ["runbook_automation", "rba_runner", "rbac"],
-        "features_demonstrated": ["self_service", "guided_troubleshooting", "safe_escalation"],
-        "target_service": "App - Checkout Team",
-        "expected_priority": "P3",
-        "rules_triggered": ["L1 runbook invocation"],
+      "required_features": [
+        "runbook_automation",
+        "rba_runner",
+        "maintenance_windows"
+      ],
+      "features_demonstrated": [
+        "scheduled_execution",
+        "staged_rollout",
+        "automatic_rollback"
+      ],
+      "target_service": "Platform - Network",
+      "expected_priority": null,
+      "rules_triggered": [
+        "Scheduled maintenance window"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Customer Portal Slow Response - L1 troubleshooting",
-            "source": "uptimerobot",
-            "severity": "warning",
-            "custom_details": {
-              "pd_service": "App - Checkout Team",
-              "env": "production",
-              "runbook": "customer-portal-troubleshooting",
-              "access_level": "L1"
-            }
+          "summary": "Scheduled maintenance: Network equipment upgrade",
+          "source": "scheduled",
+          "severity": "info",
+          "custom_details": {
+            "pd_service": "Platform - Network",
+            "maintenance_window": "Sunday 02:00 UTC",
+            "runbook": "network-equipment-upgrade"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Window Start",
+          "action": "Maintenance runbook auto-starts"
         },
-        "orchestration_trace": [
-          {"stage": "L1 Receives Alert", "action": "Acknowledges and sees suggested runbooks"},
-          {"stage": "Runbook Start", "action": "Selects Slow page loads path"},
-          {"stage": "Diagnostics", "action": "CDN healthy, origin slow, database query slow"},
-          {"stage": "Root Cause", "action": "Missing index identified"},
-          {"stage": "L1 Action", "action": "Restarts app pool (temporary fix)"},
-          {"stage": "Escalation", "action": "Escalates to L2 with full context for index fix"}
+        {
+          "stage": "Snapshot",
+          "action": "Pre-maintenance configuration backed up"
+        },
+        {
+          "stage": "Stage 1",
+          "action": "Router-edge-01 upgraded successfully"
+        },
+        {
+          "stage": "Stage 2",
+          "action": "Router-edge-02 health check failed"
+        },
+        {
+          "stage": "Rollback",
+          "action": "Automatic rollback triggered"
+        },
+        {
+          "stage": "Incident Created",
+          "action": "Maintenance failed incident for review"
+        }
+      ],
+      "tier": "AUTOMATION",
+      "enabled": false
+    },
+    {
+      "id": "RBA-003",
+      "name": "Self-Service Runbooks for L1 Support",
+      "description": "RBAC-controlled runbooks enabling L1 to handle complex troubleshooting safely",
+      "severity": "warning",
+      "tags": {
+        "industry": [
+          "msp",
+          "enterprise",
+          "saas"
+        ],
+        "team_type": [
+          "support",
+          "noc",
+          "l1"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "runbook_automation",
+          "self_service",
+          "rbac"
+        ],
+        "integration": "uptimerobot",
+        "tool_type": [
+          "automation"
+        ],
+        "tool": [
+          "runbook_automation"
         ]
       },
-      {
-        "id": "RBA-004",
-        "name": "Infrastructure Provisioning Runbook",
-        "description": "On-demand infrastructure provisioning with cost tracking and approval workflows",
-        "severity": "info",
-        "tags": {
-          "industry": ["technology", "saas", "enterprise"],
-          "team_type": ["devops", "platform", "sre"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["runbook_automation", "provisioning", "cost_tracking"],
-          "integration": "github_actions",
-          "tool_type": ["automation"],
-          "tool": ["runbook_automation"]
-        },
-        "required_features": ["runbook_automation", "rba_runner", "terraform"],
-        "features_demonstrated": ["self_service_infra", "cost_approval", "iac_execution"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": null,
-        "rules_triggered": ["Service request triggers provisioning"],
+      "required_features": [
+        "runbook_automation",
+        "rba_runner",
+        "rbac"
+      ],
+      "features_demonstrated": [
+        "self_service",
+        "guided_troubleshooting",
+        "safe_escalation"
+      ],
+      "target_service": "App - Checkout Team",
+      "expected_priority": "P3",
+      "rules_triggered": [
+        "L1 runbook invocation"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Environment provisioning request: staging for feature-X",
-            "source": "service-request",
-            "severity": "info",
-            "custom_details": {
-              "pd_service": "Platform - Kubernetes/Platform",
-              "requestor": "dev-sarah",
-              "environment_type": "staging",
-              "estimated_cost": "$45/week"
-            }
+          "summary": "Customer Portal Slow Response - L1 troubleshooting",
+          "source": "uptimerobot",
+          "severity": "warning",
+          "custom_details": {
+            "pd_service": "App - Checkout Team",
+            "env": "production",
+            "runbook": "customer-portal-troubleshooting",
+            "access_level": "L1"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "L1 Receives Alert",
+          "action": "Acknowledges and sees suggested runbooks"
         },
-        "orchestration_trace": [
-          {"stage": "Request Received", "action": "Developer requests staging environment"},
-          {"stage": "Cost Calculation", "action": "Estimated $45/week - auto-approved"},
-          {"stage": "Terraform Plan", "action": "12 resources to create"},
-          {"stage": "Terraform Apply", "action": "Namespace, pods, services created"},
-          {"stage": "Post-Setup", "action": "Test data seeded, monitoring configured"},
-          {"stage": "Ready", "action": "Environment URL provided, 7-day expiry set"}
+        {
+          "stage": "Runbook Start",
+          "action": "Selects Slow page loads path"
+        },
+        {
+          "stage": "Diagnostics",
+          "action": "CDN healthy, origin slow, database query slow"
+        },
+        {
+          "stage": "Root Cause",
+          "action": "Missing index identified"
+        },
+        {
+          "stage": "L1 Action",
+          "action": "Restarts app pool (temporary fix)"
+        },
+        {
+          "stage": "Escalation",
+          "action": "Escalates to L2 with full context for index fix"
+        }
+      ],
+      "tier": "AUTOMATION",
+      "enabled": false
+    },
+    {
+      "id": "RBA-004",
+      "name": "Infrastructure Provisioning Runbook",
+      "description": "On-demand infrastructure provisioning with cost tracking and approval workflows",
+      "severity": "info",
+      "tags": {
+        "industry": [
+          "technology",
+          "saas",
+          "enterprise"
+        ],
+        "team_type": [
+          "devops",
+          "platform",
+          "sre"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "runbook_automation",
+          "provisioning",
+          "cost_tracking"
+        ],
+        "integration": "github_actions",
+        "tool_type": [
+          "automation"
+        ],
+        "tool": [
+          "runbook_automation"
         ]
       },
-      {
-        "id": "COMBO-001",
-        "name": "Full Incident Automation Pipeline",
-        "description": "End-to-end automation from alert correlation through remediation with continuous learning",
-        "severity": "critical",
-        "tags": {
-          "industry": ["enterprise", "technology", "fintech"],
-          "team_type": ["sre", "platform", "noc"],
-          "org_style": ["structured", "enterprise"],
-          "features": ["automation_actions", "runbook_automation", "aiops", "learning"],
-          "integration": "datadog",
-          "tool_type": ["automation", "agent"],
-          "tool": ["runbook_automation", "pagerduty_agent_sre"]
-        },
-        "required_features": ["automation_actions", "rba_runner", "aiops", "ml_patterns"],
-        "features_demonstrated": ["full_automation", "human_in_loop", "continuous_improvement"],
-        "target_service": "Platform - Kubernetes/Platform",
-        "expected_priority": "P1",
-        "rules_triggered": ["Full automation pipeline"],
+      "required_features": [
+        "runbook_automation",
+        "rba_runner",
+        "terraform"
+      ],
+      "features_demonstrated": [
+        "self_service_infra",
+        "cost_approval",
+        "iac_execution"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": null,
+      "rules_triggered": [
+        "Service request triggers provisioning"
+      ],
+      "payload": {
+        "event_action": "trigger",
         "payload": {
-          "event_action": "trigger",
-          "payload": {
-            "summary": "Multi-tool correlation: API errors + response time degradation",
-            "source": "datadog",
-            "severity": "critical",
-            "custom_details": {
-              "pd_service": "Platform - Kubernetes/Platform",
-              "env": "production",
-              "correlated_sources": ["datadog", "newrelic"],
-              "pattern_match": "post-deployment-error-spike"
-            }
+          "summary": "Environment provisioning request: staging for feature-X",
+          "source": "service-request",
+          "severity": "info",
+          "custom_details": {
+            "pd_service": "Platform - Kubernetes/Platform",
+            "requestor": "dev-sarah",
+            "environment_type": "staging",
+            "estimated_cost": "$45/week"
           }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Request Received",
+          "action": "Developer requests staging environment"
         },
-        "orchestration_trace": [
-          {"stage": "Correlation", "action": "Datadog + New Relic alerts correlated"},
-          {"stage": "Enrichment", "action": "Diagnostics collected, deployment detected"},
-          {"stage": "Pattern Match", "action": "94% confidence - known deployment issue"},
-          {"stage": "Proposal", "action": "Rollback recommended, 100% historical success"},
-          {"stage": "Human Approval", "action": "On-call approves in 45 seconds"},
-          {"stage": "Execution", "action": "Rollback completed, health restored"},
-          {"stage": "Learning", "action": "Pattern confidence increased for future"}
+        {
+          "stage": "Cost Calculation",
+          "action": "Estimated $45/week - auto-approved"
+        },
+        {
+          "stage": "Terraform Plan",
+          "action": "12 resources to create"
+        },
+        {
+          "stage": "Terraform Apply",
+          "action": "Namespace, pods, services created"
+        },
+        {
+          "stage": "Post-Setup",
+          "action": "Test data seeded, monitoring configured"
+        },
+        {
+          "stage": "Ready",
+          "action": "Environment URL provided, 7-day expiry set"
+        }
+      ],
+      "tier": "AUTOMATION",
+      "enabled": false
+    },
+    {
+      "id": "COMBO-001",
+      "name": "Full Incident Automation Pipeline",
+      "description": "End-to-end automation from alert correlation through remediation with continuous learning",
+      "severity": "critical",
+      "tags": {
+        "industry": [
+          "enterprise",
+          "technology",
+          "fintech"
+        ],
+        "team_type": [
+          "sre",
+          "platform",
+          "noc"
+        ],
+        "org_style": [
+          "structured",
+          "enterprise"
+        ],
+        "features": [
+          "automation_actions",
+          "runbook_automation",
+          "aiops",
+          "learning"
+        ],
+        "integration": "datadog",
+        "tool_type": [
+          "automation",
+          "agent"
+        ],
+        "tool": [
+          "runbook_automation",
+          "pagerduty_agent_sre"
         ]
-      }
+      },
+      "required_features": [
+        "automation_actions",
+        "rba_runner",
+        "aiops",
+        "ml_patterns"
+      ],
+      "features_demonstrated": [
+        "full_automation",
+        "human_in_loop",
+        "continuous_improvement"
+      ],
+      "target_service": "Platform - Kubernetes/Platform",
+      "expected_priority": "P1",
+      "rules_triggered": [
+        "Full automation pipeline"
+      ],
+      "payload": {
+        "event_action": "trigger",
+        "payload": {
+          "summary": "Multi-tool correlation: API errors + response time degradation",
+          "source": "datadog",
+          "severity": "critical",
+          "custom_details": {
+            "pd_service": "Platform - Kubernetes/Platform",
+            "env": "production",
+            "correlated_sources": [
+              "datadog",
+              "newrelic"
+            ],
+            "pattern_match": "post-deployment-error-spike"
+          }
+        }
+      },
+      "orchestration_trace": [
+        {
+          "stage": "Correlation",
+          "action": "Datadog + New Relic alerts correlated"
+        },
+        {
+          "stage": "Enrichment",
+          "action": "Diagnostics collected, deployment detected"
+        },
+        {
+          "stage": "Pattern Match",
+          "action": "94% confidence - known deployment issue"
+        },
+        {
+          "stage": "Proposal",
+          "action": "Rollback recommended, 100% historical success"
+        },
+        {
+          "stage": "Human Approval",
+          "action": "On-call approves in 45 seconds"
+        },
+        {
+          "stage": "Execution",
+          "action": "Rollback completed, health restored"
+        },
+        {
+          "stage": "Learning",
+          "action": "Pattern confidence increased for future"
+        }
+      ],
+      "tier": "COMBINED",
+      "enabled": false
+    }
   ],
   "integrations": {
     "prometheus": {

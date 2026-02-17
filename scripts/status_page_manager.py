@@ -232,67 +232,177 @@ def post_status_update(page_id: str, message: str):
             "status": "investigating"
         }
     }
-    
+
     api_request("POST", f"/status_pages/{page_id}/status_updates", update_data)
     print(f"✓ Posted status update: {message}")
 
 
+def get_status_page_statuses(page_id: str) -> List[Dict]:
+    """Fetch available statuses from the status page API."""
+    result = api_request("GET", f"/status_pages/{page_id}/statuses")
+    return result.get("statuses", [])
+
+
+def get_status_page_severities(page_id: str) -> List[Dict]:
+    """Fetch available severities from the status page API."""
+    result = api_request("GET", f"/status_pages/{page_id}/severities")
+    return result.get("severities", [])
+
+
+def get_status_page_impacts(page_id: str) -> List[Dict]:
+    """Fetch available impacts from the status page API."""
+    result = api_request("GET", f"/status_pages/{page_id}/impacts")
+    return result.get("impacts", [])
+
+
+def get_status_page_services(page_id: str) -> List[Dict]:
+    """Fetch available services from the status page API."""
+    result = api_request("GET", f"/status_pages/{page_id}/services")
+    return result.get("services", [])
+
+
+def find_by_name(items: List[Dict], name: str) -> Optional[Dict]:
+    """Find an item in a list by name (case-insensitive)."""
+    return next((i for i in items if i.get("name", "").lower() == name.lower()), None)
+
+
 def create_incident(page_id: str, title: str, message: str, components: List[str], impact: str = "minor"):
     """Create an incident on the status page.
-    
+
     Impact values: none, minor, major, critical
+    Status values: investigating, identified, monitoring, resolved
+    Severity values: minor, major, critical
     """
     print(f"\n=== Creating Status Page Incident ===\n")
-    
-    # Get component IDs
-    result = api_request("GET", f"/status_pages/{page_id}/components")
-    all_components = result.get("components", [])
-    
-    component_ids = []
+
+    statuses = get_status_page_statuses(page_id)
+    severities = get_status_page_severities(page_id)
+    impacts = get_status_page_impacts(page_id)
+    services = get_status_page_services(page_id)
+
+    status_obj = find_by_name(statuses, "Investigating")
+    if not status_obj:
+        status_obj = statuses[0] if statuses else None
+    if not status_obj:
+        raise ValueError("No statuses available on this status page")
+
+    severity_obj = find_by_name(severities, impact)
+    if not severity_obj:
+        severity_obj = severities[0] if severities else None
+    if not severity_obj:
+        raise ValueError("No severities available on this status page")
+
+    impact_obj = find_by_name(impacts, impact)
+    if not impact_obj:
+        impact_obj = impacts[0] if impacts else None
+    if not impact_obj:
+        raise ValueError("No impacts available on this status page")
+
+    impacted_services = []
     for comp_name in components:
-        comp = next((c for c in all_components if c["name"] == comp_name), None)
-        if comp:
-            component_ids.append(comp["id"])
+        svc = find_by_name(services, comp_name)
+        if svc:
+            impacted_services.append({
+                "id": svc["id"],
+                "type": "status_page_service"
+            })
         else:
-            print(f"Warning: Component '{comp_name}' not found")
-    
-    incident_data = {
-        "incident": {
-            "name": title,
-            "status": "investigating",
-            "impact": impact,
-            "body": message,
-            "component_ids": component_ids
+            print(f"Warning: Service '{comp_name}' not found on status page")
+
+    now = datetime.now(timezone.utc).isoformat()
+
+    post_data = {
+        "post": {
+            "post_type": "incident",
+            "title": title,
+            "starts_at": None,
+            "ends_at": None,
+            "status": {
+                "id": status_obj["id"],
+                "type": "status_page_status"
+            },
+            "severity": {
+                "id": severity_obj["id"],
+                "type": "status_page_severity"
+            },
+            "impact": {
+                "id": impact_obj["id"],
+                "type": "status_page_impact"
+            },
+            "impacted_services": impacted_services,
+            "updates": [
+                {
+                    "body": message,
+                    "status": {
+                        "id": status_obj["id"],
+                        "type": "status_page_status"
+                    },
+                    "severity": {
+                        "id": severity_obj["id"],
+                        "type": "status_page_severity"
+                    },
+                    "impacted_services": impacted_services,
+                    "update_frequency_ms": 1800000,
+                    "notify_subscribers": True,
+                    "reported_at": now,
+                    "type": "status_page_post_update"
+                }
+            ]
         }
     }
-    
-    result = api_request("POST", f"/status_pages/{page_id}/incidents", incident_data)
-    incident_id = result["incident"]["id"]
-    
+
+    result = api_request("POST", f"/status_pages/{page_id}/posts", post_data)
+    post_id = result["post"]["id"]
+
     print(f"✓ Created incident: {title}")
-    print(f"  ID: {incident_id}")
+    print(f"  ID: {post_id}")
     print(f"  Impact: {impact}")
-    print(f"  Affected components: {', '.join(components)}")
-    
-    return incident_id
+    print(f"  Affected services: {', '.join(components)}")
+
+    return post_id
 
 
-def update_incident(page_id: str, incident_id: str, status: str, message: str):
-    """Update an existing incident.
-    
+def update_incident(page_id: str, post_id: str, status: str, message: str):
+    """Update an existing incident post.
+
     Status values: investigating, identified, monitoring, resolved
     """
     print(f"\n=== Updating Incident ===\n")
-    
+
+    statuses = get_status_page_statuses(page_id)
+    severities = get_status_page_severities(page_id)
+
+    status_obj = find_by_name(statuses, status)
+    if not status_obj:
+        status_obj = statuses[0] if statuses else None
+    if not status_obj:
+        raise ValueError(f"Status '{status}' not found on this status page")
+
+    severity_obj = severities[0] if severities else None
+
+    now = datetime.now(timezone.utc).isoformat()
+
     update_data = {
-        "incident": {
-            "status": status,
-            "body": message
+        "post_update": {
+            "body": message,
+            "status": {
+                "id": status_obj["id"],
+                "type": "status_page_status"
+            },
+            "severity": {
+                "id": severity_obj["id"],
+                "type": "status_page_severity"
+            },
+            "impacted_services": [],
+            "update_frequency_ms": 1800000,
+            "notify_subscribers": True,
+            "reported_at": now,
+            "type": "status_page_post_update"
         }
     }
-    
-    api_request("PUT", f"/status_pages/{page_id}/incidents/{incident_id}", update_data)
-    print(f"✓ Updated incident {incident_id} to '{status}'")
+
+    api_request("POST", f"/status_pages/{page_id}/posts/{post_id}/post_updates", update_data)
+    print(f"✓ Updated incident {post_id} to '{status}'")
 
 
 def demo_incident_flow(page_id: str):

@@ -7,19 +7,24 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional, Dict, Any, List
 from enum import Enum
+import boto3
 
 from shared import (
     PagerDutyClient, SlackClient, SlackNotifier,
-    DEMO_USERS, PAGERDUTY_TO_SLACK_USER_MAP, 
-    CONALL_EMAIL, CONALL_SLACK_USER_ID
+    DEMO_USERS, PAGERDUTY_TO_SLACK_USER_MAP,
+    CONALL_EMAIL, CONALL_SLACK_USER_ID, CONALL_SLACK_USER_ID_PERSONAL
 )
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 SCENARIOS_FILE = os.environ.get('SCENARIOS_FILE', '/var/task/scenarios.json')
-DEFAULT_ACTION_DELAY_MIN = int(os.environ.get('ACTION_DELAY_MIN', 30))
-DEFAULT_ACTION_DELAY_MAX = int(os.environ.get('ACTION_DELAY_MAX', 60))
+DEFAULT_ACTION_DELAY_MIN = int(os.environ.get('ACTION_DELAY_MIN', 15))
+DEFAULT_ACTION_DELAY_MAX = int(os.environ.get('ACTION_DELAY_MAX', 30))
+SSM_RECENT_SCENARIOS_PARAM = os.environ.get('SSM_RECENT_SCENARIOS_PARAM', '/demo-simulator/recent-scenarios')
+RECENT_SCENARIO_LIMIT = 10
 
 SERVICE_TO_ROUTING_KEY = {
     "Platform - DBRE": os.getenv("ROUTING_KEY_DBRE", ""),
@@ -140,6 +145,52 @@ _demo_state = {
     "started_at": None,
     "actions_taken": [],
     "responders": [],
+}
+
+
+DEFAULT_INTER_SCENARIO_DELAY = int(os.environ.get('INTER_SCENARIO_DELAY', 30))
+
+PLAYLISTS = {
+    "quick_overview": {
+        "name": "Quick Overview (3 scenarios)",
+        "description": "Fast tour of core PagerDuty capabilities: routing, Slack integration, and automation.",
+        "scenario_ids": ["FREE-001", "BUS-002", "AUTO-001"],
+    },
+    "sales_executive": {
+        "name": "Executive Sales Demo (5 scenarios)",
+        "description": "High-impact demo for executive buyers: incident routing, Slack channels, Jira integration, status pages, and AIOps correlation.",
+        "scenario_ids": ["PRO-001", "BUS-002", "PRO-003", "CSO-001", "SRE-004"],
+    },
+    "platform_engineering": {
+        "name": "Platform Engineering (5 scenarios)",
+        "description": "Kubernetes-focused: alert routing, response mobilization, automated diagnostics, workflows, and correlation.",
+        "scenario_ids": ["FREE-001", "BUS-001", "AUTO-001", "WF-002", "SRE-004"],
+    },
+    "full_lifecycle": {
+        "name": "Full Incident Lifecycle (4 scenarios)",
+        "description": "End-to-end incident management: trigger, acknowledge, investigate with Slack + Jira, resolve, and post-incident review.",
+        "scenario_ids": ["PRO-001", "BUS-002", "PRO-003", "PRO-002"],
+    },
+    "automation_showcase": {
+        "name": "Automation Showcase (4 scenarios)",
+        "description": "Automation capabilities: diagnostics, remediation, runbook integration, and advanced workflows.",
+        "scenario_ids": ["AUTO-001", "AUTO-002", "AUTO-003", "WF-003"],
+    },
+    "industry_verticals": {
+        "name": "Industry Verticals (5 scenarios)",
+        "description": "Cross-industry demo: manufacturing, mining safety, retail POS, fintech payments, and healthcare.",
+        "scenario_ids": ["IND-001", "IND-002", "IND-003", "IND-004", "IND-007"],
+    },
+    "enterprise_features": {
+        "name": "Enterprise Features (6 scenarios)",
+        "description": "Enterprise-grade capabilities: response mobilizer, service graph, stakeholder updates, custom fields, status page, and AIOps.",
+        "scenario_ids": ["BUS-001", "BUS-003", "BUS-005", "BUS-007", "CSO-001", "SRE-004"],
+    },
+    "aiops_intelligence": {
+        "name": "AIOps & Intelligence (3 scenarios)",
+        "description": "AI-powered operations: multi-service correlation, learning from past incidents, and advanced workflows.",
+        "scenario_ids": ["SRE-004", "SRE-006", "WF-003"],
+    },
 }
 
 
@@ -305,29 +356,49 @@ def get_random_delay(min_delay: int = None, max_delay: int = None) -> int:
     )
 
 
-def wait_for_incident_channel(slack: SlackClient, incident: Dict, timeout_seconds: int = 60, poll_interval: int = 5) -> Dict[str, Any]:
-    number = incident.get("incident_number", "0")
-    title = incident.get("title", "incident").replace("[DEMO] ", "").lower()
+def extract_channel_id_from_url(url: str) -> Optional[str]:
     import re
-    slug = re.sub(r'[^a-z0-9]+', '-', title)[:30].strip('-')
+    match = re.search(r'/archives/([A-Z0-9]+)', url)
+    if match:
+        return match.group(1)
+    match = re.search(r'channel=([A-Z0-9]+)', url)
+    if match:
+        return match.group(1)
+    match = re.search(r'(C[A-Z0-9]{8,})', url)
+    if match:
+        return match.group(1)
+    return None
 
-    expected_patterns = [
-        f"^inc-{number}",
-        f"^incident-{number}",
-        f"^pd-{number}",
-    ]
+
+def wait_for_incident_channel(pd: PagerDutyClient, slack: SlackClient, incident: Dict, timeout_seconds: int = 90, poll_interval: int = 5) -> Dict[str, Any]:
+    incident_id = incident.get("id")
+    number = incident.get("incident_number", "0")
 
     logger.info(f"Waiting for PD workflow to create Slack channel for incident {number}...")
     start = time.time()
 
     while time.time() - start < timeout_seconds:
-        for pattern in expected_patterns:
-            channel_id = slack.find_channel_by_pattern(pattern)
-            if channel_id:
-                channel_info = slack.get_channel_info(channel_id)
-                channel_name = channel_info.get('name', 'unknown') if channel_info else 'unknown'
-                logger.info(f"Found incident channel {channel_name} ({channel_id}) created by PD workflow")
-                return {"success": True, "channel_id": channel_id, "channel_name": channel_name, "created_by": "pd_workflow"}
+        inc_data = pd.get_incident(incident_id, include=['conference_bridge'])
+        if inc_data:
+            cb = inc_data.get('conference_bridge')
+            if cb:
+                conf_url = cb.get('conference_url') or cb.get('url') or ''
+                if conf_url and 'slack' in conf_url.lower():
+                    channel_id = extract_channel_id_from_url(conf_url)
+                    if channel_id:
+                        slack.join_channel(channel_id)
+                        channel_info = slack.get_channel_info(channel_id)
+                        channel_name = channel_info.get('name', 'unknown') if channel_info else 'unknown'
+                        logger.info(f"Found channel via conference_bridge: {channel_name} ({channel_id})")
+                        return {"success": True, "channel_id": channel_id, "channel_name": channel_name, "created_by": "pd_workflow"}
+
+        channel_id = slack.find_channel_by_pattern(f"^demo-{number}-")
+        if channel_id:
+            slack.join_channel(channel_id)
+            channel_info = slack.get_channel_info(channel_id)
+            channel_name = channel_info.get('name', 'unknown') if channel_info else 'unknown'
+            logger.info(f"Found channel via pattern search: {channel_name} ({channel_id})")
+            return {"success": True, "channel_id": channel_id, "channel_name": channel_name, "created_by": "pd_workflow"}
 
         time.sleep(poll_interval)
 
@@ -336,56 +407,46 @@ def wait_for_incident_channel(slack: SlackClient, incident: Dict, timeout_second
 
 
 def invite_responders_to_slack_channel(slack: SlackClient, channel_id: str, responders: List[Dict],
-                                        observer_slack_id: str = CONALL_SLACK_USER_ID) -> Dict[str, Any]:
+                                        observer_slack_ids: List[str] = None) -> Dict[str, Any]:
+    if observer_slack_ids is None:
+        observer_slack_ids = [CONALL_SLACK_USER_ID_PERSONAL]
+
     invited = []
     failed = []
 
-    observer_result = slack.invite_user_to_channel(channel_id, observer_slack_id)
-    if observer_result.get('ok') or observer_result.get('error') == 'already_in_channel':
-        invited.append("Observer (Conall)")
-        logger.info(f"Added observer to Slack channel {channel_id}")
-    else:
-        logger.warning(f"Failed to add observer to channel: {observer_result.get('error')}")
-        failed.append("Observer (Conall)")
-
-    for resp in responders:
-        slack_id = resp.get('slack_id') or PAGERDUTY_TO_SLACK_USER_MAP.get(resp.get('email'))
-        if slack_id:
-            result = slack.invite_user_to_channel(channel_id, slack_id)
-            if result.get('ok') or result.get('error') == 'already_in_channel':
-                invited.append(resp['name'])
-                logger.info(f"Added {resp['name']} to Slack channel via Slack API")
-            else:
-                failed.append(resp['name'])
-                logger.warning(f"Failed to add {resp['name']} to channel: {result.get('error')}")
+    for obs_id in observer_slack_ids:
+        observer_result = slack.invite_user_to_channel(channel_id, obs_id)
+        if observer_result.get('ok') or observer_result.get('error') == 'already_in_channel':
+            invited.append(f"Observer ({obs_id[:6]}...)")
+            logger.info(f"Added observer {obs_id} to Slack channel {channel_id}")
         else:
-            failed.append(resp['name'])
-            logger.warning(f"No Slack ID found for {resp['name']}")
+            logger.warning(f"Failed to add observer {obs_id} to channel: {observer_result.get('error')}")
+            failed.append(f"Observer ({obs_id[:6]}...)")
 
     return {"invited": invited, "failed": failed}
 
 
-def perform_action(pd: PagerDutyClient, slack: SlackClient, incident_id: str, channel_id: str, 
+def perform_action(pd: PagerDutyClient, slack: SlackClient, incident_id: str, channel_id: str,
                    responder: Dict, action_type: str, scenario: Dict, used_messages: set) -> Dict[str, Any]:
     category = get_conversation_category(scenario)
     result = {"action": action_type, "user": responder['name'], "success": False}
-    
+
     if action_type == "status_update":
         message = get_conversation_message(category, used_messages)
         pd_result = pd.post_status_update(incident_id, message, responder['email'])
         result["success"] = pd_result.get('success', False)
         result["message"] = message
         if channel_id:
-            slack.post_message(f":mega: *{responder['name']}* posted status update:\n_{message}_", channel_id)
-    
+            slack.post_as_user(f":mega: *{responder['name']}* posted status update:\n_{message}_", responder, channel_id)
+
     elif action_type == "add_note":
         message = get_conversation_message(category, used_messages)
         pd_result = pd.add_note(incident_id, message, responder['email'])
         result["success"] = pd_result.get('success', False)
         result["message"] = message
         if channel_id:
-            slack.post_message(f":memo: *{responder['name']}*: {message}", channel_id)
-    
+            slack.post_as_user(f":memo: *{responder['name']}*: {message}", responder, channel_id)
+
     elif action_type == "run_automation":
         automations = pd.list_automation_actions()
         if automations:
@@ -394,13 +455,13 @@ def perform_action(pd: PagerDutyClient, slack: SlackClient, incident_id: str, ch
             result["success"] = pd_result.get('success', False)
             result["automation"] = action.get('name', action['id'])
             if channel_id:
-                slack.post_message(f":robot_face: *{responder['name']}* triggered automation: {action.get('name', 'Unknown')}", channel_id)
+                slack.post_as_user(f":robot_face: *{responder['name']}* triggered automation: {action.get('name', 'Unknown')}", responder, channel_id)
         else:
             message = "Ran diagnostic automation - results in notes"
             pd.add_note(incident_id, message, responder['email'])
             result["success"] = True
             result["message"] = message
-    
+
     elif action_type == "trigger_workflow":
         workflows = pd.list_workflows()
         if workflows:
@@ -409,11 +470,11 @@ def perform_action(pd: PagerDutyClient, slack: SlackClient, incident_id: str, ch
             result["success"] = pd_result.get('success', False)
             result["workflow"] = workflow.get('name', workflow['id'])
             if channel_id:
-                slack.post_message(f":gear: *{responder['name']}* triggered workflow: {workflow.get('name', 'Unknown')}", channel_id)
+                slack.post_as_user(f":gear: *{responder['name']}* triggered workflow: {workflow.get('name', 'Unknown')}", responder, channel_id)
         else:
             result["success"] = True
             result["message"] = "No workflows available"
-    
+
     elif action_type == "change_priority":
         priorities = pd.list_priorities()
         if priorities:
@@ -422,32 +483,32 @@ def perform_action(pd: PagerDutyClient, slack: SlackClient, incident_id: str, ch
             result["success"] = pd_result.get('success', False)
             result["priority"] = priority.get('name', priority['id'])
             if channel_id:
-                slack.post_message(f":arrow_up_down: *{responder['name']}* changed priority to {priority.get('name', 'Unknown')}", channel_id)
+                slack.post_as_user(f":arrow_up_down: *{responder['name']}* changed priority to {priority.get('name', 'Unknown')}", responder, channel_id)
         else:
             result["success"] = True
-    
+
     elif action_type == "change_urgency":
         urgency = random.choice(["high", "low"])
         pd_result = pd.update_urgency(incident_id, urgency, responder['email'])
         result["success"] = pd_result.get('success', False)
         result["urgency"] = urgency
         if channel_id:
-            slack.post_message(f":bell: *{responder['name']}* changed urgency to {urgency}", channel_id)
-    
+            slack.post_as_user(f":bell: *{responder['name']}* changed urgency to {urgency}", responder, channel_id)
+
     elif action_type == "add_subscriber":
         manager = random.choice([u for u in DEMO_USERS if u != responder])
         pd_result = pd.add_subscriber(incident_id, manager['id'], 'user', responder['email'])
         result["success"] = pd_result.get('success', False)
         result["subscriber"] = manager['name']
         if channel_id:
-            slack.post_message(f":eyes: *{responder['name']}* added {manager['name']} as subscriber for visibility", channel_id)
-    
+            slack.post_as_user(f":eyes: *{responder['name']}* added {manager['name']} as subscriber for visibility", responder, channel_id)
+
     elif action_type == "escalate":
         pd_result = pd.escalate_incident(incident_id, 2, responder['email'])
         result["success"] = pd_result.get('success', False)
         if channel_id:
-            slack.post_message(f":arrow_double_up: *{responder['name']}* escalated the incident", channel_id)
-    
+            slack.post_as_user(f":arrow_double_up: *{responder['name']}* escalated the incident", responder, channel_id)
+
     return result
 
 
@@ -492,7 +553,7 @@ def run_responder_actions(pd: PagerDutyClient, slack: SlackClient, incident_id: 
 def acknowledge_incident(pd: PagerDutyClient, slack: SlackClient, incident_id: str, channel_id: str, responder: Dict) -> Dict[str, Any]:
     result = pd.acknowledge_incident(incident_id, responder['email'])
     if channel_id:
-        slack.post_message(f":white_check_mark: *{responder['name']}* acknowledged the incident", channel_id)
+        slack.post_as_user(f":white_check_mark: *{responder['name']}* acknowledged the incident", responder, channel_id)
     return {
         "action": "acknowledge",
         "user": responder['name'],
@@ -521,7 +582,7 @@ def resolve_incident(pd: PagerDutyClient, slack: SlackClient, incident_id: str, 
     result = pd.resolve_incident(incident_id, responder['email'])
     
     if channel_id:
-        slack.post_message(f":tada: *{responder['name']}*: {note}\n\n:white_check_mark: Incident resolved!", channel_id)
+        slack.post_as_user(f":tada: *{responder['name']}*: {note}\n\n:white_check_mark: Incident resolved!", responder, channel_id)
     
     return {
         "action": "resolve",
@@ -616,7 +677,7 @@ def run_demo_flow(scenario_id: str, action_delay: int = None) -> Dict[str, Any]:
 
     time.sleep(3)
 
-    channel_result = wait_for_incident_channel(slack, incident, timeout_seconds=90, poll_interval=5)
+    channel_result = wait_for_incident_channel(pd, slack, incident, timeout_seconds=90, poll_interval=5)
     results["steps"].append({"step": "wait_for_channel", "result": channel_result})
     channel_id = channel_result.get("channel_id")
     _demo_state["channel_id"] = channel_id
@@ -628,7 +689,7 @@ def run_demo_flow(scenario_id: str, action_delay: int = None) -> Dict[str, Any]:
         results["steps"].append({"step": "invite_primary_responder", "result": invite_result})
         logger.info(f"Added to Slack channel: {invite_result['invited']}")
 
-        slack.post_message(f":white_check_mark: *{primary_responder['name']}* acknowledged the incident", channel_id)
+        slack.post_as_user(f":white_check_mark: *{primary_responder['name']}* acknowledged the incident", primary_responder, channel_id)
     else:
         logger.warning("No Slack channel found - continuing without Slack integration")
 
@@ -646,7 +707,7 @@ def run_demo_flow(scenario_id: str, action_delay: int = None) -> Dict[str, Any]:
                     logger.info(f"Added {resp['name']} to Slack channel via Slack API")
 
             names = ", ".join([r['name'] for r in additional])
-            slack.post_message(f":busts_in_silhouette: *{primary_responder['name']}* requested help from {names}", channel_id)
+            slack.post_as_user(f":busts_in_silhouette: *{primary_responder['name']}* requested help from {names}", primary_responder, channel_id)
 
     if _demo_state.get("paused"):
         return {"status": "paused", "incident_id": incident_id, "channel_id": channel_id, "steps": results["steps"]}
@@ -710,6 +771,146 @@ def list_available_scenarios() -> List[Dict]:
     ]
 
 
+def run_playlist(playlist_key: str = None, scenario_ids: List[str] = None,
+                 action_delay: int = None, inter_scenario_delay: int = None) -> Dict[str, Any]:
+    global _demo_state
+
+    if not scenario_ids:
+        if not playlist_key or playlist_key not in PLAYLISTS:
+            return {"error": f"Unknown playlist: {playlist_key}. Use list_playlists to see available options.", "success": False}
+        playlist = PLAYLISTS[playlist_key]
+        scenario_ids = playlist["scenario_ids"]
+        playlist_name = playlist["name"]
+    else:
+        playlist_name = f"Custom playlist ({len(scenario_ids)} scenarios)"
+
+    if inter_scenario_delay is None:
+        inter_scenario_delay = DEFAULT_INTER_SCENARIO_DELAY
+
+    scenarios_data = load_scenarios()
+    valid_ids = []
+    for sid in scenario_ids:
+        scenario = get_scenario_by_id(sid, scenarios_data)
+        if not scenario:
+            logger.warning(f"Playlist scenario {sid} not found, skipping")
+            continue
+        if not scenario.get("enabled", True):
+            logger.warning(f"Playlist scenario {sid} is disabled, skipping")
+            continue
+        valid_ids.append(sid)
+
+    if not valid_ids:
+        return {"error": "No valid enabled scenarios in playlist", "success": False}
+
+    playlist_results = {
+        "playlist": playlist_name,
+        "playlist_key": playlist_key,
+        "requested_scenarios": scenario_ids,
+        "valid_scenarios": valid_ids,
+        "skipped_scenarios": [s for s in scenario_ids if s not in valid_ids],
+        "scenario_results": [],
+        "success": False,
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "completed_at": None,
+        "total": len(valid_ids),
+        "passed": 0,
+        "failed": 0,
+    }
+
+    logger.info(f"Starting playlist '{playlist_name}' with {len(valid_ids)} scenarios: {valid_ids}")
+
+    for idx, sid in enumerate(valid_ids):
+        if _demo_state.get("paused"):
+            logger.info(f"Playlist paused before scenario {idx + 1}/{len(valid_ids)}: {sid}")
+            playlist_results["scenario_results"].append({"scenario_id": sid, "status": "skipped_paused"})
+            break
+
+        logger.info(f"Playlist scenario {idx + 1}/{len(valid_ids)}: {sid}")
+
+        result = run_demo_flow(sid, action_delay)
+        scenario_success = result.get("success", False)
+
+        playlist_results["scenario_results"].append({
+            "scenario_id": sid,
+            "index": idx + 1,
+            "success": scenario_success,
+            "incident_id": result.get("incident_id"),
+            "resolver": result.get("resolver"),
+            "error": result.get("error"),
+        })
+
+        if scenario_success:
+            playlist_results["passed"] += 1
+        else:
+            playlist_results["failed"] += 1
+
+        if idx < len(valid_ids) - 1 and not _demo_state.get("paused"):
+            logger.info(f"Waiting {inter_scenario_delay}s before next scenario...")
+            time.sleep(inter_scenario_delay)
+
+    playlist_results["completed_at"] = datetime.now(timezone.utc).isoformat()
+    playlist_results["success"] = playlist_results["failed"] == 0 and playlist_results["passed"] == len(valid_ids)
+
+    logger.info(f"Playlist '{playlist_name}' complete: {playlist_results['passed']}/{len(valid_ids)} passed")
+    return playlist_results
+
+
+def list_playlists() -> List[Dict]:
+    return [
+        {
+            "key": key,
+            "name": p["name"],
+            "description": p["description"],
+            "scenario_ids": p["scenario_ids"],
+            "scenario_count": len(p["scenario_ids"]),
+        }
+        for key, p in PLAYLISTS.items()
+    ]
+
+
+def _get_recent_scenarios() -> List[str]:
+    try:
+        ssm = boto3.client("ssm")
+        resp = ssm.get_parameter(Name=SSM_RECENT_SCENARIOS_PARAM)
+        return json.loads(resp["Parameter"]["Value"])
+    except ssm.exceptions.ParameterNotFound:
+        return []
+    except Exception as e:
+        logger.warning(f"Failed to read recent scenarios from SSM: {e}")
+        return []
+
+
+def _save_recent_scenarios(recent: List[str]) -> None:
+    try:
+        ssm = boto3.client("ssm")
+        ssm.put_parameter(
+            Name=SSM_RECENT_SCENARIOS_PARAM,
+            Value=json.dumps(recent[-RECENT_SCENARIO_LIMIT:]),
+            Type="String",
+            Overwrite=True,
+        )
+    except Exception as e:
+        logger.warning(f"Failed to save recent scenarios to SSM: {e}")
+
+
+def run_random_scenario(action_delay: int = None) -> Dict[str, Any]:
+    scenarios_data = load_scenarios()
+    enabled = [s for s in scenarios_data.get("scenarios", []) if s.get("enabled", True)]
+    if not enabled:
+        return {"error": "No enabled scenarios found", "success": False}
+    recent = _get_recent_scenarios()
+    candidates = [s for s in enabled if s["id"] not in recent]
+    if not candidates:
+        logger.info("All enabled scenarios recently run, resetting history")
+        candidates = enabled
+        recent = []
+    scenario = random.choice(candidates)
+    logger.info(f"Randomly selected scenario: {scenario['id']} - {scenario.get('name', '')} (skipped {len(recent)} recent)")
+    recent.append(scenario["id"])
+    _save_recent_scenarios(recent)
+    return run_demo_flow(scenario["id"], action_delay)
+
+
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     logger.info(f"Demo Controller invoked with event: {json.dumps(event)}")
     
@@ -749,7 +950,35 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         pd = PagerDutyClient()
         result = reset_demo_incidents(pd)
         return {"statusCode": 200, "body": json.dumps(result)}
-    
+
+    elif action == "run_playlist":
+        playlist_key = event.get("playlist")
+        scenario_ids = event.get("scenario_ids")
+        if not playlist_key and not scenario_ids:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"error": "playlist or scenario_ids is required"})
+            }
+        delay = event.get("action_delay")
+        inter_delay = event.get("inter_scenario_delay")
+        result = run_playlist(playlist_key, scenario_ids, delay, inter_delay)
+        return {
+            "statusCode": 200 if result.get("success") else 500,
+            "body": json.dumps(result)
+        }
+
+    elif action == "list_playlists":
+        playlists = list_playlists()
+        return {"statusCode": 200, "body": json.dumps({"playlists": playlists})}
+
+    elif action == "run_random":
+        delay = event.get("action_delay")
+        result = run_random_scenario(delay)
+        return {
+            "statusCode": 200 if result.get("success") else 500,
+            "body": json.dumps(result)
+        }
+
     else:
         return {
             "statusCode": 400,

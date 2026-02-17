@@ -13,12 +13,6 @@ from typing import Optional, Dict, Any, List
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Decimal):
-            return float(obj) if obj % 1 else int(obj)
-        return super().default(obj)
-
 PAGERDUTY_API_URL = 'https://api.pagerduty.com'
 PAGERDUTY_EVENTS_URL = 'https://events.pagerduty.com/v2/enqueue'
 
@@ -75,6 +69,77 @@ CONVERSATION_LIBRARY = {
         "All systems back to normal. Will follow up with a post-incident review.",
         "Resolved! The automated remediation worked. Incident closed.",
     ],
+}
+
+# PagerDuty API Configuration and Stubs
+PAGERDUTY_API_ENDPOINTS = {
+    'incidents': '/incidents',
+    'incident_detail': '/incidents/{incident_id}',
+    'incident_acknowledge': '/incidents/{incident_id}/acknowledge',
+    'incident_resolve': '/incidents/{incident_id}/resolve',
+    'incident_escalate': '/incidents/{incident_id}/escalate',
+    'incident_urgency': '/incidents/{incident_id}',
+    'incident_status': '/incidents/{incident_id}/status_updates',
+    'incident_body': '/incidents/{incident_id}/body',
+    'incident_assignments': '/incidents/{incident_id}/responders',
+    'users': '/users',
+    'user_detail': '/users/{user_id}',
+    'services': '/services',
+    'service_detail': '/services/{service_id}',
+    'teams': '/teams',
+    'schedules': '/schedules',
+    'escalation_policies': '/escalation_policies',
+    'event_orchestration': '/event_orchestrations',
+    'automation_actions': '/automation_actions',
+    'response_plays': '/response_plays',
+    'webhooks': '/webhooks',
+    'webhook_subscriptions': '/webhook_subscriptions',
+    'integrations': '/integrations',
+}
+
+DEMO_CONFIG = {
+    'ack_delay_min': 30,
+    'ack_delay_max': 120,
+    'action_delay_min': 60,
+    'action_delay_max': 180,
+    'resolve_delay_min': 120,
+    'resolve_delay_max': 300,
+    'escalation_ack_delay_min': 15,
+    'escalation_ack_delay_max': 45,
+    'max_ack_attempts': 3,
+    'force_ack_after_minutes': 10,
+    'enable_slack_population': True,
+    'enable_jira_sync': True,
+    'enable_status_page_updates': False,
+    'enable_conference_bridge': True,
+    'demo_prefix': '[DEMO]',
+}
+
+FEATURE_FLAGS = {
+    'incidents': True,
+    'services': True,
+    'users': True,
+    'teams': True,
+    'schedules': True,
+    'escalation_policies': True,
+    'incident_workflows': True,
+    'event_orchestration': True,
+    'automation_actions': True,
+    'business_services': True,
+    'status_dashboard': True,
+    'analytics': True,
+    'response_plays': True,
+    'on_call': True,
+    'notifications': True,
+    'integrations': True,
+    'webhooks': True,
+    'custom_fields': True,
+    'priorities': True,
+    'tags': True,
+    'maintenance_windows': True,
+    'status_pages': False,
+    'jeli_integration': False,
+    'aiops': False,
 }
 
 dynamodb = boto3.resource('dynamodb')
@@ -152,16 +217,11 @@ class PagerDutyClient:
     
     def get_incident(self, incident_id: str) -> Optional[Dict]:
         try:
-            print(f"PD_GET_INCIDENT: Fetching {incident_id}")
             resp = requests.get(f'{PAGERDUTY_API_URL}/incidents/{incident_id}', headers=self.headers, timeout=10)
-            print(f"PD_GET_INCIDENT: Response status={resp.status_code}")
             if resp.ok:
                 return resp.json().get('incident')
-            else:
-                print(f"PD_GET_INCIDENT: Error response - {resp.status_code} {resp.text[:200]}")
         except Exception as e:
             logger.error(f"Error getting incident: {e}")
-            print(f"PD_GET_INCIDENT: Exception - {e}")
         return None
     
     def acknowledge_incident(self, incident_id: str, user_email: str) -> bool:
@@ -268,6 +328,512 @@ class PagerDutyClient:
                 return user['id']
         return ''
 
+    def list_services(self, team_ids: List[str] = None, limit: int = 100) -> List[Dict]:
+        params = {'limit': limit}
+        if team_ids:
+            params['team_ids[]'] = team_ids
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/services', headers=self.headers, params=params, timeout=10)
+            if resp.ok:
+                return resp.json().get('services', [])
+        except Exception as e:
+            logger.error(f"Error listing services: {e}")
+        return []
+
+    def get_service(self, service_id: str, include: List[str] = None) -> Optional[Dict]:
+        params = {}
+        if include:
+            params['include[]'] = include
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/services/{service_id}', headers=self.headers, params=params, timeout=10)
+            if resp.ok:
+                return resp.json().get('service')
+        except Exception as e:
+            logger.error(f"Error getting service: {e}")
+        return None
+
+    def create_service(self, name: str, escalation_policy_id: str, description: str = None, alert_grouping: str = None) -> Optional[Dict]:
+        body = {
+            'service': {
+                'type': 'service',
+                'name': name,
+                'escalation_policy': {'id': escalation_policy_id, 'type': 'escalation_policy_reference'}
+            }
+        }
+        if description:
+            body['service']['description'] = description
+        if alert_grouping:
+            body['service']['alert_grouping_parameters'] = {'type': alert_grouping}
+        try:
+            resp = requests.post(f'{PAGERDUTY_API_URL}/services', headers=self.headers, json=body, timeout=10)
+            if resp.ok:
+                return resp.json().get('service')
+        except Exception as e:
+            logger.error(f"Error creating service: {e}")
+        return None
+
+    def update_service(self, service_id: str, updates: Dict) -> Optional[Dict]:
+        body = {'service': {'type': 'service', **updates}}
+        try:
+            resp = requests.put(f'{PAGERDUTY_API_URL}/services/{service_id}', headers=self.headers, json=body, timeout=10)
+            if resp.ok:
+                return resp.json().get('service')
+        except Exception as e:
+            logger.error(f"Error updating service: {e}")
+        return None
+
+    def delete_service(self, service_id: str) -> bool:
+        try:
+            resp = requests.delete(f'{PAGERDUTY_API_URL}/services/{service_id}', headers=self.headers, timeout=10)
+            return resp.status_code == 204
+        except Exception as e:
+            logger.error(f"Error deleting service: {e}")
+            return False
+
+    def list_users(self, team_ids: List[str] = None, include: List[str] = None, limit: int = 100) -> List[Dict]:
+        params = {'limit': limit}
+        if team_ids:
+            params['team_ids[]'] = team_ids
+        if include:
+            params['include[]'] = include
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/users', headers=self.headers, params=params, timeout=10)
+            if resp.ok:
+                return resp.json().get('users', [])
+        except Exception as e:
+            logger.error(f"Error listing users: {e}")
+        return []
+
+    def get_user(self, user_id: str, include: List[str] = None) -> Optional[Dict]:
+        params = {}
+        if include:
+            params['include[]'] = include
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/users/{user_id}', headers=self.headers, params=params, timeout=10)
+            if resp.ok:
+                return resp.json().get('user')
+        except Exception as e:
+            logger.error(f"Error getting user: {e}")
+        return None
+
+    def get_user_on_call(self, user_id: str) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/users/{user_id}/oncalls', headers=self.headers, timeout=10)
+            if resp.ok:
+                return resp.json().get('oncalls', [])
+        except Exception as e:
+            logger.error(f"Error getting user on-call: {e}")
+        return []
+
+    def list_teams(self, limit: int = 100) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/teams', headers=self.headers, params={'limit': limit}, timeout=10)
+            if resp.ok:
+                return resp.json().get('teams', [])
+        except Exception as e:
+            logger.error(f"Error listing teams: {e}")
+        return []
+
+    def get_team(self, team_id: str, include: List[str] = None) -> Optional[Dict]:
+        params = {}
+        if include:
+            params['include[]'] = include
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/teams/{team_id}', headers=self.headers, params=params, timeout=10)
+            if resp.ok:
+                return resp.json().get('team')
+        except Exception as e:
+            logger.error(f"Error getting team: {e}")
+        return None
+
+    def list_schedules(self, limit: int = 100) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/schedules', headers=self.headers, params={'limit': limit}, timeout=10)
+            if resp.ok:
+                return resp.json().get('schedules', [])
+        except Exception as e:
+            logger.error(f"Error listing schedules: {e}")
+        return []
+
+    def get_schedule(self, schedule_id: str, since: str = None, until: str = None) -> Optional[Dict]:
+        params = {}
+        if since:
+            params['since'] = since
+        if until:
+            params['until'] = until
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/schedules/{schedule_id}', headers=self.headers, params=params, timeout=10)
+            if resp.ok:
+                return resp.json().get('schedule')
+        except Exception as e:
+            logger.error(f"Error getting schedule: {e}")
+        return None
+
+    def get_oncalls(self, schedule_ids: List[str] = None, escalation_policy_ids: List[str] = None) -> List[Dict]:
+        params = {}
+        if schedule_ids:
+            params['schedule_ids[]'] = schedule_ids
+        if escalation_policy_ids:
+            params['escalation_policy_ids[]'] = escalation_policy_ids
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/oncalls', headers=self.headers, params=params, timeout=10)
+            if resp.ok:
+                return resp.json().get('oncalls', [])
+        except Exception as e:
+            logger.error(f"Error getting oncalls: {e}")
+        return []
+
+    def list_escalation_policies(self, team_ids: List[str] = None, limit: int = 100) -> List[Dict]:
+        params = {'limit': limit}
+        if team_ids:
+            params['team_ids[]'] = team_ids
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/escalation_policies', headers=self.headers, params=params, timeout=10)
+            if resp.ok:
+                return resp.json().get('escalation_policies', [])
+        except Exception as e:
+            logger.error(f"Error listing escalation policies: {e}")
+        return []
+
+    def get_escalation_policy(self, policy_id: str, include: List[str] = None) -> Optional[Dict]:
+        params = {}
+        if include:
+            params['include[]'] = include
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/escalation_policies/{policy_id}', headers=self.headers, params=params, timeout=10)
+            if resp.ok:
+                return resp.json().get('escalation_policy')
+        except Exception as e:
+            logger.error(f"Error getting escalation policy: {e}")
+        return None
+
+    def list_priorities(self) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/priorities', headers=self.headers, timeout=10)
+            if resp.ok:
+                return resp.json().get('priorities', [])
+        except Exception as e:
+            logger.error(f"Error listing priorities: {e}")
+        return []
+
+    def snooze_incident(self, incident_id: str, user_email: str, duration_seconds: int) -> bool:
+        try:
+            resp = requests.post(
+                f'{PAGERDUTY_API_URL}/incidents/{incident_id}/snooze',
+                headers={**self.headers, 'From': user_email},
+                json={'duration': duration_seconds},
+                timeout=10
+            )
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error snoozing incident: {e}")
+            return False
+
+    def merge_incidents(self, parent_incident_id: str, user_email: str, incident_ids: List[str]) -> bool:
+        try:
+            source_incidents = [{'id': iid, 'type': 'incident_reference'} for iid in incident_ids]
+            resp = requests.put(
+                f'{PAGERDUTY_API_URL}/incidents/{parent_incident_id}/merge',
+                headers={**self.headers, 'From': user_email},
+                json={'source_incidents': source_incidents},
+                timeout=10
+            )
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error merging incidents: {e}")
+            return False
+
+    def reassign_incident(self, incident_id: str, user_email: str, assignee_ids: List[str]) -> bool:
+        try:
+            assignments = [{'assignee': {'id': aid, 'type': 'user_reference'}} for aid in assignee_ids]
+            resp = requests.put(
+                f'{PAGERDUTY_API_URL}/incidents/{incident_id}',
+                headers={**self.headers, 'From': user_email},
+                json={'incident': {'type': 'incident_reference', 'assignments': assignments}},
+                timeout=10
+            )
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error reassigning incident: {e}")
+            return False
+
+    def run_response_play(self, incident_id: str, user_email: str, response_play_id: str) -> bool:
+        try:
+            resp = requests.post(
+                f'{PAGERDUTY_API_URL}/response_plays/{response_play_id}/run',
+                headers={**self.headers, 'From': user_email},
+                json={'incident': {'id': incident_id, 'type': 'incident_reference'}},
+                timeout=10
+            )
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error running response play: {e}")
+            return False
+
+    def list_response_plays(self, limit: int = 100) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/response_plays', headers=self.headers, params={'limit': limit}, timeout=10)
+            if resp.ok:
+                return resp.json().get('response_plays', [])
+        except Exception as e:
+            logger.error(f"Error listing response plays: {e}")
+        return []
+
+    def list_incident_workflows(self, limit: int = 100) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/incident_workflows', headers=self.headers, params={'limit': limit}, timeout=10)
+            if resp.ok:
+                return resp.json().get('incident_workflows', [])
+        except Exception as e:
+            logger.error(f"Error listing incident workflows: {e}")
+        return []
+
+    def trigger_incident_workflow(self, workflow_id: str, incident_id: str) -> bool:
+        try:
+            resp = requests.post(
+                f'{PAGERDUTY_API_URL}/incident_workflows/{workflow_id}/instances',
+                headers=self.headers,
+                json={'incident_workflow_instance': {'incident': {'id': incident_id, 'type': 'incident_reference'}}},
+                timeout=10
+            )
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error triggering incident workflow: {e}")
+            return False
+
+    def list_business_services(self, limit: int = 100) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/business_services', headers=self.headers, params={'limit': limit}, timeout=10)
+            if resp.ok:
+                return resp.json().get('business_services', [])
+        except Exception as e:
+            logger.error(f"Error listing business services: {e}")
+        return []
+
+    def get_business_service(self, service_id: str) -> Optional[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/business_services/{service_id}', headers=self.headers, timeout=10)
+            if resp.ok:
+                return resp.json().get('business_service')
+        except Exception as e:
+            logger.error(f"Error getting business service: {e}")
+        return None
+
+    def update_business_service_impact(self, service_id: str, status: str, message: str = None) -> bool:
+        try:
+            body = {'impactor': {'type': 'incident_reference', 'status': status}}
+            if message:
+                body['impactor']['message'] = message
+            resp = requests.put(
+                f'{PAGERDUTY_API_URL}/business_services/{service_id}/impactors',
+                headers=self.headers,
+                json=body,
+                timeout=10
+            )
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error updating business service impact: {e}")
+            return False
+
+    def list_maintenance_windows(self, service_ids: List[str] = None, filter_: str = 'ongoing') -> List[Dict]:
+        params = {'filter': filter_}
+        if service_ids:
+            params['service_ids[]'] = service_ids
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/maintenance_windows', headers=self.headers, params=params, timeout=10)
+            if resp.ok:
+                return resp.json().get('maintenance_windows', [])
+        except Exception as e:
+            logger.error(f"Error listing maintenance windows: {e}")
+        return []
+
+    def create_maintenance_window(self, service_ids: List[str], start_time: str, end_time: str, description: str = None) -> Optional[Dict]:
+        services = [{'id': sid, 'type': 'service_reference'} for sid in service_ids]
+        body = {
+            'maintenance_window': {
+                'type': 'maintenance_window',
+                'start_time': start_time,
+                'end_time': end_time,
+                'services': services
+            }
+        }
+        if description:
+            body['maintenance_window']['description'] = description
+        try:
+            resp = requests.post(f'{PAGERDUTY_API_URL}/maintenance_windows', headers=self.headers, json=body, timeout=10)
+            if resp.ok:
+                return resp.json().get('maintenance_window')
+        except Exception as e:
+            logger.error(f"Error creating maintenance window: {e}")
+        return None
+
+    def get_incident_alerts(self, incident_id: str) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/incidents/{incident_id}/alerts', headers=self.headers, timeout=10)
+            if resp.ok:
+                return resp.json().get('alerts', [])
+        except Exception as e:
+            logger.error(f"Error getting incident alerts: {e}")
+        return []
+
+    def update_incident_alert(self, incident_id: str, alert_id: str, status: str) -> bool:
+        try:
+            resp = requests.put(
+                f'{PAGERDUTY_API_URL}/incidents/{incident_id}/alerts/{alert_id}',
+                headers=self.headers,
+                json={'alert': {'type': 'alert', 'status': status}},
+                timeout=10
+            )
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error updating incident alert: {e}")
+            return False
+
+    def get_incident_timeline(self, incident_id: str) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/incidents/{incident_id}/log_entries', headers=self.headers, timeout=10)
+            if resp.ok:
+                return resp.json().get('log_entries', [])
+        except Exception as e:
+            logger.error(f"Error getting incident timeline: {e}")
+        return []
+
+    def list_tags(self, limit: int = 100) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/tags', headers=self.headers, params={'limit': limit}, timeout=10)
+            if resp.ok:
+                return resp.json().get('tags', [])
+        except Exception as e:
+            logger.error(f"Error listing tags: {e}")
+        return []
+
+    def add_tags_to_entity(self, entity_type: str, entity_id: str, tag_ids: List[str]) -> bool:
+        tags = [{'id': tid, 'type': 'tag_reference'} for tid in tag_ids]
+        try:
+            resp = requests.post(
+                f'{PAGERDUTY_API_URL}/{entity_type}/{entity_id}/tags',
+                headers=self.headers,
+                json={'tags': tags},
+                timeout=10
+            )
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error adding tags: {e}")
+            return False
+
+    def get_analytics_incident_metrics(self, since: str, until: str, service_ids: List[str] = None) -> Optional[Dict]:
+        params = {'since': since, 'until': until}
+        if service_ids:
+            params['service_ids[]'] = service_ids
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/analytics/metrics/incidents/all', headers=self.headers, params=params, timeout=10)
+            if resp.ok:
+                return resp.json()
+        except Exception as e:
+            logger.error(f"Error getting analytics: {e}")
+        return None
+
+    def send_event(self, routing_key: str, event_action: str, dedup_key: str, payload: Dict) -> bool:
+        body = {
+            'routing_key': routing_key,
+            'event_action': event_action,
+            'dedup_key': dedup_key,
+            'payload': payload
+        }
+        try:
+            resp = requests.post('https://events.pagerduty.com/v2/enqueue', json=body, timeout=10)
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error sending event: {e}")
+            return False
+
+    def create_change_event(self, routing_key: str, summary: str, source: str, custom_details: Dict = None) -> bool:
+        body = {
+            'routing_key': routing_key,
+            'payload': {
+                'summary': summary,
+                'source': source,
+                'timestamp': datetime.now(timezone.utc).isoformat()
+            }
+        }
+        if custom_details:
+            body['payload']['custom_details'] = custom_details
+        try:
+            resp = requests.post('https://events.pagerduty.com/v2/change/enqueue', json=body, timeout=10)
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error creating change event: {e}")
+            return False
+
+    def list_custom_fields(self) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/incidents/custom_fields', headers=self.headers, timeout=10)
+            if resp.ok:
+                return resp.json().get('fields', [])
+        except Exception as e:
+            logger.error(f"Error listing custom fields: {e}")
+        return []
+
+    def update_incident_custom_fields(self, incident_id: str, user_email: str, custom_fields: List[Dict]) -> bool:
+        try:
+            resp = requests.put(
+                f'{PAGERDUTY_API_URL}/incidents/{incident_id}',
+                headers={**self.headers, 'From': user_email},
+                json={'incident': {'type': 'incident_reference', 'custom_fields': custom_fields}},
+                timeout=10
+            )
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error updating custom fields: {e}")
+            return False
+
+    def list_automation_actions(self, limit: int = 100) -> List[Dict]:
+        try:
+            resp = requests.get(f'{PAGERDUTY_API_URL}/automation_actions/actions', headers=self.headers, params={'limit': limit}, timeout=10)
+            if resp.ok:
+                return resp.json().get('actions', [])
+        except Exception as e:
+            logger.error(f"Error listing automation actions: {e}")
+        return []
+
+    def invoke_automation_action(self, action_id: str, incident_id: str = None) -> Optional[Dict]:
+        body = {}
+        if incident_id:
+            body = {'incident': {'id': incident_id, 'type': 'incident_reference'}}
+        try:
+            resp = requests.post(
+                f'{PAGERDUTY_API_URL}/automation_actions/actions/{action_id}/invocations',
+                headers=self.headers,
+                json=body,
+                timeout=10
+            )
+            if resp.ok:
+                return resp.json()
+        except Exception as e:
+            logger.error(f"Error invoking automation action: {e}")
+        return None
+
+    def get_current_oncall_user(self, escalation_policy_id: str) -> Optional[Dict]:
+        oncalls = self.get_oncalls(escalation_policy_ids=[escalation_policy_id])
+        for oncall in oncalls:
+            if oncall.get('escalation_level') == 1:
+                return oncall.get('user')
+        return None
+
+    def escalate_incident(self, incident_id: str, user_email: str, escalation_level: int = None) -> bool:
+        try:
+            body = {'incident': {'type': 'incident_reference', 'escalation_level': escalation_level or 2}}
+            resp = requests.put(
+                f'{PAGERDUTY_API_URL}/incidents/{incident_id}',
+                headers={**self.headers, 'From': user_email},
+                json=body,
+                timeout=10
+            )
+            return resp.ok
+        except Exception as e:
+            logger.error(f"Error escalating incident: {e}")
+            return False
+
 
 class SlackClient:
     def __init__(self, token: str = None):
@@ -276,52 +842,17 @@ class SlackClient:
             'Authorization': f'Bearer {self.token}',
             'Content-Type': 'application/json'
         }
-        self._profile_cache = {}
-
-    def get_user_profile(self, slack_user_id: str) -> Dict:
-        if slack_user_id in self._profile_cache:
-            return self._profile_cache[slack_user_id]
-        try:
-            resp = requests.get(
-                'https://slack.com/api/users.info',
-                headers=self.headers,
-                params={'user': slack_user_id},
-                timeout=10
-            )
-            if resp.ok:
-                data = resp.json()
-                if data.get('ok'):
-                    user = data.get('user', {})
-                    profile = user.get('profile', {})
-                    result = {
-                        'name': profile.get('display_name') or profile.get('real_name') or user.get('name', ''),
-                        'icon_url': profile.get('image_72', '')
-                    }
-                    self._profile_cache[slack_user_id] = result
-                    return result
-        except Exception as e:
-            logger.error(f"Error getting user profile: {e}")
-        return {'name': '', 'icon_url': ''}
-
-    def post_message(self, channel_id: str, text: str, username: str = None, icon_url: str = None) -> bool:
+    
+    def post_message(self, channel_id: str, text: str, username: str = None) -> bool:
         try:
             body = {'channel': channel_id, 'text': text}
             if username:
                 body['username'] = username
-            if icon_url:
-                body['icon_url'] = icon_url
             resp = requests.post('https://slack.com/api/chat.postMessage', headers=self.headers, json=body, timeout=10)
             return resp.ok and resp.json().get('ok')
         except Exception as e:
             logger.error(f"Error posting message: {e}")
             return False
-
-    def post_as_user(self, channel_id: str, text: str, user: Dict) -> bool:
-        slack_id = user.get('slack_id', '')
-        if slack_id:
-            profile = self.get_user_profile(slack_id)
-            return self.post_message(channel_id, text, username=profile.get('name') or user.get('name'), icon_url=profile.get('icon_url'))
-        return self.post_message(channel_id, text, username=user.get('name'))
     
     def invite_users_to_channel(self, channel_id: str, user_ids: List[str]) -> int:
         success_count = 0
@@ -351,86 +882,23 @@ class SlackClient:
                 logger.error(f"Error inviting user {user_id}: {e}")
         logger.info(f"Invited {success_count}/{len(user_ids)} users to channel {channel_id}")
         return success_count
-
-    def join_channel(self, channel_id: str) -> bool:
-        try:
-            resp = requests.post(
-                'https://slack.com/api/conversations.join',
-                headers=self.headers,
-                json={'channel': channel_id},
-                timeout=10
-            )
-            data = resp.json()
-            if data.get('ok'):
-                logger.info(f"Bot joined channel {channel_id}")
-                return True
-            logger.error(f"Failed to join channel: {data.get('error')}")
-            return False
-        except Exception as e:
-            logger.error(f"Error joining channel: {e}")
-            return False
-
+    
     def find_channel_by_pattern(self, pattern: str) -> Optional[str]:
         try:
-            print(f"SLACK_SEARCH: Using token prefix: {self.token[:20]}..." if self.token else "SLACK_SEARCH: NO TOKEN!")
-            team_id = os.environ.get('SLACK_TEAM_ID', '')
-            params = {'types': 'public_channel,private_channel', 'limit': 200}
-            if team_id:
-                params['team_id'] = team_id
             resp = requests.get(
                 'https://slack.com/api/conversations.list',
                 headers=self.headers,
-                params=params,
+                params={'types': 'public_channel,private_channel', 'limit': 200},
                 timeout=10
             )
             if resp.ok:
-                data = resp.json()
-                if not data.get('ok'):
-                    print(f"SLACK_SEARCH: API error response - {data.get('error')}")
-                    return None
-                channels = data.get('channels', [])
-                print(f"SLACK_SEARCH: Looking for pattern '{pattern}' in {len(channels)} channels")
-                if channels:
-                    print(f"SLACK_SEARCH: First 5 channel names: {[ch['name'] for ch in channels[:5]]}")
-                matching = [ch['name'] for ch in channels if pattern.lower() in ch.get('name', '').lower()]
-                print(f"SLACK_SEARCH: Matching channels: {matching[:5]}")
+                channels = resp.json().get('channels', [])
                 for ch in channels:
                     if pattern.lower() in ch.get('name', '').lower():
-                        print(f"SLACK_SEARCH: Found match - {ch['name']} ({ch['id']})")
                         return ch['id']
-            else:
-                print(f"SLACK_SEARCH: HTTP error - {resp.status_code} {resp.text[:200]}")
         except Exception as e:
             logger.error(f"Error finding channel: {e}")
         return None
-
-    def create_channel(self, name: str) -> Optional[str]:
-        try:
-            clean_name = name.lower().replace(' ', '-')[:80]
-            clean_name = ''.join(c for c in clean_name if c.isalnum() or c == '-')
-            clean_name = clean_name.strip('-')
-
-            resp = requests.post(
-                'https://slack.com/api/conversations.create',
-                headers=self.headers,
-                json={'name': clean_name, 'is_private': False},
-                timeout=10
-            )
-            data = resp.json()
-            if data.get('ok'):
-                channel_id = data['channel']['id']
-                logger.info(f"Created Slack channel {clean_name} ({channel_id})")
-                return channel_id
-            elif data.get('error') == 'name_taken':
-                existing = self.find_channel_by_pattern(clean_name)
-                if existing:
-                    logger.info(f"Channel {clean_name} already exists: {existing}")
-                    return existing
-            logger.error(f"Failed to create channel {clean_name}: {data.get('error')}")
-            return None
-        except Exception as e:
-            logger.error(f"Error creating channel: {e}")
-            return None
 
 
 def determine_responder_count() -> int:
@@ -499,85 +967,70 @@ def verify_webhook_signature(body: str, signature: str, secret: str) -> bool:
     if not secret:
         return True
     expected = 'v1=' + hmac.new(secret.encode(), body.encode(), hashlib.sha256).hexdigest()
-    print(f"SIGNATURE DEBUG: received='{signature[:50]}...' expected='{expected[:50]}...'")
-    print(f"SIGNATURE MATCH: {hmac.compare_digest(expected, signature)}")
     return hmac.compare_digest(expected, signature)
 
 
 def handle_webhook(event: Dict) -> Dict:
     body = event.get('body', '{}')
-    headers = event.get('headers', {})
-    print(f"WEBHOOK HEADERS: {list(headers.keys())}")
-
-    webhook_id = headers.get('x-webhook-id', '') or headers.get('X-Webhook-Id', '')
-    webhook_subscription = headers.get('x-webhook-subscription', '') or headers.get('X-Webhook-Subscription', '')
-    print(f"WEBHOOK IDS: webhook_id={webhook_id}, subscription={webhook_subscription}")
-
-    signature = headers.get('x-pagerduty-signature', '') or headers.get('X-Pagerduty-Signature', '')
+    signature = event.get('headers', {}).get('x-pagerduty-signature', '')
     webhook_secret = os.environ.get('WEBHOOK_SECRET', '')
-
-    print(f"WEBHOOK: has_signature={bool(signature)}, has_secret={bool(webhook_secret)}, secret_len={len(webhook_secret)}")
-    print(f"WEBHOOK SECRET FIRST 10 CHARS: {webhook_secret[:10]}...")
-
+    
     if webhook_secret and not verify_webhook_signature(body, signature, webhook_secret):
         logger.warning("Invalid webhook signature")
         return {'statusCode': 401, 'body': json.dumps({'error': 'Invalid signature'})}
-
+    
     try:
         payload = json.loads(body)
     except json.JSONDecodeError:
         return {'statusCode': 400, 'body': json.dumps({'error': 'Invalid JSON'})}
-
+    
     event_data = payload.get('event', {})
     event_type = event_data.get('event_type', '')
-    print(f"WEBHOOK EVENT: type={event_type}")
-
+    
     if event_type == 'pagey.ping':
         return {'statusCode': 200, 'body': json.dumps({'message': 'pong'})}
-
+    
     incident_data = event_data.get('data', {})
     if incident_data.get('type') != 'incident':
         incident_data = event_data.get('data', {}).get('incident', {})
-
+    
     incident_id = incident_data.get('id', '')
     title = incident_data.get('title', '')
-
-    if event_type.startswith('incident.workflow.') and not title:
-        workflow_data = event_data.get('data', {})
-        incident_ref = workflow_data.get('incident', {})
-        if not incident_id:
-            incident_id = incident_ref.get('id', '')
-        title = incident_ref.get('title', '') or incident_ref.get('summary', '')
-
-    print(f"WEBHOOK INCIDENT: id={incident_id}, title={title[:50] if title else 'NONE'}")
-
-    if not incident_id:
-        return {'statusCode': 200, 'body': json.dumps({'message': 'No incident ID'})}
-
-    if event_type.startswith('incident.workflow.'):
-        pass
-    elif '[DEMO]' not in title:
+    
+    if not incident_id or '[DEMO]' not in title:
         logger.info(f"Ignoring non-demo incident: {incident_id} - {title}")
         return {'statusCode': 200, 'body': json.dumps({'message': 'Not a demo incident'})}
-
+    
     logger.info(f"Processing webhook: {event_type} for incident {incident_id}")
-    print(f"PROCESSING: {event_type} for {incident_id}")
 
     state = DemoState()
     handlers = {
         'incident.triggered': lambda: on_incident_triggered(incident_id, incident_data, state),
         'incident.acknowledged': lambda: on_incident_acknowledged(incident_id, incident_data, state),
         'incident.resolved': lambda: on_incident_resolved(incident_id, state),
+        'incident.unacknowledged': lambda: on_incident_unacknowledged(incident_id, incident_data, state),
+        'incident.delegated': lambda: on_incident_delegated(incident_id, incident_data, state),
+        'incident.escalated': lambda: on_incident_escalated(incident_id, incident_data, state),
+        'incident.reassigned': lambda: on_incident_reassigned(incident_id, incident_data, state),
         'incident.responder.added': lambda: on_responder_added(incident_id, event_data, state),
+        'incident.responder.replied': lambda: on_responder_replied(incident_id, event_data, state),
         'incident.annotated': lambda: on_action_completed(incident_id, 'add_note', state),
         'incident.status_update_published': lambda: on_action_completed(incident_id, 'status_update', state),
-        'incident.workflow.completed': lambda: on_workflow_completed(incident_id, event_data, state),
+        'incident.priority_updated': lambda: on_priority_updated(incident_id, event_data, state),
+        'incident.reopened': lambda: on_incident_reopened(incident_id, incident_data, state),
+        'incident.urgency_updated': lambda: on_urgency_updated(incident_id, event_data, state),
+        'workflow.completed': lambda: on_workflow_completed(incident_id, event_data, state),
+        'service.created': lambda: on_service_event('created', event_data),
+        'service.updated': lambda: on_service_event('updated', event_data),
+        'service.deleted': lambda: on_service_event('deleted', event_data),
     }
-    
+
     handler = handlers.get(event_type)
     if handler:
         handler()
-    
+    else:
+        logger.info(f"Unhandled event type: {event_type}")
+
     return {'statusCode': 200, 'body': json.dumps({'message': 'Processed', 'event_type': event_type})}
 
 
@@ -617,9 +1070,9 @@ def on_incident_triggered(incident_id: str, incident_data: Dict, state: DemoStat
     
     state.create(incident_id, demo_data)
     logger.info(f"Created demo state for {incident_id} with {len(responders)} responders")
-
+    
     primary_email = responders[0]['email']
-    delay = random.randint(15, 45)
+    delay = random.randint(30, 120)
     schedule_action(incident_id, 'acknowledge', delay, responders[0]['id'])
     logger.info(f"Scheduled acknowledgment in {delay}s by {primary_email}")
 
@@ -638,7 +1091,8 @@ def on_incident_acknowledged(incident_id: str, incident_data: Dict, state: DemoS
 
     state.update(incident_id, {
         'state': 'acknowledged',
-        'acknowledged_at': datetime.now(timezone.utc).isoformat()
+        'acknowledged_at': datetime.now(timezone.utc).isoformat(),
+        'ack_attempts': 0
     })
 
     responders = demo.get('responders', [])
@@ -651,6 +1105,173 @@ def on_incident_acknowledged(incident_id: str, incident_data: Dict, state: DemoS
 
     delay = random.randint(60, 180)
     schedule_action(incident_id, 'responder_action', delay, responders[0]['id'])
+
+
+def on_incident_escalated(incident_id: str, incident_data: Dict, state: DemoState):
+    logger.info(f"Incident escalated: {incident_id}")
+
+    demo = state.get(incident_id)
+    if not demo:
+        logger.warning(f"No demo state for {incident_id}, creating new state for escalated incident")
+        on_incident_triggered(incident_id, incident_data, state)
+        return
+
+    if demo.get('paused'):
+        logger.info(f"Demo {incident_id} is paused, skipping escalation handling")
+        return
+
+    current_level = incident_data.get('escalation_level', 1)
+    ack_attempts = demo.get('ack_attempts', 0) + 1
+
+    assignments = incident_data.get('assignments', [])
+    new_assignee_id = None
+    if assignments:
+        new_assignee_id = assignments[0].get('assignee', {}).get('id')
+
+    state.update(incident_id, {
+        'escalation_level': current_level,
+        'ack_attempts': ack_attempts,
+        'last_escalation_at': datetime.now(timezone.utc).isoformat()
+    })
+
+    if new_assignee_id:
+        new_responder = next((u for u in DEMO_USERS if u['id'] == new_assignee_id), None)
+        if new_responder:
+            responders = demo.get('responders', [])
+            if new_responder not in responders:
+                responders.insert(0, new_responder)
+                state.update(incident_id, {'responders': responders})
+
+    config = DEMO_CONFIG
+    max_attempts = config.get('max_ack_attempts', 3)
+
+    if ack_attempts >= max_attempts:
+        logger.info(f"Max ack attempts ({max_attempts}) reached for {incident_id}, forcing acknowledgment")
+        schedule_action(incident_id, 'force_acknowledge', 5, new_assignee_id)
+    else:
+        delay = random.randint(
+            config.get('escalation_ack_delay_min', 15),
+            config.get('escalation_ack_delay_max', 45)
+        )
+        schedule_action(incident_id, 'acknowledge', delay, new_assignee_id)
+        logger.info(f"Escalated to level {current_level}, scheduled ack in {delay}s (attempt {ack_attempts + 1})")
+
+
+def on_incident_unacknowledged(incident_id: str, incident_data: Dict, state: DemoState):
+    logger.info(f"Incident unacknowledged (timeout): {incident_id}")
+
+    demo = state.get(incident_id)
+    if not demo:
+        return
+
+    if demo.get('paused'):
+        return
+
+    state.update(incident_id, {
+        'state': 'triggered',
+        'acknowledged_at': None
+    })
+
+    responders = demo.get('responders', [])
+    if responders:
+        delay = random.randint(15, 45)
+        schedule_action(incident_id, 'acknowledge', delay, responders[0]['id'])
+        logger.info(f"Incident timed out, rescheduling ack in {delay}s")
+
+
+def on_incident_delegated(incident_id: str, incident_data: Dict, state: DemoState):
+    logger.info(f"Incident delegated: {incident_id}")
+
+    demo = state.get(incident_id)
+    if not demo:
+        return
+
+    assignments = incident_data.get('assignments', [])
+    if assignments:
+        new_assignee = assignments[0].get('assignee', {})
+        new_id = new_assignee.get('id')
+
+        demo_user = next((u for u in DEMO_USERS if u['id'] == new_id), None)
+        if demo_user:
+            responders = demo.get('responders', [])
+            responders = [demo_user] + [r for r in responders if r['id'] != new_id]
+            state.update(incident_id, {'responders': responders})
+
+            if demo.get('state') == 'triggered':
+                delay = random.randint(30, 90)
+                schedule_action(incident_id, 'acknowledge', delay, new_id)
+
+
+def on_incident_reassigned(incident_id: str, incident_data: Dict, state: DemoState):
+    logger.info(f"Incident reassigned: {incident_id}")
+    on_incident_delegated(incident_id, incident_data, state)
+
+
+def on_incident_reopened(incident_id: str, incident_data: Dict, state: DemoState):
+    logger.info(f"Incident reopened: {incident_id}")
+
+    demo = state.get(incident_id)
+    if not demo:
+        on_incident_triggered(incident_id, incident_data, state)
+        return
+
+    state.update(incident_id, {
+        'state': 'triggered',
+        'acknowledged_at': None,
+        'resolver_id': None
+    })
+
+    responders = demo.get('responders', [])
+    if responders:
+        delay = random.randint(20, 60)
+        schedule_action(incident_id, 'acknowledge', delay, responders[0]['id'])
+
+
+def on_responder_replied(incident_id: str, event_data: Dict, state: DemoState):
+    logger.info(f"Responder replied to {incident_id}")
+
+    demo = state.get(incident_id)
+    if not demo:
+        return
+
+    responder = event_data.get('data', {}).get('responder', {})
+    responder_id = responder.get('id', '')
+    reply_type = event_data.get('data', {}).get('responder_request_response', {}).get('response', '')
+
+    responder_actions = demo.get('responder_actions', {})
+    if responder_id in responder_actions:
+        responder_actions[responder_id]['replied'] = True
+        responder_actions[responder_id]['reply_type'] = reply_type
+        state.update(incident_id, {'responder_actions': responder_actions})
+
+
+def on_priority_updated(incident_id: str, event_data: Dict, state: DemoState):
+    logger.info(f"Priority updated for {incident_id}")
+
+    demo = state.get(incident_id)
+    if not demo:
+        return
+
+    priority = event_data.get('data', {}).get('priority', {})
+    state.update(incident_id, {
+        'priority_id': priority.get('id'),
+        'priority_name': priority.get('summary')
+    })
+
+
+def on_urgency_updated(incident_id: str, event_data: Dict, state: DemoState):
+    logger.info(f"Urgency updated for {incident_id}")
+
+    demo = state.get(incident_id)
+    if not demo:
+        return
+
+    urgency = event_data.get('data', {}).get('urgency')
+    state.update(incident_id, {'urgency': urgency})
+
+
+def on_service_event(action: str, event_data: Dict):
+    logger.info(f"Service {action}: {event_data.get('data', {}).get('id')}")
 
 
 def on_responder_added(incident_id: str, event_data: Dict, state: DemoState):
@@ -668,47 +1289,38 @@ def on_responder_added(incident_id: str, event_data: Dict, state: DemoState):
         if user:
             slack = SlackClient()
             slack.invite_users_to_channel(slack_channel, [user['slack_id']])
-            slack.post_as_user(slack_channel, "I've joined to help with this incident.", user)
+            slack.post_message(slack_channel, f"{user['name']} has joined to help with this incident.")
 
 
 def on_workflow_completed(incident_id: str, event_data: Dict, state: DemoState):
     logger.info(f"Workflow completed for {incident_id}")
-    print(f"ON_WORKFLOW_COMPLETED: incident_id={incident_id}")
-
+    
     demo = state.get(incident_id)
-    print(f"ON_WORKFLOW_COMPLETED: demo_exists={demo is not None}")
     if not demo:
-        print(f"ON_WORKFLOW_COMPLETED: No demo state found for {incident_id}, returning")
         return
-
+    
     pd = PagerDutyClient()
     incident = pd.get_incident(incident_id)
     if not incident:
-        print(f"ON_WORKFLOW_COMPLETED: No PagerDuty incident found for {incident_id}")
         return
-
-    print(f"ON_WORKFLOW_COMPLETED: Got incident {incident.get('incident_number')}")
+    
     conference = incident.get('conference_bridge', {})
     slack_channel_url = conference.get('url', '') if conference else ''
-    print(f"ON_WORKFLOW_COMPLETED: conference_bridge url={slack_channel_url[:50] if slack_channel_url else 'NONE'}")
-
+    
     if not slack_channel_url:
         slack = SlackClient()
         service_name = demo.get('service_name', 'incident').lower().replace(' ', '-')[:20]
         incident_number = incident.get('incident_number', incident_id[-6:])
-        pattern = f"demo-{incident_number}"
-        print(f"ON_WORKFLOW_COMPLETED: Searching for Slack channel with pattern: {pattern}")
+        pattern = f"inc-{incident_number}"
         channel_id = slack.find_channel_by_pattern(pattern)
-        print(f"ON_WORKFLOW_COMPLETED: Found channel_id={channel_id}")
         if channel_id:
             state.update(incident_id, {'slack_channel_id': channel_id})
             invite_to_slack_channel(channel_id, demo, slack)
             return
-
+    
     if 'slack.com' in slack_channel_url:
         parts = slack_channel_url.split('/')
         channel_id = parts[-1] if parts else None
-        print(f"ON_WORKFLOW_COMPLETED: Extracted channel_id from URL: {channel_id}")
         if channel_id and channel_id.startswith('C'):
             state.update(incident_id, {'slack_channel_id': channel_id})
             slack = SlackClient()
@@ -716,18 +1328,13 @@ def on_workflow_completed(incident_id: str, event_data: Dict, state: DemoState):
 
 
 def invite_to_slack_channel(channel_id: str, demo: Dict, slack: SlackClient):
-    if not slack.join_channel(channel_id):
-        logger.warning(f"Bot could not join channel {channel_id}, attempting invite anyway")
-
     user_ids = [CONALL_SLACK_USER_ID, CONALL_SLACK_USER_ID_PERSONAL]
     for r in demo.get('responders', []):
         if r.get('slack_id'):
             user_ids.append(r['slack_id'])
 
     slack.invite_users_to_channel(channel_id, user_ids)
-    responders = demo.get('responders', [])
-    if responders:
-        slack.post_as_user(channel_id, "Team assembled for incident response. Let's investigate.", responders[0])
+    slack.post_message(channel_id, "Team assembled for incident response. Let's investigate.")
     logger.info(f"Invited {len(user_ids)} users to channel {channel_id}")
 
 
@@ -755,21 +1362,16 @@ def on_action_completed(incident_id: str, action_type: str, state: DemoState):
 
 def on_incident_resolved(incident_id: str, state: DemoState):
     logger.info(f"Incident resolved: {incident_id}")
-
+    
     demo = state.get(incident_id)
     if not demo:
         return
-
+    
     slack_channel = demo.get('slack_channel_id')
     if slack_channel:
         slack = SlackClient()
-        responders = demo.get('responders', [])
-        resolver = random.choice(responders) if responders else None
-        if resolver:
-            slack.post_as_user(slack_channel, get_conversation_message('resolved'), resolver)
-        else:
-            slack.post_message(slack_channel, get_conversation_message('resolved'))
-
+        slack.post_message(slack_channel, get_conversation_message('resolved'))
+    
     state.update(incident_id, {'state': 'resolved'})
 
 
@@ -810,9 +1412,22 @@ def handle_scheduled_action(event: Dict) -> Dict:
     user_email = user['email']
     
     if action == 'acknowledge':
-        pd.acknowledge_incident(incident_id, user_email)
-        if slack_channel:
-            slack.post_as_user(slack_channel, get_conversation_message('investigating'), user)
+        incident = pd.get_incident(incident_id)
+        if incident and incident.get('status') == 'triggered':
+            pd.acknowledge_incident(incident_id, user_email)
+            if slack_channel:
+                slack.post_message(slack_channel, f"{user['name']}: {get_conversation_message('investigating')}")
+        else:
+            logger.info(f"Incident {incident_id} not in triggered state, skipping ack")
+
+    elif action == 'force_acknowledge':
+        incident = pd.get_incident(incident_id)
+        if incident and incident.get('status') == 'triggered':
+            pd.acknowledge_incident(incident_id, user_email)
+            logger.info(f"Force acknowledged {incident_id} after max escalation attempts")
+            pd.add_note(incident_id, user_email, "[Auto-Response] Incident acknowledged after escalation timeout.")
+            if slack_channel:
+                slack.post_message(slack_channel, f"[System] Incident auto-acknowledged after escalation. {user['name']} is now responding.")
 
     elif action == 'responder_action':
         action_type = select_action()
@@ -824,28 +1439,28 @@ def handle_scheduled_action(event: Dict) -> Dict:
         resolution = f"Issue resolved by {resolver['name']}. Root cause identified and addressed."
         pd.resolve_incident(incident_id, resolver['email'], resolution)
         if slack_channel:
-            slack.post_as_user(slack_channel, get_conversation_message('resolved'), resolver)
+            slack.post_message(slack_channel, f"{resolver['name']}: {get_conversation_message('resolved')}")
         state.update(incident_id, {'state': 'resolved', 'resolver_id': resolver['id']})
 
     return {'statusCode': 200, 'body': json.dumps({'message': f'Executed {action}'})}
 
 
-def perform_responder_action(incident_id: str, user: Dict, action_type: str, pd: PagerDutyClient,
+def perform_responder_action(incident_id: str, user: Dict, action_type: str, pd: PagerDutyClient, 
                               slack: SlackClient, slack_channel: str, demo: Dict, state: DemoState):
     user_email = user['email']
-
+    
     if action_type == 'add_note':
         content = get_conversation_message('found_issue')
         pd.add_note(incident_id, user_email, content)
         if slack_channel:
-            slack.post_as_user(slack_channel, content, user)
-
+            slack.post_message(slack_channel, f"{user['name']}: {content}")
+    
     elif action_type == 'status_update':
         message = get_conversation_message('working_fix')
         pd.post_status_update(incident_id, user_email, message)
         if slack_channel:
-            slack.post_as_user(slack_channel, f"Status update: {message}", user)
-
+            slack.post_message(slack_channel, f"{user['name']} posted status update: {message}")
+    
     elif action_type == 'add_responder':
         current_responders = demo.get('responders', [])
         current_ids = [r['id'] for r in current_responders]
@@ -858,14 +1473,14 @@ def perform_responder_action(incident_id: str, user: Dict, action_type: str, pd:
             responder_actions[new_responder['id']] = {'acted': False, 'action': None}
             state.update(incident_id, {'responders': current_responders, 'responder_actions': responder_actions})
             if slack_channel:
-                slack.post_as_user(slack_channel, f"Requesting help from {new_responder['name']}", user)
-
+                slack.post_message(slack_channel, f"{user['name']} is requesting help from {new_responder['name']}")
+    
     else:
         content = get_conversation_message('investigating')
         pd.add_note(incident_id, user_email, f"[{action_type}] {content}")
         if slack_channel:
-            slack.post_as_user(slack_channel, content, user)
-
+            slack.post_message(slack_channel, f"{user['name']}: {content}")
+    
     responder_actions = demo.get('responder_actions', {})
     if user['id'] in responder_actions:
         responder_actions[user['id']] = {'acted': True, 'action': action_type}
@@ -1166,10 +1781,10 @@ def handle_api_request(event: Dict) -> Dict:
         incident_id = event.get('queryStringParameters', {}).get('incident_id')
         if incident_id:
             demo = state.get(incident_id)
-            return {'statusCode': 200, 'headers': cors_headers, 'body': json.dumps({'demo': demo}, cls=DecimalEncoder)}
+            return {'statusCode': 200, 'headers': cors_headers, 'body': json.dumps({'demo': demo})}
         else:
             active = state.get_active_demos()
-            return {'statusCode': 200, 'headers': cors_headers, 'body': json.dumps({'active_demos': active, 'count': len(active)}, cls=DecimalEncoder)}
+            return {'statusCode': 200, 'headers': cors_headers, 'body': json.dumps({'active_demos': active, 'count': len(active)})}
 
     elif '/trigger' in path and method == 'POST':
         result = handle_trigger(body)

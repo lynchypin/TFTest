@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import scenariosData from './data/scenarios.json';
 import FilterPanel from './components/FilterPanel';
 import LicenseFilterPanel from './components/LicenseFilterPanel';
@@ -23,6 +23,10 @@ function App() {
   const [demoPaused, setDemoPaused] = useState(false);
   const [activeDemos, setActiveDemos] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [triggeringId, setTriggeringId] = useState(null);
+  const notificationTimer = useRef(null);
+  const [notificationExiting, setNotificationExiting] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -49,8 +53,18 @@ function App() {
 
   const filteredScenarios = useMemo(() => {
     const licenseFiltered = filterByLicense(scenariosData.scenarios, licenseConfig);
+    const query = searchQuery.toLowerCase().trim();
 
     return licenseFiltered.filter(scenario => {
+      if (query) {
+        const matchFields = [
+          scenario.name,
+          scenario.id,
+          scenario.description,
+          scenario.target_service
+        ].filter(Boolean).map(f => f.toLowerCase());
+        if (!matchFields.some(f => f.includes(query))) return false;
+      }
       if (filters.industry?.length && !filters.industry.some(i => scenario.tags.industry.includes(i))) return false;
       if (filters.team_type?.length && !filters.team_type.some(t => scenario.tags.team_type.includes(t))) return false;
       if (filters.org_style?.length && !filters.org_style.some(o => scenario.tags.org_style.includes(o))) return false;
@@ -90,7 +104,7 @@ function App() {
       if (filters.severity?.length && !filters.severity.includes(scenario.severity)) return false;
       return true;
     });
-  }, [filters, licenseConfig]);
+  }, [filters, licenseConfig, searchQuery]);
 
   const licenseFilteredCount = useMemo(() => {
     return filterByLicense(scenariosData.scenarios, licenseConfig).length;
@@ -178,14 +192,32 @@ function App() {
     saveInstance(instance);
   };
 
-  const showNotification = (message, type = 'success') => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
-  };
+  const showNotification = useCallback((message, type = 'success') => {
+    if (notificationTimer.current) clearTimeout(notificationTimer.current);
+    setNotificationExiting(false);
+    setNotification({ message, type, startTime: Date.now() });
+    notificationTimer.current = setTimeout(() => {
+      setNotificationExiting(true);
+      setTimeout(() => {
+        setNotification(null);
+        setNotificationExiting(false);
+      }, 300);
+    }, 3000);
+  }, []);
+
+  const dismissNotification = useCallback(() => {
+    if (notificationTimer.current) clearTimeout(notificationTimer.current);
+    setNotificationExiting(true);
+    setTimeout(() => {
+      setNotification(null);
+      setNotificationExiting(false);
+    }, 300);
+  }, []);
 
   const handleTrigger = async (scenario) => {
     const integration = scenario.tags?.integration;
     const nativeConfigured = isIntegrationConfigured(integration);
+    setTriggeringId(scenario.id);
 
     try {
       const result = await triggerNativeIntegration(scenario);
@@ -219,6 +251,8 @@ function App() {
       }
     } catch (error) {
       showNotification(`Failed: ${error.message}`, 'error');
+    } finally {
+      setTriggeringId(null);
     }
   };
 
@@ -237,12 +271,20 @@ function App() {
     setModalType(null);
   };
 
-  const hasActiveFilters = Object.values(filters).some(v => v?.length > 0) || 
-    licenseConfig.plan !== null || 
-    Object.values(licenseConfig.addons).some(v => v);
+  const activeFilterLabels = useMemo(() => {
+    const labels = [];
+    if (filters.industry?.length) labels.push(...filters.industry.map(v => ({ category: 'industry', value: v })));
+    if (filters.team_type?.length) labels.push(...filters.team_type.map(v => ({ category: 'team_type', value: v })));
+    if (filters.tool?.length) labels.push(...filters.tool.map(v => ({ category: 'tool', value: v })));
+    if (filters.tool_type?.length) labels.push(...filters.tool_type.map(v => ({ category: 'tool_type', value: v })));
+    if (filters.severity?.length) labels.push(...filters.severity.map(v => ({ category: 'severity', value: v })));
+    if (filters.agent_type?.length) labels.push(...filters.agent_type.map(v => ({ category: 'agent_type', value: v })));
+    if (filters.features?.length) labels.push(...filters.features.map(v => ({ category: 'features', value: v })));
+    return labels;
+  }, [filters]);
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-screen bg-gray-950 scrollbar-thin">
       <header className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-xl border-b border-gray-800 shadow-lg shadow-black/20">
         <div className="max-w-[1800px] mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -271,6 +313,28 @@ function App() {
           </div>
 
           <div className="flex items-center gap-3">
+            <div className="relative">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search scenarios..."
+                className="w-56 pl-9 pr-8 py-2 bg-gray-800/80 border border-gray-700 rounded-xl text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-600 transition-all duration-200"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
             {hasOrchestratorConfigured() && (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-800/80 rounded-lg border border-gray-700">
                 {activeDemos > 0 && (
@@ -309,7 +373,7 @@ function App() {
               </div>
             )}
             <div className="flex items-center gap-2 px-4 py-2 bg-gray-800/80 rounded-xl border border-gray-700">
-              <span className="text-2xl font-bold text-emerald-400">{filteredScenarios.length}</span>
+              <span className="text-2xl font-bold text-emerald-400 tabular-nums transition-all duration-300">{filteredScenarios.length}</span>
               <span className="text-sm text-gray-400">of {licenseFilteredCount}</span>
               <span className="text-xs text-gray-500">({scenariosData.scenarios.length} total)</span>
             </div>
@@ -317,7 +381,7 @@ function App() {
               onClick={() => setShowFilters(!showFilters)}
               className={`btn-ghost text-sm ${showFilters ? 'bg-gray-800 text-emerald-400' : ''}`}
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className={`w-4 h-4 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
               Filters
@@ -338,7 +402,47 @@ function App() {
           </div>
         </div>
 
-        {showFilters && (
+        {!showFilters && activeFilterLabels.length > 0 && (
+          <div className="border-t border-gray-800/50 bg-gray-900/60">
+            <div className="max-w-[1800px] mx-auto px-6 py-2 flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-gray-500 mr-1">Active:</span>
+              {activeFilterLabels.slice(0, 8).map(({ category, value }, idx) => (
+                <span
+                  key={`${category}-${value}-${idx}`}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-indigo-900/40 text-indigo-300 border border-indigo-700/30"
+                >
+                  {value}
+                  <button
+                    onClick={() => {
+                      const updated = filters[category]?.filter(v => v !== value) || [];
+                      handleFilterChange(category, updated);
+                    }}
+                    className="hover:text-white transition-colors ml-0.5"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </span>
+              ))}
+              {activeFilterLabels.length > 8 && (
+                <span className="text-xs text-gray-500">+{activeFilterLabels.length - 8} more</span>
+              )}
+              <button
+                onClick={handleClearFilters}
+                className="text-xs text-gray-500 hover:text-gray-300 ml-2 transition-colors"
+              >
+                Clear all
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div
+          className="overflow-hidden transition-all duration-300 ease-in-out"
+          style={{
+            maxHeight: showFilters ? '600px' : '0',
+            opacity: showFilters ? 1 : 0,
+          }}
+        >
           <div className="border-t border-gray-800 bg-gray-900/80">
             <div className="max-w-[1800px] mx-auto px-6 py-4">
               <div className="flex gap-6">
@@ -361,39 +465,54 @@ function App() {
               </div>
             </div>
           </div>
-        )}
+        </div>
       </header>
 
       <main className="max-w-[1800px] mx-auto px-6 py-6">
         <div className="flex gap-6">
           <div className="flex-1">
             {filteredScenarios.length === 0 ? (
-              <div className="card-elevated p-12 text-center max-w-md mx-auto">
+              <div className="card-elevated p-12 text-center max-w-md mx-auto animate-fade-in">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-800 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                  <div className="relative">
+                    <svg className="w-8 h-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-gray-600 rounded-full animate-pulse"></span>
+                  </div>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-100 mb-2">No scenarios found</h3>
-                <p className="text-gray-400 mb-6">Try adjusting your filters to see more results</p>
-                <button
-                  onClick={handleClearFilters}
-                  className="btn-primary"
-                >
-                  Clear all filters
-                </button>
+                <p className="text-gray-400 mb-6">
+                  {searchQuery ? `No results for "${searchQuery}"` : 'Try adjusting your filters to see more results'}
+                </p>
+                <div className="flex gap-3 justify-center">
+                  {searchQuery && (
+                    <button onClick={() => setSearchQuery('')} className="btn-secondary text-sm">
+                      Clear search
+                    </button>
+                  )}
+                  <button onClick={handleClearFilters} className="btn-primary text-sm">
+                    Clear all filters
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filteredScenarios.map(scenario => (
-                  <ScenarioCard
+                {filteredScenarios.map((scenario, index) => (
+                  <div
                     key={scenario.id}
-                    scenario={scenario}
-                    licenseConfig={licenseConfig}
-                    onTrigger={handleTrigger}
-                    onViewPayload={handleViewPayload}
-                    onViewTrace={handleViewTrace}
-                  />
+                    className="animate-card-in"
+                    style={{ animationDelay: `${Math.min(index * 30, 300)}ms` }}
+                  >
+                    <ScenarioCard
+                      scenario={scenario}
+                      licenseConfig={licenseConfig}
+                      onTrigger={handleTrigger}
+                      onViewPayload={handleViewPayload}
+                      onViewTrace={handleViewTrace}
+                      isTriggering={triggeringId === scenario.id}
+                    />
+                  </div>
                 ))}
               </div>
             )}
@@ -408,12 +527,25 @@ function App() {
       </main>
 
       {notification && (
-        <div className={`fixed bottom-6 right-6 px-5 py-4 rounded-2xl shadow-2xl animate-slide-down ${
-          notification.type === 'error'
-            ? 'bg-gradient-to-r from-red-600 to-rose-500'
-            : 'bg-gradient-to-r from-emerald-600 to-teal-500'
-        } text-white font-medium z-50`}>
-          {notification.message}
+        <div
+          onClick={dismissNotification}
+          className={`fixed bottom-6 right-6 max-w-sm cursor-pointer rounded-2xl shadow-2xl overflow-hidden z-50 transition-all duration-300 ${
+            notificationExiting ? 'animate-slide-out' : 'animate-slide-up'
+          } ${
+            notification.type === 'error'
+              ? 'bg-gradient-to-r from-red-600 to-rose-500'
+              : 'bg-gradient-to-r from-emerald-600 to-teal-500'
+          }`}
+        >
+          <div className="px-5 py-4 text-white font-medium pr-10">
+            {notification.message}
+            <button className="absolute top-3 right-3 text-white/60 hover:text-white transition-colors">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+          <div className="h-1 bg-white/20">
+            <div className={`h-full bg-white/50 ${notificationExiting ? '' : 'animate-progress-shrink'}`}></div>
+          </div>
         </div>
       )}
 

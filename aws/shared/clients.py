@@ -13,6 +13,7 @@ PAGERDUTY_EVENTS_URL = 'https://events.pagerduty.com/v2/enqueue'
 
 CONALL_EMAIL = 'clynch@pagerduty.com'
 CONALL_SLACK_USER_ID = 'U0A9KAMT0BF'
+CONALL_SLACK_USER_ID_PERSONAL = 'U0A9GBYT999'
 SLACK_WORKSPACE_ID = 'T0A9LN53CPQ'
 
 DEMO_USERS = [
@@ -105,11 +106,15 @@ class PagerDutyClient:
             logger.error(f"Error listing incidents: {e}")
         return []
     
-    def get_incident(self, incident_id: str) -> Optional[Dict]:
+    def get_incident(self, incident_id: str, include: List[str] = None) -> Optional[Dict]:
         try:
+            params = {}
+            if include:
+                params['include[]'] = include
             response = requests.get(
                 f'{PAGERDUTY_API_URL}/incidents/{incident_id}',
                 headers=self.headers,
+                params=params,
                 timeout=10
             )
             if response.status_code == 200:
@@ -411,6 +416,32 @@ class PagerDutyClient:
             logger.error(f"Error listing priorities: {e}")
         return []
 
+    def list_automation_actions(self) -> List[Dict]:
+        try:
+            response = requests.get(
+                f'{PAGERDUTY_API_URL}/automation_actions/actions',
+                headers=self.headers,
+                timeout=10
+            )
+            if response.status_code == 200:
+                return response.json().get('actions', [])
+        except Exception as e:
+            logger.error(f"Error listing automation actions: {e}")
+        return []
+
+    def list_workflows(self) -> List[Dict]:
+        try:
+            response = requests.get(
+                f'{PAGERDUTY_API_URL}/incident_workflows',
+                headers=self.headers,
+                timeout=10
+            )
+            if response.status_code == 200:
+                return response.json().get('incident_workflows', [])
+        except Exception as e:
+            logger.error(f"Error listing workflows: {e}")
+        return []
+
     def post_status_update(self, incident_id: str, message: str, user_email: str = None) -> dict:
         url = f'{PAGERDUTY_API_URL}/incidents/{incident_id}/status_updates'
         headers = {**self.headers}
@@ -560,26 +591,58 @@ class SlackClient:
     def __init__(self, token: str = None, default_channel: str = None):
         self.token = token or os.environ.get('SLACK_BOT_TOKEN', '')
         self.default_channel = default_channel or os.environ.get('SLACK_CHANNEL', '')
+        self.team_id = os.environ.get('SLACK_TEAM_ID', SLACK_WORKSPACE_ID)
         self.api_base = 'https://slack.com/api'
-    
+        self._profile_cache = {}
+
     def _headers(self) -> Dict[str, str]:
         return {
             'Authorization': f'Bearer {self.token}',
             'Content-Type': 'application/json'
         }
-    
-    def post_message(self, text: str, channel: str = None, blocks: List[Dict] = None) -> Dict[str, Any]:
+
+    def get_user_profile(self, slack_user_id: str) -> Dict[str, str]:
+        if slack_user_id in self._profile_cache:
+            return self._profile_cache[slack_user_id]
+        try:
+            resp = requests.get(
+                f'{self.api_base}/users.info',
+                headers=self._headers(),
+                params={'user': slack_user_id},
+                timeout=10
+            )
+            if resp.ok:
+                data = resp.json()
+                if data.get('ok'):
+                    user = data.get('user', {})
+                    profile = user.get('profile', {})
+                    result = {
+                        'name': profile.get('display_name') or profile.get('real_name') or user.get('name', ''),
+                        'icon_url': profile.get('image_72', '')
+                    }
+                    self._profile_cache[slack_user_id] = result
+                    return result
+        except Exception as e:
+            logger.error(f"Error getting user profile: {e}")
+        return {'name': '', 'icon_url': ''}
+
+    def post_message(self, text: str, channel: str = None, blocks: List[Dict] = None,
+                     username: str = None, icon_url: str = None) -> Dict[str, Any]:
         if not self.token:
             return {'ok': False, 'error': 'no_token'}
-        
+
         target_channel = channel or self.default_channel
         if not target_channel:
             return {'ok': False, 'error': 'no_channel'}
-        
+
         payload = {'channel': target_channel, 'text': text}
         if blocks:
             payload['blocks'] = blocks
-        
+        if username:
+            payload['username'] = username
+        if icon_url:
+            payload['icon_url'] = icon_url
+
         try:
             resp = requests.post(
                 f'{self.api_base}/chat.postMessage',
@@ -590,6 +653,15 @@ class SlackClient:
             return resp.json()
         except Exception as e:
             return {'ok': False, 'error': str(e)}
+
+    def post_as_user(self, text: str, user: Dict, channel: str = None, blocks: List[Dict] = None) -> Dict[str, Any]:
+        slack_id = user.get('slack_id', '')
+        if slack_id:
+            profile = self.get_user_profile(slack_id)
+            return self.post_message(text, channel, blocks,
+                                     username=profile.get('name') or user.get('name'),
+                                     icon_url=profile.get('icon_url'))
+        return self.post_message(text, channel, blocks, username=user.get('name'))
     
     def send_dm(self, user_id: str, text: str, blocks: List[Dict] = None) -> Dict[str, Any]:
         if not self.token:
@@ -615,17 +687,20 @@ class SlackClient:
         if not self.token:
             return []
         try:
+            params = {'types': 'public_channel,private_channel', 'limit': 100}
+            if self.team_id:
+                params['team_id'] = self.team_id
             response = requests.get(
                 f'{self.api_base}/conversations.list',
                 headers=self._headers(),
-                params={'types': 'public_channel,private_channel', 'limit': 100},
+                params=params,
                 timeout=10
             )
             data = response.json()
             if not data.get('ok'):
                 logger.error(f"Failed to list channels: {data.get('error')}")
                 return []
-            
+
             cutoff = datetime.now(timezone.utc) - timedelta(minutes=minutes)
             recent = []
             for ch in data.get('channels', []):
@@ -636,7 +711,7 @@ class SlackClient:
         except Exception as e:
             logger.error(f"Error listing channels: {e}")
             return []
-    
+
     def get_channel_messages(self, channel_id: str, limit: int = 5) -> List[Dict]:
         if not self.token:
             return []
@@ -653,7 +728,46 @@ class SlackClient:
         except Exception as e:
             logger.error(f"Error getting messages: {e}")
         return []
-    
+
+    def remove_user_from_old_demo_channels(self, user_id: str, keep_channel_id: str = None) -> int:
+        if not self.token:
+            return 0
+        removed = 0
+        try:
+            params = {'user': user_id, 'types': 'public_channel,private_channel', 'limit': 200}
+            if self.team_id:
+                params['team_id'] = self.team_id
+            response = requests.get(
+                f'{self.api_base}/users.conversations',
+                headers=self._headers(),
+                params=params,
+                timeout=10
+            )
+            data = response.json()
+            if data.get('ok'):
+                for channel in data.get('channels', []):
+                    ch_name = channel.get('name', '')
+                    ch_id = channel.get('id')
+                    if ch_name.startswith('demo-') and ch_id != keep_channel_id:
+                        try:
+                            kick_resp = requests.post(
+                                f'{self.api_base}/conversations.kick',
+                                headers=self._headers(),
+                                json={'channel': ch_id, 'user': user_id},
+                                timeout=10
+                            )
+                            kick_data = kick_resp.json()
+                            if kick_data.get('ok'):
+                                logger.info(f"Removed user {user_id} from old demo channel {ch_name}")
+                                removed += 1
+                            else:
+                                logger.warning(f"Failed to remove {user_id} from {ch_name}: {kick_data.get('error')}")
+                        except Exception as e:
+                            logger.warning(f"Error removing {user_id} from {ch_name}: {e}")
+        except Exception as e:
+            logger.error(f"Error listing channels for user {user_id}: {e}")
+        return removed
+
     def invite_user_to_channel(self, channel_id: str, user_id: str) -> Dict[str, Any]:
         if not self.token:
             return {'ok': False, 'error': 'no_token'}
@@ -664,10 +778,21 @@ class SlackClient:
                 json={'channel': channel_id, 'users': user_id},
                 timeout=10
             )
-            return response.json()
+            data = response.json()
+            if data.get('error') == 'user_is_restricted':
+                logger.info(f"User {user_id} is restricted, removing from old demo channels...")
+                self.remove_user_from_old_demo_channels(user_id, keep_channel_id=channel_id)
+                response = requests.post(
+                    f'{self.api_base}/conversations.invite',
+                    headers=self._headers(),
+                    json={'channel': channel_id, 'users': user_id},
+                    timeout=10
+                )
+                data = response.json()
+            return data
         except Exception as e:
             return {'ok': False, 'error': str(e)}
-    
+
     def create_channel(self, name: str, is_private: bool = False) -> Dict[str, Any]:
         if not self.token:
             return {'ok': False, 'error': 'no_token'}
@@ -686,10 +811,13 @@ class SlackClient:
         if not self.token:
             return None
         try:
+            params = {'types': 'public_channel,private_channel', 'limit': 200}
+            if self.team_id:
+                params['team_id'] = self.team_id
             response = requests.get(
                 f'{self.api_base}/conversations.list',
                 headers=self._headers(),
-                params={'types': 'public_channel,private_channel', 'limit': 200},
+                params=params,
                 timeout=10
             )
             data = response.json()
@@ -701,6 +829,26 @@ class SlackClient:
         except Exception as e:
             logger.error(f"Error finding channel: {e}")
         return None
+
+    def join_channel(self, channel_id: str) -> Dict[str, Any]:
+        if not self.token:
+            return {'ok': False, 'error': 'no_token'}
+        try:
+            response = requests.post(
+                f'{self.api_base}/conversations.join',
+                headers=self._headers(),
+                json={'channel': channel_id},
+                timeout=10
+            )
+            data = response.json()
+            if data.get('ok'):
+                logger.info(f"Bot joined channel {channel_id}")
+            else:
+                logger.warning(f"Failed to join channel {channel_id}: {data.get('error')}")
+            return data
+        except Exception as e:
+            logger.error(f"Error joining channel: {e}")
+            return {'ok': False, 'error': str(e)}
 
     def get_channel_info(self, channel_id: str) -> Optional[Dict]:
         if not self.token:
@@ -724,25 +872,38 @@ class SlackClient:
             return {'ok': False, 'error': 'no_token'}
         if not user_ids:
             return {'ok': True, 'already_in_channel': True}
-        try:
-            response = requests.post(
-                f'{self.api_base}/conversations.invite',
-                headers=self._headers(),
-                json={'channel': channel_id, 'users': ','.join(user_ids)},
-                timeout=10
-            )
-            data = response.json()
-            if data.get('ok'):
-                logger.info(f"Invited {len(user_ids)} users to channel {channel_id}")
-            elif data.get('error') == 'already_in_channel':
-                logger.info(f"Users already in channel {channel_id}")
-                return {'ok': True, 'already_in_channel': True}
-            else:
-                logger.error(f"Failed to invite users: {data.get('error')}")
-            return data
-        except Exception as e:
-            logger.error(f"Error inviting users to channel: {e}")
-            return {'ok': False, 'error': str(e)}
+
+        success_count = 0
+        errors = []
+        for user_id in user_ids:
+            if not user_id:
+                continue
+            try:
+                response = requests.post(
+                    f'{self.api_base}/conversations.invite',
+                    headers=self._headers(),
+                    json={'channel': channel_id, 'users': user_id},
+                    timeout=10
+                )
+                data = response.json()
+                if data.get('ok'):
+                    logger.info(f"Invited user {user_id} to channel {channel_id}")
+                    success_count += 1
+                elif data.get('error') == 'already_in_channel':
+                    logger.info(f"User {user_id} already in channel {channel_id}")
+                    success_count += 1
+                elif data.get('error') == 'cant_invite_self':
+                    logger.info(f"Bot is {user_id}, skipping self-invite")
+                    success_count += 1
+                else:
+                    logger.warning(f"Failed to invite {user_id}: {data.get('error')}")
+                    errors.append(f"{user_id}: {data.get('error')}")
+            except Exception as e:
+                logger.error(f"Error inviting user {user_id}: {e}")
+                errors.append(f"{user_id}: {str(e)}")
+
+        logger.info(f"Invited {success_count}/{len(user_ids)} users to channel {channel_id}")
+        return {'ok': success_count > 0, 'invited': success_count, 'total': len(user_ids), 'errors': errors}
 
 
 class SlackNotifier(SlackClient):

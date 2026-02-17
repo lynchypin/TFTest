@@ -181,8 +181,28 @@
     animation: slideDown 0.2s ease-out;
   }
 
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-slide-out {
+    animation: slideOut 0.3s ease-in forwards;
+  }
+
+  .animate-card-in {
+    animation: cardIn 0.3s ease-out both;
+  }
+
   .animate-scale-in {
-    animation: scaleIn 0.15s ease-out;
+    animation: scaleIn 0.2s ease-out;
+  }
+
+  .animate-progress-shrink {
+    animation: progressShrink 3s linear forwards;
+  }
+
+  .animate-spin-slow {
+    animation: spin 1s linear infinite;
   }
 
   .scrollbar-thin {
@@ -215,14 +235,52 @@
 }
 
 @keyframes slideDown {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(-8px);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progressShrink {
+  from { width: 100%; }
+  to { width: 0%; }
 }
 
 @keyframes scaleIn {
@@ -234,4 +292,8 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

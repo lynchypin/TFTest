@@ -54,7 +54,7 @@ const FEATURE_TIER_COLORS = {
   tier3: { bg: 'bg-cyan-900/20', text: 'text-cyan-500' }
 };
 
-export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onViewTrace }) {
+export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onViewTrace, isTriggering }) {
   const [showFeaturesModal, setShowFeaturesModal] = useState(false);
   const isDisabled = scenario.enabled === false;
 
@@ -101,11 +101,12 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
 
   return (
     <>
-      <div className={`group relative rounded-2xl border overflow-hidden transition-all duration-300 ${
+      <div className={`group relative rounded-2xl border overflow-hidden transition-all duration-200 ${
         isDisabled
           ? 'bg-gray-950 border-gray-800/50 opacity-60 grayscale'
-          : 'bg-gray-900 border-gray-800 hover:shadow-2xl hover:shadow-black/50 hover:-translate-y-1 hover:border-gray-700'
+          : 'bg-gray-900 border-gray-800 hover:shadow-2xl hover:shadow-emerald-900/10 hover:-translate-y-0.5 hover:border-gray-700 hover:border-t-emerald-800/40'
       }`}>
+        <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         {isDisabled && (
           <div className="absolute top-0 right-0 z-10 overflow-hidden w-28 h-28 pointer-events-none">
             <div className="absolute top-[14px] right-[-34px] w-[170px] text-center transform rotate-45 bg-red-600 text-white text-[10px] font-bold py-1 shadow-lg tracking-wide">
@@ -151,15 +152,15 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
             )}
           </div>
 
-          <p className="text-sm text-gray-400 mb-4 line-clamp-2 leading-relaxed">{scenario.description}</p>
+          <p className="text-sm text-gray-400 mb-4 line-clamp-2 leading-relaxed h-10">{scenario.description}</p>
 
-          <div className="flex flex-wrap gap-1.5 mb-4">
+          <div className="flex flex-wrap gap-1.5 mb-4 min-h-[26px]">
             {displayFeatures.map((featureKey, index) => {
               const feature = FEATURES[featureKey];
               const tierColor = getFeatureTier(featureKey, index);
               return (
-                <span 
-                  key={featureKey} 
+                <span
+                  key={featureKey}
                   className={`px-2 py-0.5 text-xs font-medium rounded-md ${tierColor.bg} ${tierColor.text} transition-colors border border-cyan-700/30`}
                   title={feature?.name}
                 >
@@ -170,7 +171,7 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
             {remainingCount > 0 && (
               <button
                 onClick={() => setShowFeaturesModal(true)}
-                className="px-2 py-0.5 text-xs font-medium rounded-md bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-300 transition-all cursor-pointer border border-gray-700"
+                className="px-2 py-0.5 text-xs font-medium rounded-md bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-300 transition-all cursor-pointer border border-gray-700 focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:outline-none"
               >
                 +{remainingCount}
               </button>
@@ -186,8 +187,8 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
               <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-700/50">
                 <span className="text-xs text-gray-500 uppercase tracking-wide font-medium">Priority</span>
                 <span className={`font-bold text-sm px-2 py-0.5 rounded ${
-                  scenario.expected_priority === 'P1' 
-                    ? 'bg-red-900/50 text-red-300 border border-red-700/50' 
+                  scenario.expected_priority === 'P1'
+                    ? 'bg-red-900/50 text-red-300 border border-red-700/50'
                     : scenario.expected_priority === 'P2'
                     ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50'
                     : 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/50'
@@ -200,19 +201,30 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
 
           <div className="flex gap-2">
             <button
-              onClick={() => !isDisabled && onTrigger(scenario)}
-              disabled={isDisabled}
-              className={`flex-1 text-sm py-2.5 ${isDisabled ? 'btn-secondary opacity-50 cursor-not-allowed' : 'btn-success'}`}
+              onClick={() => !isDisabled && !isTriggering && onTrigger(scenario)}
+              disabled={isDisabled || isTriggering}
+              className={`flex-1 text-sm py-2.5 focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:outline-none ${
+                isDisabled ? 'btn-secondary opacity-50 cursor-not-allowed' :
+                isTriggering ? 'btn-success opacity-80 cursor-wait' :
+                'btn-success hover:scale-[1.02] hover:shadow-emerald-500/20 hover:shadow-lg'
+              }`}
               title={isDisabled ? 'Coming Soon - This scenario is not yet available' : ''}
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              {isDisabled ? 'TBD' : 'Trigger'}
+              {isTriggering ? (
+                <svg className="w-4 h-4 animate-spin-slow" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              )}
+              {isDisabled ? 'TBD' : isTriggering ? 'Sending...' : 'Trigger'}
             </button>
             <button
               onClick={() => onViewPayload(scenario)}
-              className="flex-1 btn-secondary text-sm py-2.5"
+              className="flex-1 btn-secondary text-sm py-2.5 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:outline-none"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
@@ -221,7 +233,7 @@ export default function ScenarioCard({ scenario, onTrigger, onViewPayload, onVie
             </button>
             <button
               onClick={() => onViewTrace(scenario)}
-              className="btn-ghost px-3"
+              className="btn-ghost px-3 hover:scale-105 focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:outline-none"
               title="View Trace"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

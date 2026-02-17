@@ -45,6 +45,18 @@ variable "schedule_expression" {
   description = "EventBridge schedule expression"
 }
 
+variable "demo_controller_schedule" {
+  type        = string
+  default     = "cron(0 13,15,17,19,21 ? * MON-FRI *)"
+  description = "EventBridge cron for demo controller (default: every 2h from 9AM-5PM Chilean time, weekdays)"
+}
+
+variable "demo_controller_action_delay" {
+  type        = number
+  default     = 45
+  description = "Delay in seconds between scenario phases when triggered by EventBridge"
+}
+
 variable "pagerduty_admin_token" {
   type      = string
   sensitive = true
@@ -58,6 +70,11 @@ variable "slack_bot_token" {
 variable "slack_channel" {
   type    = string
   default = "C08CHCAGX3K"
+}
+
+variable "slack_team_id" {
+  type    = string
+  default = ""
 }
 
 variable "routing_key_dbre" {
@@ -181,6 +198,14 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "logs:PutLogEvents"
         ]
         Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParameter",
+          "ssm:PutParameter"
+        ]
+        Resource = "arn:aws:ssm:*:*:parameter/demo-simulator/*"
       }
     ]
   })
@@ -579,18 +604,19 @@ resource "aws_lambda_function" "demo_controller" {
 
   environment {
     variables = {
-      LOG_LEVEL             = "INFO"
-      PAGERDUTY_ADMIN_TOKEN = var.pagerduty_admin_token
-      PAGERDUTY_TOKEN       = var.pagerduty_admin_token
-      SLACK_BOT_TOKEN       = var.slack_bot_token
-      SLACK_CHANNEL         = var.slack_channel
-      ROUTING_KEY_DBRE      = var.routing_key_dbre
-      ROUTING_KEY_API       = var.routing_key_api
-      ROUTING_KEY_K8S       = var.routing_key_k8s
-      ROUTING_KEY_STREAMING = var.routing_key_streaming
-      ACTION_DELAY_MIN      = "30"
-      ACTION_DELAY_MAX      = "60"
-      SCENARIOS_FILE        = "/var/task/scenarios.json"
+      LOG_LEVEL                    = "INFO"
+      PAGERDUTY_ADMIN_TOKEN        = var.pagerduty_admin_token
+      PAGERDUTY_TOKEN              = var.pagerduty_admin_token
+      SLACK_BOT_TOKEN              = var.slack_bot_token
+      SLACK_CHANNEL                = var.slack_channel
+      ROUTING_KEY_DBRE             = var.routing_key_dbre
+      ROUTING_KEY_API              = var.routing_key_api
+      ROUTING_KEY_K8S              = var.routing_key_k8s
+      ROUTING_KEY_STREAMING        = var.routing_key_streaming
+      ACTION_DELAY_MIN             = "30"
+      ACTION_DELAY_MAX             = "60"
+      SCENARIOS_FILE               = "/var/task/scenarios.json"
+      SSM_RECENT_SCENARIOS_PARAM   = aws_ssm_parameter.recent_scenarios.name
     }
   }
 
@@ -606,6 +632,45 @@ resource "aws_cloudwatch_log_group" "demo_controller_logs" {
   name              = "/aws/lambda/demo-simulator-controller"
   retention_in_days = 7
   tags              = local.tags
+}
+
+resource "aws_ssm_parameter" "recent_scenarios" {
+  name  = "/demo-simulator/recent-scenarios"
+  type  = "String"
+  value = "[]"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = local.tags
+}
+
+resource "aws_cloudwatch_event_rule" "demo_controller_schedule" {
+  name                = "demo-simulator-controller-daily"
+  description         = "Run random demo scenario every 2h during Chilean business hours (9AM-5PM CLT)"
+  schedule_expression = var.demo_controller_schedule
+
+  tags = local.tags
+}
+
+resource "aws_cloudwatch_event_target" "demo_controller" {
+  rule      = aws_cloudwatch_event_rule.demo_controller_schedule.name
+  target_id = "demo-controller"
+  arn       = aws_lambda_function.demo_controller.arn
+
+  input = jsonencode({
+    action       = "run_random"
+    action_delay = var.demo_controller_action_delay
+  })
+}
+
+resource "aws_lambda_permission" "demo_controller_eventbridge" {
+  statement_id  = "AllowEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.demo_controller.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.demo_controller_schedule.arn
 }
 
 resource "aws_cloudwatch_event_rule" "user_activity_schedule" {

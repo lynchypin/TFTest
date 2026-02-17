@@ -8,8 +8,9 @@ from datetime import datetime, timezone
 from typing import Optional, Dict, Any, List
 
 from shared import (
-    PagerDutyClient, SlackClient, 
-    DEMO_USERS, PAGERDUTY_TO_SLACK_USER_MAP, CONALL_SLACK_USER_ID
+    PagerDutyClient, SlackClient,
+    DEMO_USERS, PAGERDUTY_TO_SLACK_USER_MAP, CONALL_SLACK_USER_ID,
+    CONALL_SLACK_USER_ID_PERSONAL
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -610,6 +611,8 @@ def process_incidents() -> Dict[str, Any]:
                 channel_id = slack.find_channel_by_pattern(f"^{channel_name[:20]}")
 
                 if channel_id:
+                    observer_ids = [CONALL_SLACK_USER_ID, CONALL_SLACK_USER_ID_PERSONAL]
+                    slack.invite_users_to_channel(channel_id, observer_ids)
                     responders = pick_responders(pd, incident, 2)
                     slack_user_ids = get_slack_user_ids_for_responders(responders)
                     if slack_user_ids:

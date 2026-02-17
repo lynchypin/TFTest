@@ -905,17 +905,16 @@ output "cloudwatch_alarm_db_connections" {
 variable "rba_runner_token" {
   type      = string
   sensitive = true
-  default   = "OFQxJ44WT15xGXhywkhXf8xP7mpi5m8L"
 }
 
 variable "rba_runner_id" {
-  type    = string
-  default = "4da17208-b265-40f6-a57f-88aa7275ce2b"
+  type      = string
+  sensitive = true
 }
 
 variable "rba_download_token" {
-  type    = string
-  default = "0e847bbb-7e2f-4e6d-ae0c-6618d853046a"
+  type      = string
+  sensitive = true
 }
 
 variable "rba_url" {

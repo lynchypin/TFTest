@@ -283,6 +283,8 @@ function App() {
     return labels;
   }, [filters]);
 
+  const hasActiveFilters = activeFilterLabels.length > 0;
+
   return (
     <div className="min-h-screen bg-gray-950 scrollbar-thin">
       <header className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-xl border-b border-gray-800 shadow-lg shadow-black/20">

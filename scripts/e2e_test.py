@@ -115,8 +115,8 @@ class E2ETest:
         self.log("TEST 2: Verify incident created in PagerDuty")
         self.log("=" * 60)
         
-        self.log("Waiting 10s for incident to be created...")
-        time.sleep(10)
+        self.log("Waiting 20s for incident to be created...")
+        time.sleep(20)
         
         try:
             resp = requests.get(
@@ -162,8 +162,8 @@ class E2ETest:
             self.results["skipped"].append("Verify Slack channel")
             return None
 
-        self.log("Waiting 15s for workflow to create Slack channel...")
-        time.sleep(15)
+        self.log("Waiting 25s for workflow to create Slack channel...")
+        time.sleep(25)
 
         try:
             resp = requests.get(

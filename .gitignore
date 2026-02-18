@@ -10,6 +10,9 @@
 !docs/demo-scenarios/
 !docs/demo-scenarios/**
 
+# Allow root-level Terraform files (PagerDuty IaC)
+!*.tf
+
 # Allow AWS infrastructure (source only)
 !aws/
 !aws/*.tf
@@ -20,6 +23,7 @@
 !aws/lambda-*/
 !aws/lambda-*/handler.py
 !aws/lambda-*/requirements.txt
+!aws/lambda-*/scenarios.json
 
 # Exclude AWS build artifacts and secrets
 aws/terraform.tfvars

@@ -280,6 +280,18 @@ def create_incident(page_id: str, title: str, message: str, components: List[str
     impacts = get_status_page_impacts(page_id)
     services = get_status_page_services(page_id)
 
+    print(f"  Available statuses: {[s.get('name') for s in statuses]}")
+    print(f"  Available severities: {[s.get('name') for s in severities]}")
+    print(f"  Available impacts: {[s.get('name') for s in impacts]}")
+    print(f"  Available services: {[s.get('name') for s in services]}")
+
+    if not statuses or not severities or not impacts:
+        raise ValueError(
+            "Status page is missing configured statuses, severities, or impacts. "
+            "Ensure the status page is fully set up in the PagerDuty UI or via "
+            "'python3 scripts/status_page_manager.py create' before creating incidents."
+        )
+
     status_obj = find_by_name(statuses, "Investigating")
     if not status_obj:
         status_obj = statuses[0] if statuses else None
@@ -309,14 +321,13 @@ def create_incident(page_id: str, title: str, message: str, components: List[str
         else:
             print(f"Warning: Service '{comp_name}' not found on status page")
 
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     post_data = {
         "post": {
+            "type": "status_page_post",
             "post_type": "incident",
             "title": title,
-            "starts_at": None,
-            "ends_at": None,
             "status": {
                 "id": status_obj["id"],
                 "type": "status_page_status"
@@ -332,6 +343,7 @@ def create_incident(page_id: str, title: str, message: str, components: List[str
             "impacted_services": impacted_services,
             "updates": [
                 {
+                    "type": "status_page_post_update",
                     "body": message,
                     "status": {
                         "id": status_obj["id"],
@@ -344,12 +356,13 @@ def create_incident(page_id: str, title: str, message: str, components: List[str
                     "impacted_services": impacted_services,
                     "update_frequency_ms": 1800000,
                     "notify_subscribers": True,
-                    "reported_at": now,
-                    "type": "status_page_post_update"
+                    "reported_at": now
                 }
             ]
         }
     }
+
+    print(f"  Payload: {json.dumps(post_data, indent=2)}")
 
     result = api_request("POST", f"/status_pages/{page_id}/posts", post_data)
     post_id = result["post"]["id"]

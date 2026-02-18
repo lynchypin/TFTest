@@ -45,6 +45,10 @@ done
 echo "Initializing Terraform..."
 terraform init -upgrade
 
+echo "Removing stale Lambda zip files to force re-packaging..."
+rm -f lambda-*.zip
+echo "  Cleaned stale zip files"
+
 echo ""
 echo "Planning deployment..."
 terraform plan -out=tfplan

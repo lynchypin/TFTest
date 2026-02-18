@@ -176,28 +176,6 @@ resource "aws_lambda_function" "demo_orchestrator" {
   }
 }
 
-resource "aws_lambda_function_url" "demo_orchestrator" {
-  function_name      = aws_lambda_function.demo_orchestrator.function_name
-  authorization_type = "NONE"
-
-  cors {
-    allow_origins     = ["*"]
-    allow_methods     = ["*"]
-    allow_headers     = ["*"]
-    expose_headers    = ["*"]
-    max_age           = 86400
-    allow_credentials = false
-  }
-}
-
-resource "aws_lambda_permission" "demo_orchestrator_url" {
-  statement_id           = "AllowPublicAccess"
-  action                 = "lambda:InvokeFunctionUrl"
-  function_name          = aws_lambda_function.demo_orchestrator.function_name
-  principal              = "*"
-  function_url_auth_type = "NONE"
-}
-
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
@@ -206,11 +184,6 @@ variable "webhook_secret" {
   type        = string
   default     = ""
   sensitive   = true
-}
-
-output "demo_orchestrator_url" {
-  description = "URL for the demo orchestrator Lambda"
-  value       = aws_lambda_function_url.demo_orchestrator.function_url
 }
 
 output "demo_state_table" {

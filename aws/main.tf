@@ -308,11 +308,6 @@ resource "aws_lambda_function" "notifier" {
   tags = local.tags
 }
 
-resource "aws_lambda_function_url" "orchestrator" {
-  function_name      = aws_lambda_function.orchestrator.function_name
-  authorization_type = "NONE"
-}
-
 resource "aws_cloudwatch_log_group" "lambda_logs" {
   name              = "/aws/lambda/${local.function_name}"
   retention_in_days = 7
@@ -624,11 +619,6 @@ resource "aws_lambda_function" "demo_controller" {
   tags = local.tags
 }
 
-resource "aws_lambda_function_url" "demo_controller" {
-  function_name      = aws_lambda_function.demo_controller.function_name
-  authorization_type = "NONE"
-}
-
 resource "aws_cloudwatch_log_group" "demo_controller_logs" {
   name              = "/aws/lambda/demo-simulator-controller"
   retention_in_days = 7
@@ -724,22 +714,8 @@ resource "aws_lambda_permission" "health_check_eventbridge" {
   source_arn    = aws_cloudwatch_event_rule.health_check_schedule.arn
 }
 
-resource "aws_lambda_function_url" "reset" {
-  function_name      = aws_lambda_function.reset.function_name
-  authorization_type = "NONE"
-}
-
-resource "aws_lambda_function_url" "health_check" {
-  function_name      = aws_lambda_function.health_check.function_name
-  authorization_type = "NONE"
-}
-
 output "lambda_function_arn" {
   value = aws_lambda_function.orchestrator.arn
-}
-
-output "lambda_function_url" {
-  value = aws_lambda_function_url.orchestrator.function_url
 }
 
 output "schedule_rule_arn" {
@@ -782,21 +758,12 @@ output "health_check_function_arn" {
   value = aws_lambda_function.health_check.arn
 }
 
-output "health_check_function_url" {
-  value = aws_lambda_function_url.health_check.function_url
-}
-
 output "health_check_schedule_arn" {
   value = aws_cloudwatch_event_rule.health_check_schedule.arn
 }
 
 output "reset_function_arn" {
   value = aws_lambda_function.reset.arn
-}
-
-output "reset_function_url" {
-  value       = aws_lambda_function_url.reset.function_url
-  description = "URL to invoke demo reset. Use ?mode=quick or ?mode=full"
 }
 
 resource "aws_sns_topic" "pagerduty_alerts" {
@@ -903,152 +870,25 @@ output "cloudwatch_alarm_db_connections" {
   value = aws_cloudwatch_metric_alarm.demo_db_connections.arn
 }
 
-variable "rba_runner_token" {
-  type      = string
-  sensitive = true
-}
+resource "aws_cloudwatch_metric_alarm" "demo_controller_errors" {
+  alarm_name          = "demo-controller-lambda-errors"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = 300
+  statistic           = "Sum"
+  threshold           = 2
+  alarm_description   = "Demo controller Lambda errors detected — Slack operations may be failing"
 
-variable "rba_runner_id" {
-  type      = string
-  sensitive = true
-}
+  alarm_actions = [aws_sns_topic.pagerduty_alerts.arn]
 
-variable "rba_download_token" {
-  type      = string
-  sensitive = true
-}
-
-variable "rba_url" {
-  type    = string
-  default = "https://csmscale.runbook.pagerduty.cloud"
-}
-
-data "aws_ami" "amazon_linux_2023" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["al2023-ami-*-x86_64"]
+  dimensions = {
+    FunctionName = aws_lambda_function.demo_controller.function_name
   }
 
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
-
-data "aws_vpc" "default" {
-  default = true
-}
-
-resource "aws_security_group" "rba_runner" {
-  name        = "rba-runner-sg"
-  description = "Security group for RBA runner - outbound only"
-  vpc_id      = data.aws_vpc.default.id
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outbound traffic"
-  }
-
-  tags = merge(local.tags, {
-    Name = "rba-runner-sg"
-  })
-}
-
-resource "aws_iam_role" "rba_runner_role" {
-  name = "rba-runner-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "ec2.amazonaws.com"
-      }
-    }]
-  })
+  treat_missing_data = "notBreaching"
 
   tags = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "rba_runner_ssm" {
-  role       = aws_iam_role.rba_runner_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
-resource "aws_iam_instance_profile" "rba_runner_profile" {
-  name = "rba-runner-profile"
-  role = aws_iam_role.rba_runner_role.name
-}
-
-resource "aws_instance" "rba_runner" {
-  ami                    = data.aws_ami.amazon_linux_2023.id
-  instance_type          = "t2.micro"
-  iam_instance_profile   = aws_iam_instance_profile.rba_runner_profile.name
-  vpc_security_group_ids = [aws_security_group.rba_runner.id]
-
-  user_data = base64encode(<<-EOF
-    #!/bin/bash
-    set -ex
-
-    exec > /var/log/rba-runner-setup.log 2>&1
-
-    echo "Starting RBA Runner setup..."
-
-    yum update -y
-    yum install -y java-17-amazon-corretto docker
-
-    systemctl start docker
-    systemctl enable docker
-
-    mkdir -p /opt/rba-runner
-    cd /opt/rba-runner
-
-    cat > /opt/rba-runner/start-runner.sh << 'SCRIPT'
-    #!/bin/bash
-    docker run -d \
-      --name rba-runner \
-      --restart unless-stopped \
-      -e RUNNER_RUNDECK_URL="${var.rba_url}" \
-      -e RUNNER_RUNDECK_TOKEN="${var.rba_runner_token}" \
-      -e RUNNER_ID="${var.rba_runner_id}" \
-      rundeckpro/runner:latest
-    SCRIPT
-    chmod +x /opt/rba-runner/start-runner.sh
-
-    docker pull rundeckpro/runner:latest
-
-    docker run -d \
-      --name rba-runner \
-      --restart unless-stopped \
-      -e RUNNER_RUNDECK_URL="${var.rba_url}" \
-      -e RUNNER_RUNDECK_TOKEN="${var.rba_runner_token}" \
-      -e RUNNER_ID="${var.rba_runner_id}" \
-      rundeckpro/runner:latest
-
-    echo "RBA Runner setup complete!"
-  EOF
-  )
-
-  tags = merge(local.tags, {
-    Name = "rba-cloud-runner"
-  })
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-output "rba_runner_instance_id" {
-  value = aws_instance.rba_runner.id
-}
-
-output "rba_runner_private_ip" {
-  value = aws_instance.rba_runner.private_ip
-}

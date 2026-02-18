@@ -167,8 +167,11 @@ class PagerDutyClient:
         
         try:
             resp = requests.put(url, json=payload, headers=headers, timeout=10)
+            if not resp.ok:
+                logger.error(f"resolve_incident failed: incident={incident_id}, user={user_email}, status={resp.status_code}, body={resp.text[:200]}")
             return {'success': resp.ok, 'status_code': resp.status_code}
         except Exception as e:
+            logger.error(f"resolve_incident exception: incident={incident_id}, error={e}")
             return {'success': False, 'error': str(e)}
     
     def acknowledge_incident(self, incident_id: str, user_email: str = None) -> dict:
@@ -594,6 +597,19 @@ class SlackClient:
         self.team_id = os.environ.get('SLACK_TEAM_ID', SLACK_WORKSPACE_ID)
         self.api_base = 'https://slack.com/api'
         self._profile_cache = {}
+
+    def verify_token(self) -> Dict[str, Any]:
+        if not self.token:
+            return {'ok': False, 'error': 'no_token'}
+        try:
+            resp = requests.get(
+                f'{self.api_base}/auth.test',
+                headers=self._headers(),
+                timeout=10
+            )
+            return resp.json()
+        except Exception as e:
+            return {'ok': False, 'error': str(e)}
 
     def _headers(self) -> Dict[str, str]:
         return {

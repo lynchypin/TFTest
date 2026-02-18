@@ -609,6 +609,7 @@ resource "aws_lambda_function" "demo_controller" {
       PAGERDUTY_TOKEN              = var.pagerduty_admin_token
       SLACK_BOT_TOKEN              = var.slack_bot_token
       SLACK_CHANNEL                = var.slack_channel
+      SLACK_TEAM_ID                = var.slack_team_id
       ROUTING_KEY_DBRE             = var.routing_key_dbre
       ROUTING_KEY_API              = var.routing_key_api
       ROUTING_KEY_K8S              = var.routing_key_k8s

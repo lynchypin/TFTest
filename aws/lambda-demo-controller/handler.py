@@ -409,7 +409,7 @@ def wait_for_incident_channel(pd: PagerDutyClient, slack: SlackClient, incident:
 def invite_responders_to_slack_channel(slack: SlackClient, channel_id: str, responders: List[Dict],
                                         observer_slack_ids: List[str] = None) -> Dict[str, Any]:
     if observer_slack_ids is None:
-        observer_slack_ids = [CONALL_SLACK_USER_ID_PERSONAL]
+        observer_slack_ids = [CONALL_SLACK_USER_ID_PERSONAL, CONALL_SLACK_USER_ID]
 
     invited = []
     failed = []
@@ -562,28 +562,36 @@ def acknowledge_incident(pd: PagerDutyClient, slack: SlackClient, incident_id: s
     }
 
 
-def resolve_incident(pd: PagerDutyClient, slack: SlackClient, incident_id: str, channel_id: str, 
+def resolve_incident(pd: PagerDutyClient, slack: SlackClient, incident_id: str, channel_id: str,
                      responder: Dict, scenario: Dict, trigger_result: Dict) -> Dict[str, Any]:
     orchestration_trace = scenario.get("orchestration_trace", [])
-    
+
     if orchestration_trace:
         last_stage = orchestration_trace[-1] if orchestration_trace else {}
         note = f"[Resolution] {last_stage.get('result', last_stage.get('action', 'Issue resolved.'))}"
     else:
         note = "Root cause identified and fixed. Incident resolved."
-    
+
     pd.add_note(incident_id, note, responder['email'])
-    
+
     routing_key = trigger_result.get("routing_key")
     dedup_key = trigger_result.get("dedup_key")
     if routing_key and dedup_key:
         pd.resolve_via_events_api(routing_key, dedup_key)
-    
+
     result = pd.resolve_incident(incident_id, responder['email'])
-    
+    if not result.get('success'):
+        logger.error(f"Failed to resolve incident {incident_id} as {responder['email']}: status={result.get('status_code')}, error={result.get('error')}")
+        time.sleep(3)
+        result = pd.resolve_incident(incident_id, responder['email'])
+        if not result.get('success'):
+            logger.error(f"Retry failed to resolve incident {incident_id}: status={result.get('status_code')}, error={result.get('error')}")
+
     if channel_id:
-        slack.post_as_user(f":tada: *{responder['name']}*: {note}\n\n:white_check_mark: Incident resolved!", responder, channel_id)
-    
+        resolve_post = slack.post_as_user(f":tada: *{responder['name']}*: {note}\n\n:white_check_mark: Incident resolved!", responder, channel_id)
+        if not resolve_post.get('ok'):
+            logger.error(f"Failed to post resolve message to Slack: {resolve_post.get('error')}")
+
     return {
         "action": "resolve",
         "user": responder['name'],
@@ -597,6 +605,12 @@ def run_demo_flow(scenario_id: str, action_delay: int = None) -> Dict[str, Any]:
 
     pd = PagerDutyClient()
     slack = SlackClient()
+
+    slack_health = slack.verify_token()
+    if not slack_health.get('ok'):
+        logger.error(f"SLACK TOKEN INVALID: {slack_health.get('error', 'unknown')} - all Slack operations will fail")
+    else:
+        logger.info(f"Slack token valid: team={slack_health.get('team')}, user={slack_health.get('user')}")
 
     delay_func = lambda: action_delay if action_delay else get_random_delay()
 
@@ -687,9 +701,13 @@ def run_demo_flow(scenario_id: str, action_delay: int = None) -> Dict[str, Any]:
         logger.info(f"Channel created by PD workflow, adding users via Slack API...")
         invite_result = invite_responders_to_slack_channel(slack, channel_id, [primary_responder])
         results["steps"].append({"step": "invite_primary_responder", "result": invite_result})
+        if invite_result.get('failed'):
+            logger.error(f"Failed to invite some users to Slack channel: {invite_result['failed']}")
         logger.info(f"Added to Slack channel: {invite_result['invited']}")
 
-        slack.post_as_user(f":white_check_mark: *{primary_responder['name']}* acknowledged the incident", primary_responder, channel_id)
+        ack_post = slack.post_as_user(f":white_check_mark: *{primary_responder['name']}* acknowledged the incident", primary_responder, channel_id)
+        if not ack_post.get('ok'):
+            logger.error(f"Failed to post ack message to Slack: {ack_post.get('error')}")
     else:
         logger.warning("No Slack channel found - continuing without Slack integration")
 
@@ -703,8 +721,11 @@ def run_demo_flow(scenario_id: str, action_delay: int = None) -> Dict[str, Any]:
             for resp in additional:
                 slack_id = resp.get('slack_id') or PAGERDUTY_TO_SLACK_USER_MAP.get(resp.get('email'))
                 if slack_id:
-                    slack.invite_user_to_channel(channel_id, slack_id)
-                    logger.info(f"Added {resp['name']} to Slack channel via Slack API")
+                    inv_result = slack.invite_user_to_channel(channel_id, slack_id)
+                    if inv_result.get('ok') or inv_result.get('error') == 'already_in_channel':
+                        logger.info(f"Added {resp['name']} to Slack channel via Slack API")
+                    else:
+                        logger.error(f"Failed to invite {resp['name']} to Slack channel: {inv_result.get('error')}")
 
             names = ", ".join([r['name'] for r in additional])
             slack.post_as_user(f":busts_in_silhouette: *{primary_responder['name']}* requested help from {names}", primary_responder, channel_id)

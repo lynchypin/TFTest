@@ -64,5 +64,21 @@ docs/demo-scenarios/node_modules/
 docs/demo-scenarios/.env*
 docs/demo-scenarios/*.log
 
-# Credentials reference (contains real secrets)
+# Allow documentation markdown files
+!README.md
+!docs/*.md
+!docs/setup/
+!docs/setup/*.md
+!docs/project/
+!docs/project/*.md
+!docs/development/
+!docs/development/*.md
+!docs/archive/
+!docs/archive/*.md
+
+# Exclude sensitive docs (MUST be after !docs/*.md negation — last match wins)
 docs/CREDENTIALS_REFERENCE.md
+docs/setup/SECRETS.md
+docs/E2E_TEST_DOCUMENTATION.md
+docs/archive/COMPREHENSIVE_DEMO_ENVIRONMENT_SPECIFICATION.md
+docs/archive/REMAINING_WORK.md

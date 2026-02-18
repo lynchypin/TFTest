@@ -64,21 +64,13 @@ docs/demo-scenarios/node_modules/
 docs/demo-scenarios/.env*
 docs/demo-scenarios/*.log
 
-# Allow documentation markdown files
-!README.md
-!docs/*.md
-!docs/setup/
-!docs/setup/*.md
-!docs/project/
-!docs/project/*.md
-!docs/development/
-!docs/development/*.md
-!docs/archive/
-!docs/archive/*.md
-
-# Exclude sensitive docs (MUST be after !docs/*.md negation — last match wins)
-docs/CREDENTIALS_REFERENCE.md
-docs/setup/SECRETS.md
-docs/E2E_TEST_DOCUMENTATION.md
-docs/archive/COMPREHENSIVE_DEMO_ENVIRONMENT_SPECIFICATION.md
-docs/archive/REMAINING_WORK.md
+# Exclude ALL documentation markdown files (keep local only, never push to GitHub)
+# The docs/demo-scenarios/ React app is allowed above via !docs/demo-scenarios/**
+README.md
+docs/*.md
+docs/setup/*.md
+docs/project/*.md
+docs/development/*.md
+docs/archive/*.md
+docs/features/*.md
+docs/confluence-runbooks/*.md
